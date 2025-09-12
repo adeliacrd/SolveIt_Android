@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Camada 1: Fundo Azul Arredondado à Esquerda -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/solveit_fundo_edittext_icone" />
+            <corners
+                android:bottomLeftRadius="8dp"
+                android:topLeftRadius="8dp"
+                android:bottomRightRadius="0dp"
+                android:topRightRadius="0dp" />
+            <size
+                android:width="48dp"
+                android:height="48dp" />
+        </shape>
+    </item>
+
+    <!-- Camada 2: Ícone de Cadeado (branco) sobre o fundo -->
+    <item
+        android:drawable="@drawable/ic_lock"
+        android:width="24dp"        android:height="24dp"
+        android:gravity="center"
+        android:top="12dp"          android:bottom="12dp"
+        android:left="12dp"         android:right="12dp" />
+
+</layer-list>

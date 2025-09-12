@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "269703269723",
+    "project_id": "solveitapp",
+    "storage_bucket": "solveitapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:269703269723:android:24ad72ff1459cb5aa0de7e",
+        "android_client_info": {
+          "package_name": "com.example.solveit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAy-8zJoK4Dcz2U0B1gtndFyBUFiKp_sJI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
