@@ -2,19 +2,24 @@ package com.example.solveit; // !! MUITO IMPORTANTE: Verifique se este é o SEU 
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent; // <<< ADICIONADO IMPORT
 import android.os.Bundle;
+import android.util.Log;         // <<< ADICIONADO IMPORT
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;     // <<< ADICIONADO IMPORT (se já não estiver)
 import android.widget.Toast;
 // import android.widget.ImageView; // Descomente esta linha se precisar manipular a ImageView via código Java
 
+// SÓ UMA DECLARAÇÃO DA CLASSE AQUI
 public class MainActivity extends AppCompatActivity {
 
     // Declaração dos componentes da UI que usaremos no código Java
     private EditText editTextEmail;
     private EditText editTextPassword;
     private Button buttonLogin;
+    private TextView textViewGoToRegister; // TextView para o link "Crie sua conta"
     // private ImageView imageViewLogo; // Descomente se precisar
 
     @Override
@@ -28,6 +33,29 @@ public class MainActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword);
         buttonLogin = findViewById(R.id.buttonLogin);
         // imageViewLogo = findViewById(R.id.imageViewLogo); // Descomente se precisar
+
+        // ----- INÍCIO DO CÓDIGO PARA O TEXTVIEW DE CADASTRO -----
+        // Substitua 'R.id.textViewCreateAccount' pelo ID REAL do seu TextView "Crie sua conta" no activity_main.xml
+        textViewGoToRegister = findViewById(R.id.textViewCreateAccount);
+
+        if (textViewGoToRegister != null) {
+            textViewGoToRegister.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Cria uma "intenção" de ir da MainActivity para a RegisterActivity
+                    Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+                    // Inicia a nova tela (RegisterActivity)
+                    startActivity(intent);
+                }
+            });
+        } else {
+            // Isso ajuda a saber se o ID está errado ou se o TextView não existe no layout
+            Log.e("MainActivity", "TextView 'textViewCreateAccount' não foi encontrado. Verifique o ID no XML (activity_main.xml).");
+            // Você também pode mostrar um Toast para debug, se quiser, descomentando a linha abaixo
+            // Toast.makeText(this, "Link de cadastro não encontrado. Verifique o ID.", Toast.LENGTH_LONG).show();
+        }
+        // ----- FIM DO CÓDIGO PARA O TEXTVIEW DE CADASTRO -----
+
 
         // Configurar o que acontece quando o botão de login é clicado
         buttonLogin.setOnClickListener(new View.OnClickListener() {
@@ -54,10 +82,10 @@ public class MainActivity extends AppCompatActivity {
                     // Se o email E a senha estiverem corretos
                     Toast.makeText(MainActivity.this, "Login bem-sucedido!", Toast.LENGTH_LONG).show();
 
-                    // Aqui você poderia, por exemplo, navegar para uma nova tela (Activity)
-                    // Exemplo de como navegar para uma OutraActivity (você precisaria criar essa Activity):
-                    // Intent intent = new Intent(MainActivity.this, OutraActivity.class);
-                    // startActivity(intent);
+                    // Aqui você poderia, por exemplo, navegar para uma nova tela (Activity) após o login
+                    // Exemplo de como navegar para uma HomeActivity (você precisaria criar essa Activity):
+                    // Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
+                    // startActivity(homeIntent);
                     // finish(); // Opcional: fecha a tela de login para não voltar para ela com o botão "voltar"
                 } else {
                     // Se o email ou a senha estiverem incorretos

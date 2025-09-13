@@ -14,8 +14,8 @@
         android:id="@+id/imageViewLogo"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="40dp"
         android:contentDescription="Logo do SolveIt"
         android:src="@drawable/logo_solveit" />
 
@@ -23,7 +23,7 @@
         android:id="@+id/textViewWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="60dp"
         android:text="Bem-vindo!"
         android:textColor="@android:color/black"
         android:textSize="28sp"
@@ -44,8 +44,8 @@
     android:layout_marginBottom="16dp"
     android:paddingStart="12dp"
     android:paddingEnd="14dp"
-    android:paddingTop="14dp"
-    android:paddingBottom="14dp"/>
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"/>
 
     <!-- Campo de Senha com Ícone e Fundo Azul -->
     <EditText
@@ -114,7 +114,8 @@
             android:layout_height="wrap_content"
             android:text="Novo no SolveIt? "
             android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"/>
+            android:textStyle="bold"
+            android:textColor="@android:color/black"/>
 
         <TextView
             android:id="@+id/textViewCreateAccount"
