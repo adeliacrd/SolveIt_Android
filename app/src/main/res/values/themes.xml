@@ -2,7 +2,12 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.SolveIt" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/solveit_azul_primario</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Se você tiver uma variação mais escura do seu azul para a status bar, por exemplo: -->
+        <!-- <item name="colorPrimaryVariant">@color/solveit_azul_primario_escuro</item> -->
+        <!-- <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item> -->
     </style>
 
     <style name="Theme.SolveIt" parent="Base.Theme.SolveIt" />

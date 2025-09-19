@@ -1,133 +1,208 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="24dp"
-    android:paddingEnd="24dp"
+    android:fillViewport="true"
     tools:context=".RegisterActivity">
 
-    <!-- Logo SolveIt -->
-    <ImageView
-        android:id="@+id/imageViewLogoRegister"
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:src="@drawable/logo_solveit"
-        android:contentDescription="Logo SolveIt"
-        android:layout_marginTop="48dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Texto "Crie sua conta" -->
-    <TextView
-        android:id="@+id/textViewTitleRegister"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Crie sua conta"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewLogoRegister"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="32dp"
+        android:paddingBottom="32dp"
+        android:gravity="center_horizontal">
 
-    <ScrollView
-        android:id="@+id/formScrollView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitleRegister"
-        app:layout_constraintBottom_toTopOf="@id/buttonCreateAccount"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:fillViewport="true">
+        <!-- Logo -->
+        <ImageView
+            android:id="@+id/imageViewLogo"
+            android:layout_width="200dp"
+            android:layout_height="80dp"
+            android:src="@drawable/logo_solveit"
+            android:contentDescription="Logo SolveIT"
+            android:layout_marginBottom="24dp"/>
 
-        <LinearLayout
+        <!-- Título da Tela -->
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Crie sua conta"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Rótulo Nome -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:text="Nome*"
+            android:labelFor="@+id/editTextName"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"/>
 
-            <!-- Label para o Campo Nome -->
+        <!-- Campo Nome -->
+        <EditText
+            android:id="@+id/editTextName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName|textCapWords"
+            android:importantForAutofill="yes"
+            android:background="@drawable/edit_text_border_outline"
+            android:padding="14dp"
+            android:layout_marginBottom="16dp"
+            android:hint="Seu nome"
+            android:textSize="14sp"/>
+
+        <!-- Rótulo Email Corporativo -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Email Corporativo*"
+            android:labelFor="@+id/editTextEmailCorporativo"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"/>
+
+        <!-- Campo Email Corporativo -->
+        <EditText
+            android:id="@+id/editTextEmailCorporativo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:importantForAutofill="yes"
+            android:background="@drawable/edit_text_border_outline"
+            android:padding="14dp"
+            android:layout_marginBottom="16dp"
+            android:hint="seuemail@empresa.com"
+            android:textSize="14sp"/>
+
+        <!-- Rótulo Senha -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Senha*"
+            android:labelFor="@+id/editTextPassword"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"/>
+
+        <!-- Campo Senha -->
+        <EditText
+            android:id="@+id/editTextPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:importantForAutofill="yes"
+            android:background="@drawable/edit_text_border_outline"
+            android:padding="14dp"
+            android:layout_marginBottom="16dp"
+            android:hint="Crie uma senha"
+            android:textSize="14sp"/>
+
+        <!-- Rótulo Confirme a Senha -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Confirme a senha*"
+            android:labelFor="@+id/editTextConfirmPassword"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"/>
+
+        <!-- Campo Confirme a Senha -->
+        <EditText
+            android:id="@+id/editTextConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:importantForAutofill="yes"
+            android:background="@drawable/edit_text_border_outline"
+            android:padding="14dp"
+            android:layout_marginBottom="16dp"
+            android:hint="Confirme sua senha"
+            android:textSize="14sp"/>
+
+        <!-- Rótulo Nome da empresa -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nome da empresa*"
+            android:labelFor="@+id/editTextCompanyName"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"/>
+
+
+        <!-- Campo Nome da empresa -->
+        <EditText
+            android:id="@+id/editTextCompanyName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences"
+            android:importantForAutofill="yes"
+            android:background="@drawable/edit_text_border_outline"
+            android:padding="14dp"
+            android:layout_marginBottom="16dp"
+            android:hint="Nome da sua empresa"
+            android:textSize="14sp"/>
+
+        <!-- Rótulo Tamanho da empresa (mantido como antes, pois já estava acima) -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tamanho da empresa*"
+            android:textSize="12sp"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerCompanySize"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@drawable/spinner_border_outline"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_marginBottom="24dp"
+            android:prompt="@string/select_company_size_prompt"
+            tools:listitem="@android:layout/simple_spinner_dropdown_item"/>
+
+
+        <!-- Botão Criar conta -->
+        <Button
+            android:id="@+id/buttonCreateAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Criar conta"
+            android:onClick="onRegisterButtonClicked"
+            android:backgroundTint="?attr/colorPrimary"
+            android:textColor="?android:attr/textColorPrimaryInverse"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Link para Login -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
             <TextView
-                android:id="@+id/textViewLabelName"
+                android:id="@+id/textViewAlreadyHaveAccount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nome*"
-                android:labelFor="@+id/editTextName"
-                android:textStyle="bold"
-                android:layout_marginTop="16dp"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="12sp" />
+                android:text="Já tem uma conta? "
+                android:textStyle="bold"/>
 
-            <!-- Campo de Entrada Nome -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayoutNameContainer"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/textViewLoginLink"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:hintEnabled="false">  <!-- DESABILITA a label flutuante do TextInputLayout -->
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Seu nome"
-                android:inputType="textPersonName|textCapWords"
-                android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Próximos campos (Email Corporativo, etc.) virão aqui seguindo o mesmo padrão -->
-
+                android:text="Faça seu login"
+                android:textColor="?attr/colorPrimary"
+                android:textStyle="bold"/>
         </LinearLayout>
-    </ScrollView>
 
-    <!-- Botão "Criar conta" -->
-    <Button
-        android:id="@+id/buttonCreateAccount"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Criar conta"
-        android:backgroundTint="@color/design_default_color_primary"
-        android:textColor="@android:color/white"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/formScrollView"
-        app:layout_constraintBottom_toTopOf="@+id/layoutLoginLink" />
-
-    <!-- Link "Já tem conta? Faça seu login" -->
-    <LinearLayout
-        android:id="@+id/layoutLoginLink"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <TextView
-            android:id="@+id/textViewAlreadyHaveAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Já tem conta? "
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/textViewLoginLink"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Faça seu login"
-            android:textColor="@color/design_default_color_primary"
-            android:textStyle="bold"
-            android:textSize="16sp" />
     </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

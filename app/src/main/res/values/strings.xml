@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">SolveIt</string>
+    <!-- Outras strings que você já tenha -->
+
+    <string name="select_company_size_prompt">Selecione o tamanho</string>
+
+    <!-- Recomendo adicionar também o array para as opções do Spinner, para uso futuro: -->
+    <string-array name="company_size_options">
+        <item>Selecione as opções</item>
+        <item>Pequena (1-50 funcionários)</item>
+        <item>Média (51-200 funcionários)</item>
+        <item>Grande (201+ funcionários)</item>
+        <item>Autônomo</item>
+    </string-array>
 </resources>
