@@ -21,7 +21,11 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
+# --- LINHA ADICIONADA ABAIXO ---
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 googleGmsGoogleServices = { id = "com.google.gms.google-services", version.ref = "googleGmsServices" }
+
+

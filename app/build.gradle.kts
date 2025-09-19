@@ -42,13 +42,12 @@ android {
 }
 
 dependencies {
-    // Dependências AndroidX padrão
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
 
-    // Dependências de Teste
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -57,11 +56,8 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
 
-    // Exemplos de como adicionar outros produtos Firebase (descomente e certifique-se que os aliases existem no seu libs.versions.toml):
-    // implementation(libs.firebase.auth)       // Para Firebase Authentication
-    // implementation(libs.firebase.firestore)  // Para Cloud Firestore
-    // implementation(libs.firebase.database)   // Para Realtime Database
-    // implementation(libs.firebase.storage)    // Para Cloud Storage
-    // implementation(libs.firebase.messaging)  // Para Firebase Cloud Messaging (FCM)
+    implementation(libs.firebase.auth)       // Para Firebase Authentication
+    implementation(libs.firebase.firestore)  // Para Cloud Firestore
+
 }
 

@@ -18,9 +18,11 @@
         android:theme="@style/Theme.SolveIt"
         tools:targetApi="31">
         <activity
-            android:name=".RegisterActivity"
+            android:name=".ForgotPasswordActivity"
             android:exported="false" />
-        <!-- O nome do tema (Theme.SolveIt) deve corresponder ao seu projeto. Verifique em res/values/themes.xml -->
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false" /> <!-- O nome do tema (Theme.SolveIt) deve corresponder ao seu projeto. Verifique em res/values/themes.xml -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
