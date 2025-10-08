@@ -4,17 +4,14 @@
     <color name="white">#FFFFFFFF</color>
 
     <!-- Cores do SolveIT -->
-    <color name="solveit_azul_primario">#2196F3</color> <!-- Azul principal para botões, links -->
-    <color name="solveit_texto_botao">#FFFFFFFF</color> <!-- Cor do texto para botões com fundo azul -->
+    <color name="solveit_azul_primario">#0c72df</color> <!-- Azul principal do app -->
 
-    <color name="solveit_texto_principal">#FF000000</color> <!-- Para texto como "Bem-vindo!" -->
-    <color name="solveit_texto_secundario">#424242</color> <!-- Para texto como "Lembre de mim", "Novo no SolveIT?" -->
-    <color name="solveit_hint_text">#757575</color> <!-- Cor para o hint text nos EditTexts -->
+    <color name="solveit_texto_primario">#2b333e</color>
 
-    <color name="solveit_borda_edittext">#BDBDBD</color> <!-- Cinza claro para a borda do EditText -->
+    <color name="solveit_file">#d9d9d9</color>
 
-    <!-- Cores específicas para o fundo e ícone do EditText -->
-    <color name="solveit_fundo_edittext_icone">#2196F3</color> <!-- Fundo azul para a área do ícone no EditText (mesmo que o primário) -->
-    <color name="solveit_cor_icone_no_fundo_azul">#FFFFFFFF</color> <!-- Cor BRANCA para o ícone sobre o fundo azul -->
+    <color name="solveit_texto_secundario">#737373</color> <!-- Para campos a preencher ou textos pequenos "Lembre de mim"... -->
+
+    <color name="solveit_borda_edittext">#919191</color> <!-- Cinza claro para a borda do EditText -->
 
 </resources>

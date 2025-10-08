@@ -140,11 +140,11 @@ public class MainActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(MainActivity.this, "Login bem-sucedido!", Toast.LENGTH_SHORT).show();
 
-                            // Navegar para a próxima tela (ex: HomeActivity ou DashboardActivity)
-                            // Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
-                            // homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            // startActivity(homeIntent);
-                            // finish(); // Finaliza MainActivity para não poder voltar para ela com o botão "back"
+                            // Navegar para a próxima tela (AGORA VAI PARA SUA TELA DE TESTE!)
+                            Intent homeIntent = new Intent(MainActivity.this, AberturaChamadoActivity.class);
+                            homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(homeIntent);
+                            finish(); // Finaliza MainActivity para não poder voltar para ela com o botão "back"
                         } else {
                             // Se o login falhar
                             Log.w(TAG, "signInWithEmail:FALHA", task.getException());

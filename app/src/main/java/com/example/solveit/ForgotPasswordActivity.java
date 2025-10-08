@@ -1,9 +1,8 @@
-package com.example.solveit; // Certifique-se que este é o seu pacote correto
+package com.example.solveit;
 
-// Imports existentes
+// Imports
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -13,13 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 
-// Imports androidx existentes
-import androidx.activity.EdgeToEdge;
+// Imports androidx
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 // Firebase Auth imports
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -41,14 +36,9 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_forgot_password);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        // CORREÇÃO: Removendo o EdgeToEdge e WindowInsets (CAUSADORES DO CRASH)
+        setContentView(R.layout.activity_forgot_password);
 
         // Inicializa os componentes da UI
         editTextEmailForgotPassword = findViewById(R.id.editTextEmailForgotPassword);
@@ -80,7 +70,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         String email = editTextEmailForgotPassword.getText().toString().trim();
 
         // Validação básica do e-mail
-        if (TextUtils.isEmpty(email)) {
+        if (email.isEmpty()) {
             editTextEmailForgotPassword.setError("E-mail é obrigatório.");
             editTextEmailForgotPassword.requestFocus();
             return;
@@ -121,13 +111,11 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                                     "Link enviado. Verifique seu e-mail.",
                                     Toast.LENGTH_LONG).show();
                             // ----------------------------------------------
-                            // Opcional: Voltar para a tela de login ou fechar esta activity após um pequeno delay
-                            // finish();
-                            // Ou, para ir para LoginActivity explicitamente:
-                            // Intent intent = new Intent(ForgotPasswordActivity.this, MainActivity.class); // Assumindo MainActivity é seu login
-                            // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            // startActivity(intent);
-                            // finish();
+                            // Voltando para o Login
+                            Intent intent = new Intent(ForgotPasswordActivity.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
                         } else {
                             Log.w(TAG, "Falha ao enviar email de redefinição.", task.getException());
                             Toast.makeText(ForgotPasswordActivity.this,
