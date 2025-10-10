@@ -1,3 +1,5 @@
+// Copie e cole este código inteiro para C:/Users/adeli/StudioProjects/SolveIt/app/src/main/java/com/example/solveit/ForgotPasswordActivity.java
+
 package com.example.solveit;
 
 // Imports
@@ -13,14 +15,9 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 
 // Imports androidx
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-// Firebase Auth imports
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-
+// Os imports do Firebase foram REMOVIDOS daqui
 
 public class ForgotPasswordActivity extends AppCompatActivity {
 
@@ -31,13 +28,11 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     private TextView textViewBackToLogin;
     private ProgressBar progressBarForgotPassword;
 
-    private FirebaseAuth mAuth;
+    // A variável do Firebase (mAuth) foi REMOVIDA daqui
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // CORREÇÃO: Removendo o EdgeToEdge e WindowInsets (CAUSADORES DO CRASH)
         setContentView(R.layout.activity_forgot_password);
 
         // Inicializa os componentes da UI
@@ -46,14 +41,13 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         textViewBackToLogin = findViewById(R.id.textViewBackToLogin);
         progressBarForgotPassword = findViewById(R.id.progressBarForgotPassword);
 
-        // Inicializar Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
+        // A inicialização do Firebase foi REMOVIDA daqui
 
         // Configura o listener para o botão de enviar e-mail de redefinição
         buttonSendResetEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendPasswordResetEmailRequest(v); // Chamar o método refatorado
+                sendPasswordResetEmailRequest(v); // Chama o nosso novo método simulado
             }
         });
 
@@ -61,7 +55,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         textViewBackToLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish(); // Simplesmente fecha esta activity
+                finish(); // Simplesmente fecha esta activity e volta para a anterior
             }
         });
     }
@@ -69,7 +63,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     private void sendPasswordResetEmailRequest(View buttonView) {
         String email = editTextEmailForgotPassword.getText().toString().trim();
 
-        // Validação básica do e-mail
+        // Validação básica do e-mail (permanece igual)
         if (email.isEmpty()) {
             editTextEmailForgotPassword.setError("E-mail é obrigatório.");
             editTextEmailForgotPassword.requestFocus();
@@ -82,7 +76,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             return;
         }
 
-        Log.d(TAG, "Tentando enviar email de redefinição para: " + email);
+        Log.d(TAG, "Simulando envio de email de redefinição para: " + email);
 
         // Mostrar ProgressBar e desabilitar botão
         if (progressBarForgotPassword != null) {
@@ -92,38 +86,26 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             buttonView.setEnabled(false);
         }
 
-        mAuth.sendPasswordResetEmail(email)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // Esconder ProgressBar e reabilitar botão
-                        if (progressBarForgotPassword != null) {
-                            progressBarForgotPassword.setVisibility(View.GONE);
-                        }
-                        if (buttonView != null) {
-                            buttonView.setEnabled(true);
-                        }
+        // <<< LÓGICA DO FIREBASE FOI REMOVIDA DAQUI >>>
+        // Agora, apenas mostramos uma mensagem de sucesso e voltamos para a tela de login.
+        // Isso remove os erros e deixa o fluxo do app funcional.
 
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "Email de redefinição enviado com sucesso para: " + email);
-                            // --- MENSAGEM DO TOAST DE SUCESSO AJUSTADA ---
-                            Toast.makeText(ForgotPasswordActivity.this,
-                                    "Link enviado. Verifique seu e-mail.",
-                                    Toast.LENGTH_LONG).show();
-                            // ----------------------------------------------
-                            // Voltando para o Login
-                            Intent intent = new Intent(ForgotPasswordActivity.this, MainActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            Log.w(TAG, "Falha ao enviar email de redefinição.", task.getException());
-                            Toast.makeText(ForgotPasswordActivity.this,
-                                    "Falha ao enviar o e-mail de redefinição. Verifique o e-mail ou tente mais tarde.",
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+        // Esconder ProgressBar e reabilitar botão (simulando que a tarefa terminou)
+        if (progressBarForgotPassword != null) {
+            progressBarForgotPassword.setVisibility(View.GONE);
+        }
+        if (buttonView != null) {
+            buttonView.setEnabled(true);
+        }
+
+        Toast.makeText(ForgotPasswordActivity.this,
+                "Se o e-mail estiver cadastrado, um link será enviado (simulação).",
+                Toast.LENGTH_LONG).show();
+
+        // Voltando para a tela de Login
+        Intent intent = new Intent(ForgotPasswordActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 }
-

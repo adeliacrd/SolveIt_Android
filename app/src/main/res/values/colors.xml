@@ -5,13 +5,18 @@
 
     <!-- Cores do SolveIT -->
     <color name="solveit_azul_primario">#0c72df</color> <!-- Azul principal do app -->
-
     <color name="solveit_texto_primario">#2b333e</color>
-
     <color name="solveit_file">#d9d9d9</color>
-
     <color name="solveit_texto_secundario">#737373</color> <!-- Para campos a preencher ou textos pequenos "Lembre de mim"... -->
-
     <color name="solveit_borda_edittext">#919191</color> <!-- Cinza claro para a borda do EditText -->
+
+    <!-- NOVAS CORES DE PRIORIDADE ADICIONADAS -->
+    <color name="prioridade_urgente">#DC3545</color>
+    <color name="prioridade_alta">#FD7E14</color>
+    <color name="prioridade_media">#FFC107</color>
+    <color name="prioridade_baixa">#198754</color>
+
+    <!-- COR ADICIONADA PARA AS ABAS DO TABLAYOUT -->
+    <color name="white_transparente_70">#B3FFFFFF</color> <!-- Branco com 70% de opacidade -->
 
 </resources>

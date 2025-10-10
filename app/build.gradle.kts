@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    // A linha do plugin Kotlin foi REMOVIDA daqui
-    alias(libs.plugins.googleGmsGoogleServices) // Aplica o plugin Google Services para o Firebase
+    // A linha do plugin googleGmsGoogleServices foi removida.
 }
 
 android {
@@ -33,10 +32,6 @@ android {
         // Java 8 é uma escolha comum e estável para compatibilidade
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
-        // Se você estava usando Java 11 especificamente e funcionava bem para seu projeto Java puro,
-        // você poderia considerar voltar para:
-        // sourceCompatibility = JavaVersion.VERSION_11
-        // targetCompatibility = JavaVersion.VERSION_11
     }
     // O bloco kotlinOptions foi REMOVIDO pois o projeto é puramente Java
 }
@@ -52,12 +47,6 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    // Dependências do Firebase
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
-
-    implementation(libs.firebase.auth)       // Para Firebase Authentication
-    implementation(libs.firebase.firestore)  // Para Cloud Firestore
+    // As dependências do Firebase foram removidas daqui.
 
 }
-
