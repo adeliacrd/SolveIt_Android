@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="#FAFAFA"
     tools:context=".ListaChamadosActivity">
 
-    <!-- 1. TOOLBAR (permanece igual) -->
+    <!-- Toolbar e TabLayout permanecem iguais -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -23,96 +23,92 @@
             android:layout_height="32dp"
             android:layout_marginStart="16dp"
             android:adjustViewBounds="true"
-            android:src="@drawable/logo_solveit"
-            android:contentDescription="Logo SolveIT" />
-
+            android:contentDescription="Logo SolveIT"
+            android:src="@drawable/logo_solveit" />
     </androidx.appcompat.widget.Toolbar>
 
-    <!-- 2. TABLAYOUT (permanece igual) -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/solveit_azul_primario"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:tabIndicatorColor="@android:color/white"
-        app:tabTextColor="@color/white_transparente_70"
         app:tabSelectedTextColor="@android:color/white"
-        app:tabTextAppearance="@style/App.Custom.Tabs" />
+        app:tabTextAppearance="@style/App.Custom.Tabs"
+        app:tabTextColor="@color/white_transparente_70" />
 
-    <!-- 3. CABEÇALHO COM OS PESOS AJUSTADOS -->
+    <!-- CONTÊINER DA TABELA COM ALTURA AJUSTÁVEL -->
     <LinearLayout
-        android:id="@+id/headerLayout"
+        android:id="@+id/tableContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#F0F0F0"
-        android:orientation="horizontal"
-        android:paddingStart="8dp"
-        android:paddingTop="12dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="12dp"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout"
+        android:layout_margin="16dp"
+        android:background="@drawable/borda_tabela"
+        android:elevation="2dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/tabLayout">
 
-        <TextView
-            android:layout_width="0dp"
+        <!-- O cabeçalho -->
+        <LinearLayout
+            android:id="@+id/headerLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.8"
-            android:text="ID"
-            android:textColor="@color/solveit_texto_secundario" />
+            android:background="#F5F5F5"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="12dp">
 
-        <!-- MUDANÇA NO PESO -->
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3.5"
-            android:text="Título"
-            android:textColor="@color/solveit_texto_secundario" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:text="ID"
+                android:textColor="@color/solveit_texto_secundario" />
 
-        <!-- MUDANÇA NO PESO -->
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2.5"
-            android:gravity="center"
-            android:text="Prioridade"
-            android:textColor="@color/solveit_texto_secundario" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3.0"
+                android:text="Título"
+                android:textColor="@color/solveit_texto_secundario" />
 
-        <TextView
-            android:layout_width="0dp"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3.0"
+                android:gravity="center"
+                android:text="Prioridade"
+                android:textColor="@color/solveit_texto_secundario" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2.2"
+                android:gravity="end"
+                android:text="Status"
+                android:textColor="@color/solveit_texto_secundario" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewChamados"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2.2"
-            android:gravity="end"
-            android:text="Status"
-            android:textColor="@color/solveit_texto_secundario" />
+            android:clipToPadding="false"
+            tools:listitem="@layout/item_chamado_layout" />
+
     </LinearLayout>
-
-    <!-- O resto do arquivo permanece exatamente igual -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewChamados"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/headerLayout"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_chamado_layout" />
-
-    <TextView
-        android:id="@+id/textViewEmpty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nenhum chamado encontrado."
-        android:textSize="18sp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/headerLayout"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:visibility="visible" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdicionarChamado"
@@ -125,5 +121,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@android:color/white" />
+
+    <!-- TEXTVIEW PARA MENSAGEM DE LISTA VAZIA (CORRIGIDO) -->
+    <TextView
+        android:id="@+id/textViewEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColor="@color/solveit_texto_secundario"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/tableContainer"
+        app:layout_constraintEnd_toEndOf="@id/tableContainer"
+        app:layout_constraintStart_toStartOf="@id/tableContainer"
+        app:layout_constraintTop_toTopOf="@id/tableContainer"
+        tools:text="Você não possui chamados"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

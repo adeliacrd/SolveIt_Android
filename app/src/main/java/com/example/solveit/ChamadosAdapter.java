@@ -1,11 +1,10 @@
-package com.example.solveit;
-
-import android.view.LayoutInflater;
+package com.example.solveit;import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
@@ -64,9 +63,26 @@ public class ChamadosAdapter extends RecyclerView.Adapter<ChamadosAdapter.Chamad
     // 3. Este método diz à lista quantos itens ela tem no total
     @Override
     public int getItemCount() {
-        return listaChamados.size();
+        // Garante que a lista nunca seja nula, evitando crashes
+        return listaChamados != null ? listaChamados.size() : 0;
     }
 
+    // =============================================================
+    // ✨ MÉTODO NOVO QUE CORRIGE O ERRO DE COMPILAÇÃO ✨
+    // =============================================================
+    /**
+     * Atualiza a lista de chamados exibida pelo adapter.
+     * @param novaLista A nova lista de chamados a ser exibida.
+     */
+    public void atualizarLista(List<Chamado> novaLista) {
+        // Limpa a lista antiga
+        this.listaChamados.clear();
+        // Adiciona todos os itens da nova lista
+        this.listaChamados.addAll(novaLista);
+        // Notifica o RecyclerView que os dados mudaram, para que ele se redesenhe
+        notifyDataSetChanged();
+    }
+    // =============================================================
 
     // 4. Esta classe interna representa os componentes visuais de CADA linha da lista
     public static class ChamadoViewHolder extends RecyclerView.ViewHolder {
