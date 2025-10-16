@@ -1,26 +1,33 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Seu tema base, que já está correto -->
+    <!-- 1. SEU TEMA BASE (já estava correto) -->
+    <!-- Este é o tema "pai" de todos os outros. Ele herda de MaterialComponents e define as cores primárias. -->
     <style name="Base.Theme.SolveIt" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-
         <item name="colorPrimary">@color/solveit_azul_primario</item>
         <item name="colorOnPrimary">@color/white</item>
-
         <item name="android:statusBarColor" tools:targetApi="l">@color/white</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <item name="android:windowBackground">@color/white</item>
-
     </style>
 
-    <!-- Seus estilos existentes -->
+    <!-- 2. SEU TEMA PRINCIPAL (correto) -->
+    <!-- Apenas herda do tema base. Usado como padrão no app. -->
     <style name="Theme.SolveIt" parent="Base.Theme.SolveIt" />
 
+    <!-- 3. TEMA PARA TELAS COM BARRA DE STATUS AZUL (correto) -->
+    <!-- Herda do tema base e apenas muda a cor da barra de status. -->
     <style name="Theme.SolveIt.BlueStatusBar" parent="Base.Theme.SolveIt">
         <item name="android:statusBarColor" tools:targetApi="l">@color/solveit_azul_primario</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
     </style>
 
-    <style name="Theme.SolveIt.MaterialNoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <!-- ===================================================================== -->
+    <!-- ✨ A CORREÇÃO ESTÁ AQUI ✨ -->
+    <!-- Este tema agora herda de "Base.Theme.SolveIt" e não mais diretamente de "Theme.MaterialComponents...". -->
+    <!-- Isso garante que ele conheça suas cores e estilos personalizados. -->
+    <!-- ===================================================================== -->
+    <style name="Theme.SolveIt.MaterialNoActionBar" parent="Base.Theme.SolveIt">
+        <!-- As propriedades que você definiu aqui continuam, mas agora elas sobrescrevem o tema base se necessário. -->
         <item name="colorPrimary">@color/solveit_azul_primario</item>
         <item name="colorPrimaryVariant">@color/solveit_azul_primario</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -28,13 +35,33 @@
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>
 
-    <!-- ============================================= -->
-    <!-- ESTILO ADICIONADO PARA AS ABAS DO TABLAYOUT -->
-    <!-- ============================================= -->
+    <!-- ESTILO EXISTENTE PARA AS ABAS DO TABLAYOUT (sem alteração) -->
     <style name="App.Custom.Tabs" parent="TextAppearance.Design.Tab">
         <item name="android:textAllCaps">false</item>
         <item name="android:textStyle">bold</item>
     </style>
-    <!-- ============================================= -->
+
+    <!-- ESTILOS PARA O FORMULÁRIO (sem alteração) -->
+    <style name="App.Form.Label" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textColor">@color/solveit_texto_secundario</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="App.Form.Input" parent="Widget.AppCompat.EditText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:background">@drawable/borda_edittext</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="custom_spinner_selected_item" parent="Widget.AppCompat.TextView.SpinnerItem">
+        <item name="android:textSize">16sp</item>
+    </style>
 
 </resources>

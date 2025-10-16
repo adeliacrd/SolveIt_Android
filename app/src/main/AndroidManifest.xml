@@ -15,6 +15,9 @@
         android:theme="@style/Theme.SolveIt"
         tools:targetApi="31">
         <activity
+            android:name=".AberturaChamado"
+            android:exported="false" />
+        <activity
             android:name=".ListaChamadosActivity"
             android:exported="false" />
         <activity

@@ -1,16 +1,22 @@
 package com.example.solveit;
 
+// IMPORTAÇÕES NECESSÁRIAS (ADICIONADAS)
+import android.content.Intent;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+// SUAS IMPORTAÇÕES EXISTENTES
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable; // IMPORT ADICIONADO
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.Menu;import android.view.MenuItem;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat; // IMPORT ADICIONADO
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.tabs.TabLayout;
@@ -20,7 +26,7 @@ import java.util.stream.Collectors;
 
 public class ListaChamadosActivity extends AppCompatActivity {
 
-    // --- Variáveis da Classe (sem alterações) ---
+    // --- Suas variáveis de classe (sem alterações) ---
     private RecyclerView recyclerViewChamados;
     private ChamadosAdapter chamadosAdapter;
     private TextView textViewEmpty;
@@ -45,16 +51,38 @@ public class ListaChamadosActivity extends AppCompatActivity {
         tableContainer = findViewById(R.id.tableContainer);
         tabLayout = findViewById(R.id.tabLayout);
 
-        // --- Carregar Dados, Configurar RecyclerView e Abas (sem alterações) ---
-        carregarChamadosDeExemplo();
+        // --- Dados de Exemplo (Corretamente comentados) ---
+        // carregarChamadosDeExemplo();
+
+        // --- Configuração do RecyclerView e Adapter (sem alterações) ---
         recyclerViewChamados.setLayoutManager(new LinearLayoutManager(this));
         chamadosAdapter = new ChamadosAdapter(new ArrayList<>());
         recyclerViewChamados.setAdapter(chamadosAdapter);
+
+        // --- Configuração das Abas (sem alterações) ---
         setupTabLayout();
 
         // --- Exibição Inicial (sem alterações) ---
         tabLayout.getTabAt(0).select();
         filtrarEAtualizarLista(0);
+
+
+        // ================================================================
+        // ✨ CÓDIGO ADICIONADO PARA FAZER O BOTÃO FUNCIONAR ✨
+        // Configura o listener de clique para o FloatingActionButton (FAB).
+        // ================================================================
+        FloatingActionButton fabAdicionarChamado = findViewById(R.id.fabAdicionarChamado);
+        fabAdicionarChamado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Cria uma "Intenção" de navegar da tela atual para a tela de Abertura de Chamado.
+                Intent intent = new Intent(ListaChamadosActivity.this, AberturaChamadoActivity.class);
+                // Executa a navegação.
+                startActivity(intent);
+            }
+        });
+        // ================================================================
+
     }
 
     // --- carregarChamadosDeExemplo (sem alterações) ---
@@ -111,8 +139,7 @@ public class ListaChamadosActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
+            public void onTabReselected(TabLayout.Tab tab) {}
         });
     }
 
@@ -151,37 +178,29 @@ public class ListaChamadosActivity extends AppCompatActivity {
         }
     }
 
-    // --- Funções do Menu ---
-    // =============================================================
-    // ✨ MÉTODO ATUALIZADO PARA COLORIR OS ÍCONES ✨
-    // =============================================================
+    // --- Funções do Menu (sem alterações) ---
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // 1. Infla o menu a partir do XML.
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
-        // 2. Itera sobre cada item do menu para aplicar a cor.
         for (int i = 0; i < menu.size(); i++) {
             MenuItem menuItem = menu.getItem(i);
             Drawable drawable = menuItem.getIcon();
 
-            // 3. Se o item tiver um ícone, aplica o filtro de cor branco.
             if (drawable != null) {
-                drawable = DrawableCompat.wrap(drawable); // Prepara o ícone para ser modificado
-                DrawableCompat.setTint(drawable, ContextCompat.getColor(this, android.R.color.white)); // Pinta de branco
-                menuItem.setIcon(drawable); // Devolve o ícone pintado ao menu
+                drawable = DrawableCompat.wrap(drawable);
+                DrawableCompat.setTint(drawable, ContextCompat.getColor(this, android.R.color.white));
+                menuItem.setIcon(drawable);
             }
         }
 
         return true;
     }
 
-    // --- onOptionsItemSelected (sem alterações) ---
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.menu_notifications || id == R.id.menu_profile) {
-            // Ação para os ícones pode ser adicionada aqui no futuro
             return true;
         }
         return super.onOptionsItemSelected(item);
