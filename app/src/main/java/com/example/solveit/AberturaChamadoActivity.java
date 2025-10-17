@@ -1,12 +1,16 @@
 package com.example.solveit;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.view.Gravity; // ✨ IMPORT NECESSÁRIO PARA O ALINHAMENTO
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,44 +19,36 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 public class AberturaChamadoActivity extends AppCompatActivity {
 
-    // --- Variáveis para os componentes do layout ---
+    // (Suas variáveis de classe permanecem as mesmas)
     private EditText editTitulo;
     private EditText editNomeSolicitante;
     private Spinner spinnerPrioridade;
     private EditText editEmail;
     private EditText editDescricao;
-
-    // ================================================================
-    // ✨ VARIÁVEIS DO CAMPO DE ANEXO ATUALIZADAS PARA O NOVO LAYOUT ✨
-    // ================================================================
     private ImageButton btnAnexarIcone;
     private TextView textNomeArquivo;
-    // O TIPO DA VARIÁVEL FOI CORRIGIDO AQUI!
-    private TextView btnAnexarEscolha; // <-- AJUSTE FEITO: MUDOU DE 'Button' PARA 'TextView'
-
-    // --- Variáveis para os Botões ---
+    private TextView btnAnexarEscolha;
     private Button btnConfirmar;
     private Button btnCancelar;
     private ImageButton btnVoltar;
     private ImageButton btnNotifications;
     private ImageButton btnProfile;
-
-    // --- Variáveis de Controle ---
     private static final int PICK_FILE_REQUEST_CODE = 101;
     private final String PLACEHOLDER = "Selecione";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_abertura_chamado);
 
-        // --- Conectar os componentes (findViewById) ---
+        // (Seu código de findViewById permanece igual)
         editTitulo = findViewById(R.id.edit_titulo);
         editNomeSolicitante = findViewById(R.id.edit_nome_solicitante);
         spinnerPrioridade = findViewById(R.id.spinner_prioridade);
@@ -63,78 +59,77 @@ public class AberturaChamadoActivity extends AppCompatActivity {
         btnVoltar = findViewById(R.id.btn_voltar);
         btnNotifications = findViewById(R.id.btn_notifications);
         btnProfile = findViewById(R.id.btn_profile);
-
-        // ================================================================
-        // ✨ CONEXÃO DOS NOVOS COMPONENTES DE ANEXO ✨
-        // ================================================================
         btnAnexarIcone = findViewById(R.id.btn_anexar_icone);
         textNomeArquivo = findViewById(R.id.text_nome_arquivo);
-        btnAnexarEscolha = findViewById(R.id.btn_anexar_escolha); // Esta linha agora funciona sem erro
+        btnAnexarEscolha = findViewById(R.id.btn_anexar_escolha);
 
-
-        // --- Configuração dos Componentes ---
         configurarSpinnerPrioridade();
+        configurarListeners();
+    }
 
-        // --- Configuração dos Listeners (Ações de Clique) ---
+    private void configurarListeners() {
         btnVoltar.setOnClickListener(v -> finish());
         btnCancelar.setOnClickListener(v -> finish());
         btnConfirmar.setOnClickListener(v -> validarEEnviarChamado());
         btnNotifications.setOnClickListener(v -> Toast.makeText(this, "Notificações clicado!", Toast.LENGTH_SHORT).show());
         btnProfile.setOnClickListener(v -> Toast.makeText(this, "Perfil clicado!", Toast.LENGTH_SHORT).show());
-
-        // ================================================================
-        // ✨ LISTENERS DOS NOVOS BOTÕES DE ANEXO ✨
-        // ================================================================
         btnAnexarIcone.setOnClickListener(v -> abrirSeletorArquivo());
         btnAnexarEscolha.setOnClickListener(v -> abrirSeletorArquivo());
     }
 
-    /**
-     * Inicia a intenção para abrir o seletor de arquivos do sistema.
-     */
-    private void abrirSeletorArquivo() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        try {
-            startActivityForResult(Intent.createChooser(intent, "Selecione o arquivo"), PICK_FILE_REQUEST_CODE);
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(this, "Nenhum gerenciador de arquivos encontrado.", Toast.LENGTH_SHORT).show();
-        }
-    }
+    private void configurarSpinnerPrioridade() {
+        // As listas de dados permanecem as mesmas
+        final String[] prioridades = new String[]{PLACEHOLDER, "Urgente", "Alta", "Média", "Baixa"};
+        final int[] coresFundo = new int[]{
+                R.color.prioridade_urgente, // Esta lista agora tem 4 itens
+                R.color.prioridade_alta,
+                R.color.prioridade_media,
+                R.color.prioridade_baixa
+        };
 
-    /**
-     * Trata o retorno do seletor de arquivos, obtendo o nome do arquivo e exibindo-o.
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            String nomeArquivo = "Arquivo selecionado"; // Valor padrão
-            if (uri != null) {
-                // Tenta obter o nome do arquivo de forma segura
-                try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
-                    if (cursor != null && cursor.moveToFirst()) {
-                        int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                        if (nameIndex != -1) {
-                            nomeArquivo = cursor.getString(nameIndex);
-                        }
-                    }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item_prioridade, android.R.id.text1, prioridades) {
+
+            @Override
+            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView textView = (TextView) view.findViewById(android.R.id.text1);
+
+                if (position == 0) {
+                    textView.setHeight(0);
+                    textView.setVisibility(View.GONE);
+                } else {
+                    textView.setHeight((int) (48 * getContext().getResources().getDisplayMetrics().density));
+                    textView.setVisibility(View.VISIBLE);
+                    GradientDrawable background = (GradientDrawable) textView.getBackground().mutate();
+                    // O índice das cores é `position - 1` porque a lista de cores não tem o placeholder
+                    background.setColor(ContextCompat.getColor(getContext(), coresFundo[position - 1]));
                 }
+                return view;
             }
-            // ================================================================
-            // ✨ USANDO O NOVO TEXTVIEW PARA MOSTRAR O NOME DO ARQUIVO ✨
-            // ================================================================
-            textNomeArquivo.setText(nomeArquivo);
-            textNomeArquivo.setTextColor(Color.BLACK); // Deixa o texto preto para indicar seleção
-            Toast.makeText(this, "Arquivo: " + nomeArquivo, Toast.LENGTH_SHORT).show();
-        }
+
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView textView = (TextView) view.findViewById(android.R.id.text1);
+
+                // --- ✨ ÚNICA ALTERAÇÃO ESTÁ AQUI: DEFININDO O ALINHAMENTO ✨ ---
+                if (position == 0) {
+                    textView.setTextColor(Color.GRAY);
+                } else {
+                    textView.setTextColor(Color.BLACK);
+                }
+                // Alinha o texto à esquerda (START) e o centraliza verticalmente
+                textView.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+                textView.setBackgroundColor(Color.TRANSPARENT);
+
+                return view;
+            }
+        };
+
+        spinnerPrioridade.setAdapter(adapter);
     }
 
-    /**
-     * Valida os campos obrigatórios e, se tudo estiver correto, simula o envio.
-     */
+    // (O resto do seu código, validarEEnviarChamado, onActivityResult, etc., permanece igual)
     private void validarEEnviarChamado() {
         String titulo = editTitulo.getText().toString().trim();
         String nomeSolicitante = editNomeSolicitante.getText().toString().trim();
@@ -143,7 +138,6 @@ public class AberturaChamadoActivity extends AppCompatActivity {
         String prioridade = spinnerPrioridade.getSelectedItem().toString();
 
         boolean houveErro = false;
-
         if (titulo.isEmpty()) { editTitulo.setError("Obrigatório."); houveErro = true; }
         if (nomeSolicitante.isEmpty()) { editNomeSolicitante.setError("Obrigatório."); houveErro = true; }
         if (email.isEmpty()) { editEmail.setError("Obrigatório."); houveErro = true; }
@@ -156,43 +150,40 @@ public class AberturaChamadoActivity extends AppCompatActivity {
 
         if (!houveErro) {
             Toast.makeText(this, "CHAMADO ENVIADO COM SUCESSO!", Toast.LENGTH_LONG).show();
-            finish(); // Fecha a tela após o sucesso
+            finish();
         }
     }
 
-    /**
-     * Configura o Spinner de Prioridade, incluindo a lógica de cor para o placeholder.
-     */
-    private void configurarSpinnerPrioridade() {
-        String[] prioridades = new String[]{PLACEHOLDER, "Baixa", "Média", "Alta"};
+    private void abrirSeletorArquivo() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        try {
+            startActivityForResult(Intent.createChooser(intent, "Selecione o arquivo"), PICK_FILE_REQUEST_CODE);
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(this, "Nenhum gerenciador de arquivos encontrado.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, prioridades) {
-            @Override
-            public View getView(int position, View convertView, android.view.ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView textView = (TextView) view;
-                if (position == 0) {
-                    textView.setTextColor(Color.GRAY);
-                } else {
-                    textView.setTextColor(Color.BLACK);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+            String nomeArquivo = "Arquivo selecionado";
+            if (uri != null) {
+                try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                        if (nameIndex != -1) {
+                            nomeArquivo = cursor.getString(nameIndex);
+                        }
+                    }
                 }
-                return view;
             }
-
-            @Override
-            public View getDropDownView(int position, View convertView, android.view.ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                TextView textView = (TextView) view;
-                if (position == 0) {
-                    textView.setTextColor(Color.GRAY);
-                } else {
-                    textView.setTextColor(Color.BLACK);
-                }
-                return view;
-            }
-        };
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerPrioridade.setAdapter(adapter);
+            textNomeArquivo.setText(nomeArquivo);
+            textNomeArquivo.setTextColor(Color.BLACK);
+            Toast.makeText(this, "Arquivo: " + nomeArquivo, Toast.LENGTH_SHORT).show();
+        }
     }
 }

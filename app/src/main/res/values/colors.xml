@@ -10,11 +10,13 @@
     <color name="solveit_texto_secundario">#737373</color> <!-- Para campos a preencher ou textos pequenos "Lembre de mim"... -->
     <color name="solveit_borda_edittext">#919191</color> <!-- Cinza claro para a borda do EditText -->
 
-    <!-- NOVAS CORES DE PRIORIDADE ADICIONADAS -->
-    <color name="prioridade_urgente">#DC3545</color>
-    <color name="prioridade_alta">#FD7E14</color>
-    <color name="prioridade_media">#FFC107</color>
-    <color name="prioridade_baixa">#198754</color>
+    <!-- ======================================================= -->
+    <!-- ✨ CORES ADICIONADAS PARA O SPINNER DE PRIORIDADE ✨ -->
+    <!-- ======================================================= -->
+    <color name="prioridade_urgente">#D32F2F</color> <!-- Vermelho -->
+    <color name="prioridade_alta">#F57C00</color>    <!-- Laranja -->
+    <color name="prioridade_media">#FBC02D</color>   <!-- Amarelo -->
+    <color name="prioridade_baixa">#388E3C</color>   <!-- Verde -->
 
     <!-- COR ADICIONADA PARA AS ABAS DO TABLAYOUT -->
     <color name="white_transparente_70">#B3FFFFFF</color> <!-- Branco com 70% de opacidade -->
