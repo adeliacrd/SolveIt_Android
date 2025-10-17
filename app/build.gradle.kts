@@ -47,6 +47,18 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    // As dependências do Firebase foram removidas daqui.
+    // ************************************************************
+    // NOVO: DEPENDÊNCIAS DO RETROFIT E GSON PARA A API
+    // ************************************************************
 
+    // Retrofit (Biblioteca principal para requisições HTTP)
+    implementation(libs.retrofit)
+
+    // Gson Converter (Para Retrofit ler e escrever JSON, que é o que sua API usa)
+    implementation(libs.converter.gson)
+
+    // Interceptor de Logs (Opcional, mas útil para debug de rede)
+    implementation(libs.logging.interceptor)
+
+    // ... (As dependências do Firebase foram removidas daqui.)
 }
