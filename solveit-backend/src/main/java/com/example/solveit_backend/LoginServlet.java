@@ -12,14 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class LoginServlet extends HttpServlet {
 
-    // #######################################################################
-    // DADOS DE CONEXÃO COM O SQL SERVER (AJUSTE ESTES 3 CAMPOS!)
-    // #######################################################################
-    private static final String JDBC_URL = "jdbc:sqlserver://DESKTOP-PR12T5D\\SQLEXPRESS01:1433;databaseName=SOC_SOLVE;encrypt=true;trustServerCertificate=true;";
-    private static final String USERNAME = "gabadaro";
-    private static final String PASSWORD = "Gabi0204";
-    // #######################################################################
-
         private static class LoginResponse {
             boolean success;
             String message;
@@ -49,7 +41,11 @@ public class LoginServlet extends HttpServlet {
             }
 
             // 2. Conectar ao SQL Server e verificar
-            try (Connection conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD)) {
+            try (Connection conn = DriverManager.getConnection(
+                    DatabaseConfig.getDbUrl(),
+                    DatabaseConfig.getDbUsername(),
+                    DatabaseConfig.getDbPassword()
+            )) {
 
                 String sql = "SELECT senha_hash, id_tipo_acesso FROM USUARIOS WHERE email = ?";
                 PreparedStatement pstmt = conn.prepareStatement(sql);

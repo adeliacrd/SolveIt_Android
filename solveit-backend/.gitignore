@@ -1,1 +1,3 @@
 /build
+# Ignorar arquivos de configuração local com senhas
+config.properties

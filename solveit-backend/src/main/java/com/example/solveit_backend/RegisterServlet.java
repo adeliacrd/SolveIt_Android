@@ -13,14 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class RegisterServlet extends HttpServlet {
 
-    // #######################################################################
-    // DADOS DE CONEXÃO COM O SQL SERVER (!!! AJUSTE ISTO !!!)
-    // #######################################################################
-    private static final String JDBC_URL = "jdbc:sqlserver://DESKTOP-PR12T5D\\SQLEXPRESS01:1433;databaseName=SOC_SOLVE;encrypt=true;trustServerCertificate=true;";
-    private static final String USERNAME = "gabadaro";
-    private static final String PASSWORD = "Gabi0204";
-    // #######################################################################
-
     private static class RegisterResponse {
         boolean success;
         String message;
@@ -53,7 +45,11 @@ public class RegisterServlet extends HttpServlet {
         int idEmpresaGerado = -1;
 
         try {
-            conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+            conn = DriverManager.getConnection(
+                    DatabaseConfig.getDbUrl(),
+                    DatabaseConfig.getDbUsername(),
+                    DatabaseConfig.getDbPassword()
+            );
             conn.setAutoCommit(false); // INÍCIO DA TRANSAÇÃO
 
             // 1. PASSO 1: INSERIR EMPRESA (Busca/Insere)
