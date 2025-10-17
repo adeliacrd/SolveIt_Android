@@ -15,20 +15,68 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/toolbar_icones"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/solveit_azul_primario"
-            app:contentInsetStart="0dp">
+            android:layout_height="38dp"
+            android:paddingStart="0dp"
+            android:paddingTop="0dp"
+            android:paddingEnd="0dp"
+            app:contentInsetEnd="0dp"
+            app:contentInsetStart="0dp"
+            app:contentInsetStartWithNavigation="0dp">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:layout_marginStart="16dp"
-                android:adjustViewBounds="true"
-                android:contentDescription="Logo SolveIT"
-                android:src="@drawable/logo_solveit" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="0dp"
+                android:paddingTop="0dp"
+                android:paddingEnd="0dp"
+                android:paddingBottom="4dp">
 
+                <ImageView
+                    android:id="@+id/img_logo_solveit"
+                    android:layout_width="230dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="Logo SolveIT"
+                    android:scaleType="fitStart"
+                    android:src="@drawable/solveit_logo2" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <ImageButton
+                    android:id="@+id/icon_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="false"
+                    android:contentDescription="Abrir Novo Chamado"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_add_circle_outline_white" />
+
+                <ImageButton
+                    android:id="@+id/ic_notifications"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Notificações"
+                    android:padding="8dp"
+                    android:src="@drawable/notifications" />
+
+                <ImageButton
+                    android:id="@+id/btn_profile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Perfil do Usuário"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_person_white" />
+            </LinearLayout>
         </androidx.appcompat.widget.Toolbar>
 
         <com.google.android.material.tabs.TabLayout
@@ -39,7 +87,8 @@
             app:tabIndicatorColor="@android:color/white"
             app:tabSelectedTextColor="@android:color/white"
             app:tabTextAppearance="@style/App.Custom.Tabs"
-            app:tabTextColor="@color/white_transparente_70" />
+            app:tabTextColor="@color/white_transparente_70"
+            app:tabIndicatorFullWidth="false" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

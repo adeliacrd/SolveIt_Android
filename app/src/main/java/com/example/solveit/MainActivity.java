@@ -13,6 +13,12 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.example.solveit.api.ApiService;
+import com.example.solveit.api.LoginResponse;
+import com.example.solveit.api.RetrofitClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -75,41 +81,77 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void loginUser(View buttonView) { // 'buttonView' é o botão de login
+    private void loginUser(View buttonView) {
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
+        // Validações de campos (seu código já faz isso bem)
         if (email.isEmpty()) {
             editTextEmail.setError("Por favor, insira o email.");
             editTextEmail.requestFocus();
             return;
         }
-
         if (password.isEmpty()) {
             editTextPassword.setError("Por favor, insira a senha.");
             editTextPassword.requestFocus();
             return;
         }
 
-        Log.d(TAG, "Simulando login com email: " + email);
-
-        if (progressBarLogin != null) {
-            progressBarLogin.setVisibility(View.VISIBLE);
-        }
-        if (buttonView != null) {
-            buttonView.setEnabled(false);
-        }
-
-        Toast.makeText(MainActivity.this, "Login bem-sucedido (simulação)!", Toast.LENGTH_SHORT).show();
+        // Mostra a barra de progresso e desabilita o botão
+        progressBarLogin.setVisibility(View.VISIBLE);
+        buttonLogin.setEnabled(false);
 
         // ======================================================================
-        // A CORREÇÃO ESTÁ AQUI!
-        // Navegar para a tela de LISTA de Chamados, em vez da de Abertura.
+        // INÍCIO DA LÓGICA REAL DE LOGIN (AQUI ESTÁ A MÁGICA!)
         // ======================================================================
-        Intent homeIntent = new Intent(MainActivity.this, ListaChamadosActivity.class);
 
-        homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(homeIntent);
-        finish(); // Finaliza MainActivity para não poder voltar para ela
+        // 1. Obtenha a instância do serviço da API através do Retrofit
+        ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+
+        // 2. Crie a chamada para o endpoint de login
+        Call<LoginResponse> call = apiService.loginUsuario(email, password);
+
+        // 3. Execute a chamada de forma assíncrona (em background)
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                // Esconde a barra de progresso e reabilita o botão
+                progressBarLogin.setVisibility(View.GONE);
+                buttonLogin.setEnabled(true);
+
+                // Verifica se a resposta do servidor foi bem-sucedida (código 200-299)
+                if (response.isSuccessful() && response.body() != null) {
+                    LoginResponse loginResponse = response.body();
+
+                    if (loginResponse.isSuccess()) {
+                        // SUCESSO! O backend validou o usuário.
+                        Toast.makeText(MainActivity.this, "Login bem-sucedido!", Toast.LENGTH_SHORT).show();
+
+                        // Navega para a próxima tela
+                        Intent homeIntent = new Intent(MainActivity.this, ListaChamadosActivity.class);
+                        homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(homeIntent);
+                        finish();
+                    } else {
+                        // Falha de negócio (ex: senha errada)
+                        Toast.makeText(MainActivity.this, "Erro: " + loginResponse.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    // Erro do servidor (ex: 401 Unauthorized, 404 Not Found)
+                    Toast.makeText(MainActivity.this, "Credenciais inválidas ou erro no servidor.", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                // Esconde a barra de progresso e reabilita o botão
+                progressBarLogin.setVisibility(View.GONE);
+                buttonLogin.setEnabled(true);
+
+                // Erro de rede (sem internet, firewall, servidor offline)
+                Log.e(TAG, "Falha na chamada de rede: ", t);
+                Toast.makeText(MainActivity.this, "Não foi possível conectar ao servidor. Verifique sua conexão.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

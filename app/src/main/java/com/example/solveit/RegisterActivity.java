@@ -1,52 +1,60 @@
-// Copie e cole este código inteiro para C:/Users/adeli/StudioProjects/SolveIt/app/src/main/java/com/example/solveit/RegisterActivity.java
-
 package com.example.solveit;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.example.solveit.api.ApiService;
+import com.example.solveit.api.RegisterResponse;
+import com.example.solveit.api.RetrofitClient;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+// Seu código do Spinner precisa desses imports também, se já não estiverem lá
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+import android.graphics.Color;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private static final String TAG = "RegistroApp";
 
+    // Variáveis para os componentes da tela
+    private EditText editTextFullName, editTextEmail, editTextPassword, editTextConfirmPassword, editTextCompanyName;
     private Spinner spinnerCompanySize;
+    private ProgressBar progressBarRegister;
+    private Button buttonRegister; // A variável para o botão
+
+    // Variável para a API
+    private ApiService apiService;
+
+    // Variáveis para a lógica do Spinner
     private String selectedCompanySize = "";
     private int defaultSpinnerTextColor;
-
-    private EditText editTextFullName;
-    private EditText editTextEmail;
-    private EditText editTextPassword;
-    private EditText editTextConfirmPassword;
-    private EditText editTextCompanyName;
-
-    private ProgressBar progressBarRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        // --- Inicialização da API (seu código já estava correto) ---
+        apiService = RetrofitClient.getClient().create(ApiService.class);
 
+        // =========================================================================
+        // <<< CORREÇÃO PRINCIPAL AQUI >>>
+        // Conectando cada variável Java com o ID exato do seu arquivo XML.
+        // =========================================================================
         editTextFullName = findViewById(R.id.editTextName);
         editTextEmail = findViewById(R.id.editTextEmailCorporativo);
         editTextPassword = findViewById(R.id.editTextPassword);
@@ -55,108 +63,128 @@ public class RegisterActivity extends AppCompatActivity {
         spinnerCompanySize = findViewById(R.id.spinnerCompanySize);
         progressBarRegister = findViewById(R.id.progressBarRegister);
 
-        // --- Configuração do Spinner (seu código ótimo permanece aqui) ---
+        // <<< O ID no XML é "buttonCreateAccount", então usamos ele aqui >>>
+        buttonRegister = findViewById(R.id.buttonCreateAccount);
+
+        // --- Configuração do Spinner (movi sua lógica para um método separado) ---
+        setupSpinner();
+
+        // --- Configuração do Clique do Botão (o jeito moderno e seguro) ---
+        buttonRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Quando o botão for clicado, chame o método para registrar o usuário
+                registerUser();
+            }
+        });
+    }
+
+    /**
+     * Este método é chamado quando o botão de registro é clicado.
+     * Ele coleta os dados da tela e envia para a API.
+     */
+    private void registerUser() {
+        Log.d(TAG, "Botão de registro clicado. Iniciando processo.");
+
+        // Coleta dos dados dos campos
+        String fullName = editTextFullName.getText().toString().trim();
+        String email = editTextEmail.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
+        String confirmPassword = editTextConfirmPassword.getText().toString().trim();
+        String companyName = editTextCompanyName.getText().toString().trim();
+        String companySize = selectedCompanySize;
+
+        // VALIDAÇÕES LOCAIS (verificando se os campos não estão vazios, etc.)
+        if (fullName.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || companyName.isEmpty() || companySize.isEmpty()) {
+            Toast.makeText(this, "Por favor, preencha todos os campos.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            editTextConfirmPassword.setError("As senhas não coincidem.");
+            editTextConfirmPassword.requestFocus();
+            return;
+        }
+
+        // Mostrar a barra de progresso e desabilitar o botão para evitar cliques duplos
+        progressBarRegister.setVisibility(View.VISIBLE);
+        buttonRegister.setEnabled(false);
+
+        // CHAMADA À API USANDO RETROFIT
+        Call<RegisterResponse> call = apiService.registerUsuario(fullName, email, password, companyName, companySize);
+
+        call.enqueue(new Callback<RegisterResponse>() {
+            @Override
+            public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
+                // Esconder a barra e reabilitar o botão, não importa o resultado
+                progressBarRegister.setVisibility(View.GONE);
+                buttonRegister.setEnabled(true);
+
+                if (response.isSuccessful() && response.body() != null) {
+                    // O servidor respondeu com sucesso (código 200-299)
+                    RegisterResponse registerResponse = response.body();
+                    if (registerResponse.isSuccess()) {
+                        Toast.makeText(RegisterActivity.this, "Cadastro realizado com sucesso!", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish(); // Fecha a tela de registro
+                    } else {
+                        // O servidor respondeu com um erro de lógica (ex: email já existe)
+                        Toast.makeText(RegisterActivity.this, "Erro: " + registerResponse.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    // O servidor respondeu com um erro HTTP (ex: 409, 500)
+                    String erroMsg = "Erro no servidor (Código: " + response.code() + ").";
+                    if (response.code() == 409) {
+                        erroMsg = "Este e-mail já está cadastrado.";
+                    }
+                    Toast.makeText(RegisterActivity.this, erroMsg, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RegisterResponse> call, Throwable t) {
+                // Erro de conexão (sem internet, servidor offline)
+                progressBarRegister.setVisibility(View.GONE);
+                buttonRegister.setEnabled(true);
+                Toast.makeText(RegisterActivity.this, "Falha de conexão. Verifique a internet ou o servidor.", Toast.LENGTH_LONG).show();
+                Log.e(TAG, "Erro de rede no registro: ", t);
+            }
+        });
+    }
+
+    /**
+     * Método que contém toda a sua lógica para configurar o Spinner.
+     * Fica mais organizado assim.
+     */
+    private void setupSpinner() {
         String[] companySizeOptions = getResources().getStringArray(R.array.company_size_options);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.custom_spinner_selected_item, android.R.id.text1, companySizeOptions);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.custom_spinner_selected_item, companySizeOptions);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCompanySize.setAdapter(adapter);
 
-        if (spinnerCompanySize.getSelectedItem() != null && spinnerCompanySize.getSelectedView() instanceof TextView) {
+        if (spinnerCompanySize.getSelectedView() != null) {
             defaultSpinnerTextColor = ((TextView) spinnerCompanySize.getSelectedView()).getCurrentTextColor();
         } else {
-            TextView tempTextView = new TextView(this);
-            tempTextView.setTextAppearance(android.R.style.TextAppearance_Widget_TextView_SpinnerItem);
-            defaultSpinnerTextColor = tempTextView.getCurrentTextColor();
-            if (defaultSpinnerTextColor == 0) defaultSpinnerTextColor = Color.BLACK;
+            defaultSpinnerTextColor = Color.BLACK;
         }
+
         spinnerCompanySize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String itemSelecionado = parent.getItemAtPosition(position).toString();
-                String promptText = (companySizeOptions.length > 0) ? companySizeOptions[0] : "";
-                TextView selectedTextView = (view instanceof TextView) ? (TextView) view : null;
-                if (position == 0 && itemSelecionado.equals(promptText)) {
-                    selectedCompanySize = "";
+                TextView selectedTextView = (TextView) view;
+                if (position == 0) {
+                    selectedCompanySize = ""; // Valor vazio se a primeira opção for selecionada
                     if (selectedTextView != null) selectedTextView.setTextColor(Color.GRAY);
                 } else {
-                    selectedCompanySize = itemSelecionado;
+                    selectedCompanySize = parent.getItemAtPosition(position).toString();
                     if (selectedTextView != null) selectedTextView.setTextColor(defaultSpinnerTextColor);
                 }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 selectedCompanySize = "";
-                View currentSelectedView = spinnerCompanySize.getSelectedView();
-                if (currentSelectedView instanceof TextView) {
-                    ((TextView) currentSelectedView).setTextColor(Color.GRAY);
-                }
             }
         });
-        if (spinnerCompanySize.getCount() > 0) {
-            spinnerCompanySize.setSelection(0);
-            View selectedView = spinnerCompanySize.getSelectedView();
-            if (selectedView instanceof TextView && companySizeOptions.length > 0 &&
-                    ((TextView) selectedView).getText().toString().equals(companySizeOptions[0])) {
-                ((TextView) selectedView).setTextColor(Color.GRAY);
-            }
-        }
-    }
-
-    private void showProgressAndDisableButton(View buttonView) {
-        progressBarRegister.setVisibility(View.VISIBLE);
-        if (buttonView != null) buttonView.setEnabled(false);
-    }
-
-    private void hideProgressAndReEnableButton(View buttonView) {
-        progressBarRegister.setVisibility(View.GONE);
-        if (buttonView != null) buttonView.setEnabled(true);
-    }
-
-    public void onRegisterButtonClicked(View view) {
-        Log.d(TAG, "onRegisterButtonClicked chamado.");
-        showProgressAndDisableButton(view);
-
-        String fullName = editTextFullName.getText().toString().trim();
-        String email = editTextEmail.getText().toString().trim();
-        String password = editTextPassword.getText().toString().trim();
-        String confirmPassword = editTextConfirmPassword.getText().toString().trim();
-        String companyName = editTextCompanyName.getText().toString().trim();
-
-        // --- Validações (seu código ótimo permanece aqui) ---
-        if (fullName.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || companyName.isEmpty()) {
-            Toast.makeText(this, "Por favor, preencha todos os campos.", Toast.LENGTH_LONG).show();
-            hideProgressAndReEnableButton(view);
-            return;
-        }
-        String promptText = (getResources().getStringArray(R.array.company_size_options).length > 0) ? getResources().getStringArray(R.array.company_size_options)[0] : "";
-        if (selectedCompanySize.isEmpty() || (spinnerCompanySize.getSelectedItemPosition() == 0 && spinnerCompanySize.getSelectedItem().toString().equals(promptText))) {
-            Toast.makeText(this, "Por favor, selecione o tamanho da empresa.", Toast.LENGTH_LONG).show();
-            hideProgressAndReEnableButton(view);
-            return;
-        }
-        if (!password.equals(confirmPassword)) {
-            Toast.makeText(this, "As senhas não coincidem.", Toast.LENGTH_LONG).show();
-            hideProgressAndReEnableButton(view);
-            return;
-        }
-        if (password.length() < 6) {
-            Toast.makeText(this, "A senha deve ter pelo menos 6 caracteres.", Toast.LENGTH_LONG).show();
-            hideProgressAndReEnableButton(view);
-            return;
-        }
-
-        // <<< LÓGICA DE REGISTRO REMOVIDA >>>
-        // Agora, o app não faz nada com os dados, mas também não dá erro.
-        // Isso é o que queremos!
-
-        Log.d(TAG, "Validações passaram. Nenhuma ação de registro configurada (isso é esperado por enquanto).");
-
-        // Simula um sucesso e vai para a tela principal
-        Toast.makeText(this, "Registro concluído (simulação).", Toast.LENGTH_LONG).show();
-
-        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish(); // Finaliza a tela de registro
     }
 }
