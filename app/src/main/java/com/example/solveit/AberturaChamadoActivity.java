@@ -57,7 +57,7 @@ public class AberturaChamadoActivity extends AppCompatActivity {
         btnConfirmar = findViewById(R.id.btn_confirmar);
         btnCancelar = findViewById(R.id.btn_cancelar);
         btnVoltar = findViewById(R.id.btn_voltar);
-        btnNotifications = findViewById(R.id.btn_notifications);
+        btnNotifications = findViewById(R.id.ic_notifications);
         btnProfile = findViewById(R.id.btn_profile);
         btnAnexarIcone = findViewById(R.id.btn_anexar_icone);
         textNomeArquivo = findViewById(R.id.text_nome_arquivo);

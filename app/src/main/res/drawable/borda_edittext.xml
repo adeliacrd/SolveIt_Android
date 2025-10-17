@@ -4,7 +4,7 @@
     <solid android:color="@android:color/white" />
 
     <!-- Raio dos cantos arredondados -->
-    <corners android:radius="8dp" />
+    <corners android:radius="15dp" />
 
     <!-- Cor e espessura da borda -->
     <stroke

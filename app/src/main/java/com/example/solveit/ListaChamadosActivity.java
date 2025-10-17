@@ -40,7 +40,7 @@ public class ListaChamadosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lista_chamados);
 
         // --- Configuração dos Componentes (sem alterações) ---
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar_icones);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -111,6 +111,7 @@ public class ListaChamadosActivity extends AppCompatActivity {
                 tabTextView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 tabTextView.setText(tab.getText());
                 tabTextView.setTypeface(null, Typeface.BOLD);
+                tabTextView.setTextSize(18);
 
                 if (tab.getPosition() == 0) {
                     tabTextView.setTextColor(ContextCompat.getColor(this, android.R.color.white));
@@ -200,7 +201,7 @@ public class ListaChamadosActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.menu_notifications || id == R.id.menu_profile) {
+        if (id == R.id.ic_notifications || id == R.id.btn_profile) {
             return true;
         }
         return super.onOptionsItemSelected(item);
