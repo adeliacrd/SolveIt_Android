@@ -42,7 +42,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nome*"
+            android:text="Nome Completo*"
             android:textColor="@color/black"
             android:labelFor="@+id/editTextName"
             android:layout_marginStart="4dp"
@@ -58,7 +58,31 @@
             android:background="@drawable/input_field_border"
             android:padding="14dp"
             android:layout_marginBottom="16dp"
-            android:hint="Seu nome"
+            android:hint="Seu nome completo"
+            android:textSize="12sp"/>
+
+        <!-- Rótulo CPF -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CPF*"
+            android:textColor="@color/black"
+            android:labelFor="@+id/editTextCPF"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"/>
+
+        <!-- Campo CPF -->
+        <EditText
+            android:id="@+id/editTextCPF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="14"
+            android:importantForAutofill="yes"
+            android:background="@drawable/input_field_border"
+            android:padding="14dp"
+            android:layout_marginBottom="16dp"
+            android:hint="000.000.000-00"
             android:textSize="12sp"/>
 
         <!-- Rótulo Email Corporativo -->
@@ -111,7 +135,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Confirme a senha*"
+            android:text="Confirme a Senha*"
             android:textColor="@color/black"
             android:labelFor="@+id/editTextConfirmPassword"
             android:layout_marginStart="4dp"
@@ -134,7 +158,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nome da empresa*"
+            android:text="Nome da Empresa*"
             android:textColor="@color/black"
             android:labelFor="@+id/editTextCompanyName"
             android:layout_marginStart="4dp"
@@ -154,24 +178,24 @@
             android:hint="Nome da sua empresa"
             android:textSize="12sp"/>
 
-        <!-- Rótulo Tamanho da empresa -->
+        <!-- Rótulo para Login Sugerido -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tamanho da empresa*"
+            android:text="Login Sugerido*"
             android:textColor="@color/black"
             android:layout_marginStart="4dp"
             android:layout_marginBottom="4dp"/>
 
+        <!-- Campo para Login Sugerido -->
         <Spinner
-            android:id="@+id/spinnerCompanySize"
+            android:id="@+id/spinnerLoginOptions"
             android:layout_width="match_parent"
             android:layout_height="46dp"
             android:background="@drawable/input_field_border"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:layout_marginBottom="24dp"
-            android:prompt="@string/select_company_size_prompt"
             tools:listitem="@android:layout/simple_spinner_dropdown_item"/>
 
         <!-- ProgressBar para indicar carregamento -->

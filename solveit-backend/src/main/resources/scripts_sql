@@ -1,0 +1,129 @@
+-- =====================================================================
+-- SCRIPT DE ATUALIZAÇÃO DA ESTRUTURA DAS TABELAS SolveIT
+-- Execute este script no banco de dados da sua amiga para aplicar
+-- as mesmas alterações de estrutura que você fez.
+-- =====================================================================
+
+-- Adiciona a coluna cpf na tabela Usuarios, se ainda não existir
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE Name = N'cpf' AND Object_ID = Object_ID(N'Usuarios'))
+BEGIN
+    ALTER TABLE Usuarios
+    ADD cpf VARCHAR(14) NULL; -- Adiciona como NULL primeiro, depois alteramos
+    PRINT 'Coluna cpf adicionada à tabela Usuarios.';
+END
+ELSE
+BEGIN
+    PRINT 'Coluna cpf já existe na tabela Usuarios.';
+END
+GO
+
+-- Adiciona a coluna login_sugerido na tabela Usuarios, se ainda não existir
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE Name = N'login_sugerido' AND Object_ID = Object_ID(N'Usuarios'))
+BEGIN
+    ALTER TABLE Usuarios
+    ADD login_sugerido VARCHAR(100) NULL; -- Adiciona como NULL primeiro, depois alteramos
+    PRINT 'Coluna login_sugerido adicionada à tabela Usuarios.';
+END
+ELSE
+BEGIN
+    PRINT 'Coluna login_sugerido já existe na tabela Usuarios.';
+END
+GO
+
+-- Garante que a coluna cpf seja única, se a restrição ainda não existir
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE Name = N'UQ_Usuarios_CPF' AND Type = 'UQ')
+BEGIN
+    ALTER TABLE Usuarios
+    ADD CONSTRAINT UQ_Usuarios_CPF UNIQUE(cpf);
+    PRINT 'Restrição UNIQUE UQ_Usuarios_CPF adicionada à coluna cpf.';
+END
+ELSE
+BEGIN
+    PRINT 'Restrição UNIQUE UQ_Usuarios_CPF já existe.';
+END
+GO
+
+-- Garante que a coluna login_sugerido seja única, se a restrição ainda não existir
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE Name = N'UQ_Usuarios_LoginSugerido' AND Type = 'UQ')
+BEGIN
+    ALTER TABLE Usuarios
+    ADD CONSTRAINT UQ_Usuarios_LoginSugerido UNIQUE(login_sugerido);
+    PRINT 'Restrição UNIQUE UQ_Usuarios_LoginSugerido adicionada à coluna login_sugerido.';
+END
+ELSE
+BEGIN
+    PRINT 'Restrição UNIQUE UQ_Usuarios_LoginSugerido já existe.';
+END
+GO
+
+-- Remove a coluna tamanho_empresa da tabela Empresa, se ela existir
+IF EXISTS (SELECT * FROM sys.columns WHERE Name = N'tamanho_empresa' AND Object_ID = Object_ID(N'Empresa'))
+BEGIN
+    ALTER TABLE Empresa
+    DROP COLUMN tamanho_empresa;
+    PRINT 'Coluna tamanho_empresa removida da tabela Empresa.';
+END
+ELSE
+BEGIN
+    PRINT 'Coluna tamanho_empresa não existe na tabela Empresa.';
+END
+GO
+
+-- =====================================================================
+-- Ajustando NULL/NOT NULL na tabela Usuarios para bater com a imagem
+-- ATENÇÃO: Se alguma dessas colunas já tiver dados NULOS, os comandos
+-- ALTER COLUMN ... NOT NULL irão falhar. Será preciso atualizar os
+-- dados existentes antes.
+-- =====================================================================
+
+-- Coluna nome_usuario (NVARCHAR conforme imagem, mas seu código usa VARCHAR, ajuste se necessário)
+ALTER TABLE Usuarios ALTER COLUMN nome_usuario NVARCHAR(100) NOT NULL;
+GO
+-- Coluna email (NVARCHAR conforme imagem)
+ALTER TABLE Usuarios ALTER COLUMN email NVARCHAR(150) NOT NULL;
+GO
+-- Coluna area (PERMITE NULO, conforme imagem)
+ALTER TABLE Usuarios ALTER COLUMN area NVARCHAR(100) NULL;
+GO
+-- Coluna dt_cadastro
+ALTER TABLE Usuarios ALTER COLUMN dt_cadastro DATETIME NOT NULL;
+GO
+-- Coluna st_usuario
+ALTER TABLE Usuarios ALTER COLUMN st_usuario BIT NOT NULL;
+GO
+-- Coluna senha_hash (VARCHAR conforme imagem)
+ALTER TABLE Usuarios ALTER COLUMN senha_hash VARCHAR(255) NOT NULL;
+GO
+-- Coluna id_tipo_acesso
+ALTER TABLE Usuarios ALTER COLUMN id_tipo_acesso INT NOT NULL;
+GO
+-- Coluna id_empresa
+ALTER TABLE Usuarios ALTER COLUMN id_empresa INT NOT NULL;
+GO
+-- Coluna cpf (que adicionamos antes)
+ALTER TABLE Usuarios ALTER COLUMN cpf VARCHAR(14) NOT NULL;
+GO
+-- Coluna login_sugerido (que adicionamos antes)
+ALTER TABLE Usuarios ALTER COLUMN login_sugerido VARCHAR(100) NOT NULL;
+GO
+
+PRINT 'Restrições de NULOS/NOT NULL atualizadas na tabela Usuarios.';
+GO
+
+-- =====================================================================
+-- IMPORTANTE: Propriedade IDENTITY (Auto-Incremento) para id_empresa
+-- =====================================================================
+-- O script NÃO PODE adicionar a propriedade IDENTITY a uma coluna existente
+-- de forma simples e segura sem recriar a tabela.
+-- Como você já fez essa alteração na sua tabela 'Empresa' usando o modo Design do SSMS,
+-- sua amiga precisará fazer o MESMO procedimento manualmente:
+-- 1. Abrir o Design da tabela 'Empresa'.
+-- 2. Clicar na coluna 'id_empresa'.
+-- 3. Nas Propriedades da Coluna, expandir 'Especificação de Identidade'.
+-- 4. Mudar '(É Identidade)' para 'Sim'.
+-- 5. Salvar a tabela (lembrando de desmarcar a opção "Impedir salvar alterações..."
+--    nas Ferramentas > Opções > Designers, caso o SSMS reclame).
+-- =====================================================================
+
+PRINT 'Script concluído. Verifique manualmente a propriedade IDENTITY da coluna id_empresa na tabela Empresa.';
+GO

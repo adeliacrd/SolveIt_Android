@@ -20,9 +20,11 @@ public interface ApiService {
     @POST("api/register")
     Call<RegisterResponse> registerUsuario(
             @Field("fullName") String fullName,
+            @Field("cpf") String cpf,
             @Field("email") String email,
-            @Field("password") String password,
             @Field("companyName") String companyName,
-            @Field("companySize") String companySize // Novo campo
+            @Field("loginSugerido") String loginSugerido,
+            @Field("password") String password
+            // O campo companySize foi removido
     );
 }
