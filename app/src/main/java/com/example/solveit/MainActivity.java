@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+// import android.os.Handler; // O Handler não é mais necessário
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+// As importações do Retrofit agora são necessárias e foram descomentadas
 import com.example.solveit.api.ApiService;
 import com.example.solveit.api.LoginResponse;
 import com.example.solveit.api.RetrofitClient;
@@ -76,16 +79,20 @@ public class MainActivity extends AppCompatActivity {
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginUser(v); // Chamar o método de login simulado
+                // A CHAMADA FOI RESTAURADA PARA O MÉTODO DE LOGIN REAL
+                loginUser(v);
             }
         });
     }
 
+    // ======================================================================
+    // ESTE É O MÉTODO DE LOGIN ORIGINAL E REAL, AGORA ATIVO NOVAMENTE
+    // ======================================================================
     private void loginUser(View buttonView) {
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
-        // Validações de campos (seu código já faz isso bem)
+        // Validações de campos
         if (email.isEmpty()) {
             editTextEmail.setError("Por favor, insira o email.");
             editTextEmail.requestFocus();
@@ -100,10 +107,6 @@ public class MainActivity extends AppCompatActivity {
         // Mostra a barra de progresso e desabilita o botão
         progressBarLogin.setVisibility(View.VISIBLE);
         buttonLogin.setEnabled(false);
-
-        // ======================================================================
-        // INÍCIO DA LÓGICA REAL DE LOGIN (AQUI ESTÁ A MÁGICA!)
-        // ======================================================================
 
         // 1. Obtenha a instância do serviço da API através do Retrofit
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
