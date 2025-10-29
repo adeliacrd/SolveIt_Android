@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--
+      ITEM 1: SINO DE NOTIFICAÇÕES
+      Este é o item que estava faltando.
+      O 'id' é crucial para o Java encontrá-lo.
+    -->
+    <item
+        android:id="@+id/ic_notifications"
+        android:icon="@drawable/notifications"
+        android:title="Notificações"
+        app:showAsAction="ifRoom" />
+
+    <!--
+      ITEM 2: PERFIL DO USUÁRIO
+    -->
+    <item
+        android:id="@+id/btn_profile"
+        android:icon="@drawable/ic_person_white"
+        android:title="Perfil"
+        app:showAsAction="ifRoom" />
+
 </menu>

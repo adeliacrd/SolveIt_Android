@@ -1,28 +1,38 @@
 package com.example.solveit;
 
-// IMPORTAÇÕES NECESSÁRIAS (ADICIONADAS)
+// IMPORTAÇÕES NECESSÁRIAS
 import android.content.Intent;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-// SUAS IMPORTAÇÕES EXISTENTES
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.solveit.api.ApiService;
+import com.example.solveit.api.RetrofitClient;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class ListaChamadosActivity extends AppCompatActivity {
 
@@ -33,13 +43,14 @@ public class ListaChamadosActivity extends AppCompatActivity {
     private View tableContainer;
     private TabLayout tabLayout;
     private final List<Chamado> todosOsChamados = new ArrayList<>();
+    private static final String TAG = "ListaChamadosActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_chamados);
 
-        // --- Configuração dos Componentes (sem alterações) ---
+        // --- Configuração da UI (sem alterações) ---
         Toolbar toolbar = findViewById(R.id.toolbar_icones);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -51,53 +62,71 @@ public class ListaChamadosActivity extends AppCompatActivity {
         tableContainer = findViewById(R.id.tableContainer);
         tabLayout = findViewById(R.id.tabLayout);
 
-        // --- Dados de Exemplo (Corretamente comentados) ---
-        // carregarChamadosDeExemplo();
-
-        // --- Configuração do RecyclerView e Adapter (sem alterações) ---
         recyclerViewChamados.setLayoutManager(new LinearLayoutManager(this));
         chamadosAdapter = new ChamadosAdapter(new ArrayList<>());
         recyclerViewChamados.setAdapter(chamadosAdapter);
 
-        // --- Configuração das Abas (sem alterações) ---
         setupTabLayout();
 
-        // --- Exibição Inicial (sem alterações) ---
-        tabLayout.getTabAt(0).select();
-        filtrarEAtualizarLista(0);
-
-
-        // ================================================================
-        // ✨ CÓDIGO ADICIONADO PARA FAZER O BOTÃO FUNCIONAR ✨
-        // Configura o listener de clique para o FloatingActionButton (FAB).
-        // ================================================================
         FloatingActionButton fabAdicionarChamado = findViewById(R.id.fabAdicionarChamado);
-        fabAdicionarChamado.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Cria uma "Intenção" de navegar da tela atual para a tela de Abertura de Chamado.
-                Intent intent = new Intent(ListaChamadosActivity.this, AberturaChamadoActivity.class);
-                // Executa a navegação.
-                startActivity(intent);
-            }
+        fabAdicionarChamado.setOnClickListener(view -> {
+            Intent intent = new Intent(ListaChamadosActivity.this, AberturaChamadoActivity.class);
+            startActivity(intent);
         });
-        // ================================================================
 
+        // --- Inicia o carregamento dos dados REAIS da API ---
+        carregarDadosDaApi();
     }
 
-    // --- carregarChamadosDeExemplo (sem alterações) ---
-    private void carregarChamadosDeExemplo() {
-        todosOsChamados.clear();
-        todosOsChamados.add(new Chamado(1, "Impressora travou no 2º andar", "Urgente", "Novo"));
-        todosOsChamados.add(new Chamado(2, "PC não liga na sala de reunião", "Alta", "Novo"));
-        todosOsChamados.add(new Chamado(3, "Mouse sem fio com bateria fraca", "Baixa", "Concluído"));
-        todosOsChamados.add(new Chamado(4, "Sistema de ponto com erro", "Urgente", "Em atendimento"));
-        todosOsChamados.add(new Chamado(5, "Solicitação de novo monitor", "Media", "Aberto"));
-        todosOsChamados.add(new Chamado(6, "Wi-Fi instável no escritório", "Alta", "Novo"));
-        todosOsChamados.add(new Chamado(7, "Troca de teclado", "Baixa", "Concluído"));
+    private void carregarDadosDaApi() {
+        Toast.makeText(this, "Buscando chamados...", Toast.LENGTH_SHORT).show();
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            final List<Chamado> chamadosBuscados = new ArrayList<>();
+            final String[] erro = {null};
+
+            try {
+                // --- Bloco de chamada à API (sem alterações) ---
+                ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+                Call<List<Chamado>> call = apiService.getChamados();
+                Response<List<Chamado>> response = call.execute();
+
+                if (response.isSuccessful() && response.body() != null) {
+                    chamadosBuscados.addAll(response.body());
+                } else {
+                    erro[0] = "Falha ao buscar dados. Código: " + response.code();
+                    Log.e(TAG, erro[0]);
+                }
+            } catch (Exception e) {
+                erro[0] = "Erro de conexão. Verifique a URL e a internet.";
+                Log.e(TAG, erro[0], e);
+            }
+
+            // --- Bloco para atualizar a tela ---
+            runOnUiThread(() -> {
+                todosOsChamados.clear();
+                todosOsChamados.addAll(chamadosBuscados);
+                filtrarEAtualizarLista(tabLayout.getSelectedTabPosition());
+
+                // =====================================================================
+                // ✨ AQUI ESTÁ A CORREÇÃO ✨
+                // O Toast só é exibido se a tela ainda estiver ativa para o usuário.
+                // =====================================================================
+                if (!isFinishing() && !isDestroyed()) {
+                    if (erro[0] != null) {
+                        Toast.makeText(ListaChamadosActivity.this, erro[0], Toast.LENGTH_LONG).show();
+                    } else {
+                        // Opcional: Você pode querer remover a mensagem de sucesso para não poluir a tela.
+                        // Toast.makeText(ListaChamadosActivity.this, "Chamados carregados!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        });
     }
 
-    // --- setupTabLayout (sem alterações) ---
+    // --- O RESTO DOS SEUS MÉTODOS ESTÁ CORRETO E NÃO PRECISA DE ALTERAÇÃO ---
+
     private void setupTabLayout() {
         tabLayout.addTab(tabLayout.newTab().setText("Minhas Solicitações"));
         tabLayout.addTab(tabLayout.newTab().setText("Encerrados"));
@@ -144,7 +173,6 @@ public class ListaChamadosActivity extends AppCompatActivity {
         });
     }
 
-    // --- filtrarEAtualizarLista (sem alterações) ---
     private void filtrarEAtualizarLista(int position) {
         List<Chamado> listaFiltrada;
 
@@ -162,7 +190,6 @@ public class ListaChamadosActivity extends AppCompatActivity {
         atualizarVisibilidade(listaFiltrada, position);
     }
 
-    // --- atualizarVisibilidade (sem alterações) ---
     private void atualizarVisibilidade(List<Chamado> listaExibida, int position) {
         if (listaExibida.isEmpty()) {
             tableContainer.setVisibility(View.GONE);
@@ -179,7 +206,6 @@ public class ListaChamadosActivity extends AppCompatActivity {
         }
     }
 
-    // --- Funções do Menu (sem alterações) ---
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -187,21 +213,29 @@ public class ListaChamadosActivity extends AppCompatActivity {
         for (int i = 0; i < menu.size(); i++) {
             MenuItem menuItem = menu.getItem(i);
             Drawable drawable = menuItem.getIcon();
-
             if (drawable != null) {
                 drawable = DrawableCompat.wrap(drawable);
                 DrawableCompat.setTint(drawable, ContextCompat.getColor(this, android.R.color.white));
                 menuItem.setIcon(drawable);
             }
         }
-
         return true;
     }
 
+    // ✨ Atenção: se você aplicou a correção de renomear os IDs, eles devem estar diferentes aqui.
+    // Este código usa os IDs que você me mandou por último.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.ic_notifications || id == R.id.btn_profile) {
+
+        if (id == R.id.ic_notifications) { // Verifique se este é o ID correto do seu main_menu.xml
+            Intent intent = new Intent(ListaChamadosActivity.this, NotificacoesActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        if (id == R.id.btn_profile) { // Verifique se este é o ID correto do seu main_menu.xml
+            Toast.makeText(this, "Tela de perfil será aberta aqui.", Toast.LENGTH_SHORT).show();
             return true;
         }
         return super.onOptionsItemSelected(item);
