@@ -5,9 +5,11 @@ public class LoginResponse {
     private boolean success;
     private String message;
     private Integer id_acesso;
+    private String nome_usuario;
 
     // Getters
     public boolean isSuccess() { return success; }
     public String getMessage() { return message; }
     public Integer getIdAcesso() { return id_acesso; }
+    public String getNomeUsuario() { return nome_usuario; }
 }

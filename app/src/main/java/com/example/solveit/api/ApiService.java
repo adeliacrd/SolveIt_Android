@@ -10,6 +10,8 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET; // Importa o GET
 import retrofit2.http.POST;
+import retrofit2.http.GET; //Adicionado pós abertura de chamado
+import java.util.List;
 
 public interface ApiService {
 
@@ -40,5 +42,22 @@ public interface ApiService {
             @Field("loginSugerido") String loginSugerido,
             @Field("password") String password
             // O campo companySize foi removido
+    );
+
+    // 1. Método para buscar a lista de categorias
+    @GET("api/categorias") // Usa GET para buscar dados
+    Call<List<CategoriaDTO>> getCategorias(); // Retorna uma lista de objetos CategoriaDTO
+
+    // 2. Método para abrir/criar um novo chamado
+    @FormUrlEncoded // Envia dados como formulário
+    @POST("api/chamados") // Usa POST para criar um novo recurso
+    Call<AbrirChamadoResponse> abrirChamado(
+            @Field("titulo") String titulo,
+            @Field("id_usuario_abertura") int idUsuarioAbertura,
+            @Field("prioridade") String prioridade, // O texto: "Média", "Alta", etc.
+            @Field("id_categoria") int idCategoria, // O ID numérico selecionado
+            @Field("email") String email,
+            @Field("descricao") String descricao
+            // @Field("id_usuario_logado") int idUsuarioLogado // Adicione se precisar enviar quem abriu
     );
 }

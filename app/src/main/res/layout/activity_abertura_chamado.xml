@@ -8,21 +8,26 @@
     android:background="#FAFAFA"
     tools:context=".AberturaChamadoActivity">
 
-    <!-- 1. TOOLBAR CUSTOMIZADA (permanece igual) -->
+    <!-- 1. TOOLBAR CUSTOMIZADA (SEM ALTERAÇÕES) -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/solveit_azul_primario"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
 
-        <!-- ... (Toda a sua AppBarLayout, incluindo os dois LinearLayouts internos, continua aqui sem NENHUMA alteração) ... -->
+        android:fitsSystemWindows="true">
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar_icones"
             android:layout_width="match_parent"
             android:layout_height="38dp"
+            android:paddingStart="0dp"
+            android:paddingTop="0dp"
+            android:paddingEnd="0dp"
             app:contentInsetEnd="0dp"
             app:contentInsetStart="0dp"
             app:contentInsetStartWithNavigation="0dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -32,6 +37,7 @@
                 android:paddingTop="0dp"
                 android:paddingEnd="0dp"
                 android:paddingBottom="4dp">
+
                 <ImageView
                     android:id="@+id/img_logo_solveit"
                     android:layout_width="230dp"
@@ -40,10 +46,12 @@
                     android:contentDescription="Logo SolveIT"
                     android:scaleType="fitStart"
                     android:src="@drawable/ic_solveit_logo" />
+
                 <View
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_weight="1" />
+
                 <ImageButton
                     android:id="@+id/icon_add"
                     android:layout_width="wrap_content"
@@ -53,6 +61,7 @@
                     android:contentDescription="Abrir Novo Chamado"
                     android:padding="8dp"
                     android:src="@drawable/ic_add_circle_outline_white" />
+
                 <ImageButton
                     android:id="@+id/ic_notifications"
                     android:layout_width="wrap_content"
@@ -61,6 +70,7 @@
                     android:contentDescription="Notificações"
                     android:padding="8dp"
                     android:src="@drawable/notifications" />
+
                 <ImageButton
                     android:id="@+id/btn_profile"
                     android:layout_width="wrap_content"
@@ -71,56 +81,60 @@
                     android:src="@drawable/ic_person_white" />
             </LinearLayout>
         </androidx.appcompat.widget.Toolbar>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
             android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:paddingBottom="0dp">
+
             <ImageButton
                 android:id="@+id/btn_voltar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_back_white"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Voltar"
-                android:padding="0dp"
-                android:src="@drawable/ic_arrow_back_white" />
+                android:padding="0dp" />
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
+                android:gravity="center_horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
                     android:text="Abertura de Chamado"
-                    android:textColor="@android:color/white"
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:layout_marginBottom="4dp"/>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="4dp"
-                    android:layout_marginHorizontal="64dp"
-                    android:background="@color/white" />
+                    android:background="@color/white"
+                    android:layout_marginHorizontal="64dp" />
+
             </LinearLayout>
+
             <View
                 android:layout_width="48dp"
                 android:layout_height="0dp" />
+
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- ========================================================================= -->
-    <!-- ✨ ÁREA DE CONTEÚDO COM ROLAGEM CORRIGIDA ✨ -->
-    <!-- ========================================================================= -->
-    <androidx.core.widget.NestedScrollView
+    <!-- 2. CONTEÚDO DO FORMULÁRIO COM ROLAGEM -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        <!-- LINHA CORRIGIDA/ADICIONADA AQUI -->
-        <!-- TAMBÉM MUDEI PARA NestedScrollView, que é a versão correta para CoordinatorLayout -->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -128,7 +142,7 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Todo o seu formulário continua aqui dentro, exatamente como estava -->
+            <!-- OUTROS CAMPOS DO FORMULÁRIO (SEM ALTERAÇÕES) -->
             <TextView
                 style="@style/App.Form.Label"
                 android:text="Título*" />
@@ -168,6 +182,23 @@
             <TextView
                 style="@style/App.Form.Label"
                 android:layout_marginTop="16dp"
+                android:text="Categoria*" />
+            <FrameLayout
+                style="@style/App.Form.Input"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp">
+                <Spinner
+                    android:id="@+id/spinner_categoria"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp" />
+            </FrameLayout>
+
+            <TextView
+                style="@style/App.Form.Label"
+                android:layout_marginTop="16dp"
                 android:text="E-mail de contato*" />
             <EditText
                 android:id="@+id/edit_email"
@@ -188,15 +219,21 @@
                 android:inputType="textMultiLine"
                 android:paddingTop="16dp" />
 
+            <!-- ========================================================================= -->
+            <!-- ✨ CAMPO "ANEXAR ARQUIVO" COM A SOLUÇÃO DEFINITIVA APLICADA ✨ -->
+            <!-- ========================================================================= -->
             <TextView
                 style="@style/App.Form.Label"
                 android:layout_marginTop="16dp"
                 android:text="Anexar arquivo" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:background="@drawable/borda_edittext"
                 android:orientation="horizontal">
+
+                <!-- 1. Botão da Esquerda com Ícone '+' (sem alteração) -->
                 <ImageButton
                     android:id="@+id/btn_anexar_icone"
                     android:layout_width="50dp"
@@ -205,10 +242,13 @@
                     android:contentDescription="Anexar arquivo"
                     android:src="@drawable/ic_add"
                     app:tint="#616161" />
+
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="#D0D0D0" />
+
+                <!-- 2. Texto do Nome do Arquivo (sem alteração) -->
                 <TextView
                     android:id="@+id/text_nome_arquivo"
                     android:layout_width="0dp"
@@ -220,10 +260,13 @@
                     android:text="Selecione o arquivo"
                     android:textColor="#757575"
                     android:textSize="16sp" />
+
                 <View
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="#D0D0D0" />
+
+                <!-- 3. Botão "Escolha" (SUBSTITUÍDO POR TEXTVIEW PARA CONTROLE TOTAL) -->
                 <TextView
                     android:id="@+id/btn_anexar_escolha"
                     android:layout_width="wrap_content"
@@ -238,13 +281,16 @@
                     android:textColor="#757575"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
+
             </LinearLayout>
 
+            <!-- BOTÕES DE AÇÃO (SEM ALTERAÇÕES) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:orientation="horizontal">
+
                 <Button
                     android:id="@+id/btn_confirmar"
                     android:layout_width="0dp"
@@ -256,9 +302,11 @@
                     android:textColor="@android:color/white"
                     android:textSize="16sp"
                     app:backgroundTint="@color/solveit_azul_primario" />
+
                 <View
                     android:layout_width="16dp"
                     android:layout_height="0dp" />
+
                 <Button
                     android:id="@+id/btn_cancelar"
                     android:layout_width="0dp"
@@ -272,5 +320,5 @@
                     app:backgroundTint="#A9A9A9" />
             </LinearLayout>
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
