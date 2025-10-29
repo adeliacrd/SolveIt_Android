@@ -1,6 +1,6 @@
 # Configuração de Conexão com o Banco de Dados
 # Preencha este arquivo e renomeie para "config.properties"
 
-db.url=jdbc:sqlserver://SEU_SERVIDOR:1433;databaseName=NOME_DO_BANCO;encrypt=true;trustServerCertificate=true;
-db.username=SEU_USUARIO
-db.password=SUA_SENHA
+db.url=jdbc:sqlserver://localhost:1433;databaseName=NOME_DO_BANCO;encrypt=true;trustServerCertificate=true;
+db.username=SEU_adeliacrd
+db.password=SUA_Maquina23*

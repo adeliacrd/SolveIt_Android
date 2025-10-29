@@ -2,74 +2,65 @@ package com.example.solveit_backend;
 
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+// Não precisamos mais das importações de banco de dados, então elas podem ser removidas ou comentadas
+// import java.sql.Connection;
+// import java.sql.DriverManager;
+// import java.sql.PreparedStatement;
+// import java.sql.ResultSet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class LoginServlet extends HttpServlet {
 
-        private static class LoginResponse {
-            boolean success;
-            String message;
-            Integer id_acesso;
+    // As credenciais antigas não são mais usadas, mas podem permanecer aqui sem problemas.
+    // #######################################################################
+    // DADOS DE CONEXÃO COM O SQL SERVER (TEMPORARIAMENTE DESATIVADOS)
+    // #######################################################################
+    private static final String JDBC_URL = "jdbc:sqlserver://DESKTOP-PR12T5D\\SQLEXPRESS01:1433;databaseName=SOC_SOLVE;encrypt=true;trustServerCertificate=true;";
+    private static final String USERNAME = "gabadaro";
+    private static final String PASSWORD = "Gabi0204";
+    // #######################################################################
 
-            public LoginResponse(boolean success, String message, Integer id_acesso) {
-                this.success = success;
-                this.message = message;
-                this.id_acesso = id_acesso;
-            }
-        }
+    private static class LoginResponse {
+        boolean success;
+        String message;
+        Integer id_acesso;
 
-        @Override
-        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-            Gson gson = new Gson();
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-
-            String email = request.getParameter("email");
-            String senha = request.getParameter("senha");
-
-            if (email == null || senha == null || email.trim().isEmpty() || senha.trim().isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write(gson.toJson(new LoginResponse(false, "E-mail e senha são obrigatórios.", null)));
-                return;
-            }
-
-            // 2. Conectar ao SQL Server e verificar
-            try (Connection conn = DriverManager.getConnection(
-                    DatabaseConfig.getDbUrl(),
-                    DatabaseConfig.getDbUsername(),
-                    DatabaseConfig.getDbPassword()
-            )) {
-
-                String sql = "SELECT senha_hash, id_tipo_acesso FROM USUARIOS WHERE email = ?";
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                pstmt.setString(1, email);
-                ResultSet rs = pstmt.executeQuery();
-
-                if (rs.next()) {
-                    String senhaDoBanco = rs.getString("senha_hash");
-                    int idAcesso = rs.getInt("id_tipo_acesso");
-
-                    if (senha.equals(senhaDoBanco)) { // Validação de senha de teste
-                        response.setStatus(HttpServletResponse.SC_OK);
-                        response.getWriter().write(gson.toJson(new LoginResponse(true, "Login bem-sucedido!", idAcesso)));
-                        return;
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write(gson.toJson(new LoginResponse(false, "Erro interno do servidor: " + e.getMessage(), null)));
-                return;
-            }
-
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write(gson.toJson(new LoginResponse(false, "Credenciais inválidas. Verifique e-mail e senha.", null)));
+        public LoginResponse(boolean success, String message, Integer id_acesso) {
+            this.success = success;
+            this.message = message;
+            this.id_acesso = id_acesso;
         }
     }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        // O código original que valida e conecta ao banco de dados foi substituído por este bloco.
+
+        // #####################################################################
+        // ### MODO DE DESENVOLVIMENTO: BYPASS DE LOGIN ATIVADO              ###
+        // ### Responde que o login foi bem-sucedido para qualquer usuário.    ###
+        // #####################################################################
+
+        System.out.println("============================================================");
+        System.out.println("AVISO: O MODO DE BYPASS DE LOGIN ESTÁ ATIVO NO SERVIDOR!");
+        System.out.println("Qualquer tentativa de login será aprovada automaticamente.");
+        System.out.println("============================================================");
+
+        // 1. Cria uma resposta de sucesso Falsa, como se o login tivesse funcionado.
+        // O "id_acesso: 1" geralmente significa que é um usuário administrador.
+        LoginResponse respostaFalsa = new LoginResponse(true, "Login de desenvolvedor bem-sucedido!", 1);
+
+        Gson gson = new Gson();
+
+        // 2. Envia a resposta de sucesso para o aplicativo.
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(gson.toJson(respostaFalsa));
+
+        // E é só isso. O servidor não tentará mais se conectar ao banco de dados.
+    }
+}

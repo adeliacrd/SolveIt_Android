@@ -6,12 +6,20 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.SQLException; // <--- AGORA CORRETO
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class RegisterServlet extends HttpServlet {
+
+    // #######################################################################
+    // DADOS DE CONEXÃO COM O SQL SERVER (!!! AJUSTE ISTO !!!)
+    // #######################################################################
+    private static final String JDBC_URL = "jdbc:sqlserver://DESKTOP-PR12T5D\\SQLEXPRESS01:1433;databaseName=SOC_SOLVE;encrypt=true;trustServerCertificate=true;";
+    private static final String USERNAME = "gabadaro";
+    private static final String PASSWORD = "Gabi0204";
+    // #######################################################################
 
     private static class RegisterResponse {
         boolean success;
@@ -28,18 +36,14 @@ public class RegisterServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        // --- Leitura dos novos parâmetros ---
         String fullName = request.getParameter("fullName");
-        String cpf = request.getParameter("cpf");
         String email = request.getParameter("email");
-        String companyName = request.getParameter("companyName");
-        String loginSugerido = request.getParameter("loginSugerido");
         String password = request.getParameter("password");
-        // A variável 'area' é sempre nula, o que está correto
+        String companyName = request.getParameter("companyName");
+        String companySize = request.getParameter("companySize");
         String area = null;
 
-        // ✨ CORREÇÃO 1: Adicionada a verificação para 'loginSugerido' ✨
-        if (fullName == null || cpf == null || email == null || password == null || companyName == null || loginSugerido == null) {
+        if (fullName == null || email == null || password == null || companyName == null || companySize == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write(gson.toJson(new RegisterResponse(false, "Todos os campos são obrigatórios.")));
             return;
@@ -49,15 +53,10 @@ public class RegisterServlet extends HttpServlet {
         int idEmpresaGerado = -1;
 
         try {
-            conn = DriverManager.getConnection(
-                    DatabaseConfig.getDbUrl(),
-                    DatabaseConfig.getDbUsername(),
-                    DatabaseConfig.getDbPassword()
-            );
+            conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
             conn.setAutoCommit(false); // INÍCIO DA TRANSAÇÃO
 
-            // --- 1. PASSO 1: INSERIR EMPRESA (Busca/Insere) ---
-            // ✨ CORREÇÃO 2: Removido o 'tamanho_empresa' que não existe mais ✨
+            // 1. PASSO 1: INSERIR EMPRESA (Busca/Insere)
             String sqlSelectId = "SELECT id_empresa FROM Empresa WHERE nome_empresa = ?";
             PreparedStatement pstmtSelect = conn.prepareStatement(sqlSelectId);
             pstmtSelect.setString(1, companyName);
@@ -66,9 +65,11 @@ public class RegisterServlet extends HttpServlet {
             if (rsSelect.next()) {
                 idEmpresaGerado = rsSelect.getInt("id_empresa");
             } else {
-                String sqlInsertEmpresa = "INSERT INTO Empresa (nome_empresa) VALUES (?)";
+                String sqlInsertEmpresa = "INSERT INTO Empresa (nome_empresa, tamanho_empresa) VALUES (?, ?)";
                 PreparedStatement pstmtInsert = conn.prepareStatement(sqlInsertEmpresa, PreparedStatement.RETURN_GENERATED_KEYS);
                 pstmtInsert.setString(1, companyName);
+                pstmtInsert.setString(2, companySize);
+
                 pstmtInsert.executeUpdate();
 
                 try (ResultSet rsGenerated = pstmtInsert.getGeneratedKeys()) {
@@ -78,56 +79,47 @@ public class RegisterServlet extends HttpServlet {
                 }
             }
 
-            // --- 2. PASSO 2: INSERIR USUÁRIO ---
+            // 2. PASSO 2: INSERIR USUÁRIO
             if (idEmpresaGerado <= 0) {
                 throw new SQLException("Erro: Não foi possível obter o ID da Empresa.");
             }
 
-            // ✨ CORREÇÃO 3: Query SQL do usuário totalmente reconstruída ✨
-            // A query anterior estava com colunas e valores fora de ordem e faltando o login_sugerido.
-            String sqlUsuario = "INSERT INTO Usuarios (nome_usuario, cpf, email, login_sugerido, senha_hash, id_tipo_acesso, id_empresa, area, dt_cadastro, st_usuario) VALUES (?, ?, ?, ?, ?, 1, ?, NULL, GETDATE(), 1)";
-
+            String sqlUsuario = "INSERT INTO Usuarios (nome_usuario, email, senha_hash, id_tipo_acesso, id_empresa, area, dt_cadastro, st_usuario) VALUES (?, ?, ?, 1, ?, ?, GETDATE(), 1)";
             PreparedStatement pstmtUsuario = conn.prepareStatement(sqlUsuario);
-
-            // ✨ CORREÇÃO 4: Ordem dos parâmetros corrigida para bater com a nova query ✨
             pstmtUsuario.setString(1, fullName);
-            pstmtUsuario.setString(2, cpf);
-            pstmtUsuario.setString(3, email);
-            pstmtUsuario.setString(4, loginSugerido); // Estava faltando
-            pstmtUsuario.setString(5, password);      // Estava na posição errada
-            pstmtUsuario.setInt(6, idEmpresaGerado);
+            pstmtUsuario.setString(2, email);
+            pstmtUsuario.setString(3, password);
+            pstmtUsuario.setInt(4, idEmpresaGerado);
+            pstmtUsuario.setString(5, area);
 
             int linhasAfetadas = pstmtUsuario.executeUpdate();
 
             if (linhasAfetadas > 0) {
                 conn.commit();
                 response.setStatus(HttpServletResponse.SC_CREATED);
-                response.getWriter().write(gson.toJson(new RegisterResponse(true, "Usuário registrado com sucesso!")));
+                String msg = (idEmpresaGerado > 0) ? "Usuário registrado com sucesso!" : "Empresa e Usuário registrados com sucesso!";
+                response.getWriter().write(gson.toJson(new RegisterResponse(true, msg)));
+                return;
             } else {
                 conn.rollback();
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 response.getWriter().write(gson.toJson(new RegisterResponse(false, "Falha ao inserir usuário no banco de dados.")));
+                return;
             }
-            return; // Adicionado para garantir que o código pare aqui
 
         } catch (SQLException e) {
+            // Tratamento de erros de SQL e e-mail duplicado
             if (conn != null) {
                 try { conn.rollback(); } catch (SQLException ignore) {}
             }
 
+            // Imprime o erro real no console do back-end
             System.err.println("SQL ERROR: " + e.getMessage());
             e.printStackTrace();
 
-            // ✨ CORREÇÃO 5: Mensagem de erro mais específica para o usuário ✨
-            if (e.getMessage().toLowerCase().contains("unique constraint") || (e.getSQLState() != null && e.getSQLState().startsWith("23"))) {
-                response.setStatus(HttpServletResponse.SC_CONFLICT); // Erro 409
-                String erroMsg = "Erro: O E-mail ou CPF informado já está em uso.";
-                if (e.getMessage().toLowerCase().contains("cpf")) {
-                    erroMsg = "Erro: O CPF informado já está em uso.";
-                } else if (e.getMessage().toLowerCase().contains("email")) {
-                    erroMsg = "Erro: O E-mail informado já está em uso.";
-                }
-                response.getWriter().write(gson.toJson(new RegisterResponse(false, erroMsg)));
+            if (e.getSQLState() != null && e.getSQLState().startsWith("23")) {
+                response.setStatus(HttpServletResponse.SC_CONFLICT);
+                response.getWriter().write(gson.toJson(new RegisterResponse(false, "Erro: E-mail ou Nome de Empresa já está em uso.")));
             } else {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 response.getWriter().write(gson.toJson(new RegisterResponse(false, "Erro interno de SQL: " + e.getMessage())));
@@ -135,6 +127,7 @@ public class RegisterServlet extends HttpServlet {
             return;
 
         } catch (Exception e) {
+            // Erro de runtime ou conexão
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write(gson.toJson(new RegisterResponse(false, "Erro inesperado: " + e.getMessage())));
             return;

@@ -7,7 +7,7 @@
     android:background="#FAFAFA"
     tools:context=".ListaChamadosActivity">
 
-    <!-- 1. Barra superior com Toolbar e Abas (TabLayout) -->
+    <!-- 1. Barra superior com Toolbar e Abas -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
@@ -15,49 +15,52 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar_icones"
+            android:id="@+id/toolbar_main"
             android:layout_width="match_parent"
-            android:layout_height="38dp"
-            android:paddingStart="0dp"
-            android:paddingTop="0dp"
-            android:paddingEnd="0dp"
-            app:contentInsetEnd="0dp"
-            app:contentInsetStart="0dp"
-            app:contentInsetStartWithNavigation="0dp">
+            android:layout_height="?attr/actionBarSize"
+            app:contentInsetEnd="8dp"
+            app:contentInsetStart="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="0dp"
-                android:paddingTop="0dp"
-                android:paddingEnd="0dp"
-                android:paddingBottom="4dp">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/img_logo_solveit"
-                    android:layout_width="230dp"
+                    android:layout_width="0dp"
                     android:layout_height="32dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
                     android:contentDescription="Logo SolveIT"
                     android:scaleType="fitStart"
                     android:src="@drawable/solveit_logo2" />
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+                <!-- ================== ÍCONES DA TOOLBAR CORRIGIDOS ================== -->
 
+                <!-- BOTÃO DE CONFIGURAÇÕES (Admin) - INVISÍVEL POR PADRÃO -->
                 <ImageButton
-                    android:id="@+id/icon_add"
+                    android:id="@+id/ic_settings"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:clickable="false"
+                    android:contentDescription="Configurações do Admin"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_settings_white"
+                    android:visibility="gone"
+                    tools:visibility="visible" /> <!-- tools:visibility só para vermos no editor -->
+
+                <!-- BOTÃO DE ADICIONAR (Admin) - INVISÍVEL POR PADRÃO -->
+                <ImageButton
+                    android:id="@+id/ic_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Abrir Novo Chamado"
                     android:padding="8dp"
-                    android:src="@drawable/ic_add_circle_outline_white" />
+                    android:src="@drawable/ic_add_circle_outline_white"
+                    android:visibility="gone"
+                    tools:visibility="visible"/>
 
                 <ImageButton
                     android:id="@+id/ic_notifications"
@@ -69,7 +72,7 @@
                     android:src="@drawable/notifications" />
 
                 <ImageButton
-                    android:id="@+id/btn_profile"
+                    android:id="@+id/ic_profile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -79,6 +82,22 @@
             </LinearLayout>
         </androidx.appcompat.widget.Toolbar>
 
+        <!-- TÍTULO PARA O ADMIN - INVISÍVEL POR PADRÃO -->
+        <TextView
+            android:id="@+id/textViewAdminTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/solveit_azul_primario"
+            android:gravity="center"
+            android:paddingBottom="12dp"
+            android:text="Todos os Chamados"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <!-- Abas para o usuário normal -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
@@ -92,110 +111,48 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- 2. ÁREA DE CONTEÚDO PRINCIPAL -->
+    <!-- ========================================================================= -->
+    <!-- ✨ ÁREA DE CONTEÚDO PRINCIPAL - SUBSTITUÍDA PELO CÓDIGO ABAIXO ✨ -->
+    <!-- ========================================================================= -->
     <FrameLayout
+        android:id="@+id/content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- CONTÊINER DA TABELA -->
-        <LinearLayout
-            android:id="@+id/tableContainer"
+        <!-- Este ViewPager é para o usuário normal, com as abas -->
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:background="@drawable/borda_tabela"
-            android:elevation="2dp"
-            android:orientation="vertical"
+            android:layout_height="match_parent" />
+
+        <!-- Este RecyclerView é para a lista do admin, e começa invisível -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="120dp"
             android:visibility="gone"
-            tools:visibility="visible">
-
-            <!-- Cabeçalho -->
-            <LinearLayout
-                android:id="@+id/headerLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#F5F5F5"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingTop="12dp"
-                android:paddingEnd="16dp"
-                android:paddingBottom="12dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.8"
-                    android:text="ID"
-                    android:textColor="@color/solveit_texto_secundario" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3.0"
-                    android:text="Título"
-                    android:textColor="@color/solveit_texto_secundario" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3.0"
-                    android:gravity="center"
-                    android:text="Prioridade"
-                    android:textColor="@color/solveit_texto_secundario" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2.2"
-                    android:gravity="end"
-                    android:text="Status"
-                    android:textColor="@color/solveit_texto_secundario" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#E0E0E0" />
-
-            <!-- Lista -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewChamados"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:listitem="@layout/item_chamado_layout" />
-
-        </LinearLayout>
-
-        <!-- TEXTVIEW PARA MENSAGEM DE LISTA VAZIA -->
-        <TextView
-            android:id="@+id/textViewEmpty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Nenhum chamado a ser exibido"
-            android:textColor="@color/solveit_texto_secundario"
-            android:textSize="16sp"
-            android:visibility="visible"
-            tools:visibility="gone" />
+            tools:listitem="@layout/item_chamado_admin"
+            tools:visibility="visible"/> <!-- tools:visibility para vermos no editor -->
 
     </FrameLayout>
 
-    <!-- 3. Botão Flutuante (FAB) com Posição Ajustada -->
+
+    <!-- 3. Botão Flutuante (FAB) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdicionarChamado"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="48dp"
         android:contentDescription="Adicionar novo chamado"
         android:src="@drawable/ic_add"
         app:backgroundTint="@color/solveit_azul_primario"
         app:fabCustomSize="72dp"
         app:maxImageSize="36dp"
-        app:tint="@android:color/white"
-
-
-    android:layout_marginEnd="32dp"
-    android:layout_marginBottom="48dp" />
+        app:tint="@android:color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

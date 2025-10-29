@@ -31,6 +31,8 @@ public class ServerMain {
 
         context.addServlet(new ServletHolder(RegisterServlet.class), "/api/register");
 
+        context.addServlet(new ServletHolder(TesteConexaoServlet.class), "/api/status");
+
         server.setHandler(context);
 
         System.out.println("-----------------------------------------------------------------");
