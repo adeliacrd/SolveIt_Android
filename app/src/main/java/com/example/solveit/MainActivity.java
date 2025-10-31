@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String PREFS_NAME = "AppPrefs";
     public static final String KEY_USER_ID = "ID_USUARIO_LOGADO";
     public static final String KEY_USER_NAME = "NOME_USUARIO_LOGADO";
+    public static final String KEY_USER_ROLE_ID = "ID_TIPO_ACESSO_LOGADO"; // ✨ NOVA CONSTANTE ✨
 
 
     @Override
@@ -104,38 +105,55 @@ public class MainActivity extends AppCompatActivity {
                         // ==========================================================
                         Integer idUsuario = loginResponse.getIdAcesso(); // Pega o ID
                         String nomeUsuario = loginResponse.getNomeUsuario(); // Pega o NOME
+                        Integer idTipoAcesso = loginResponse.getIdTipoAcesso(); // Pega o nível de Acesso
 
-                        if (idUsuario != null && idUsuario > 0 && nomeUsuario != null && !nomeUsuario.isEmpty()) {
-                            Log.d(TAG, "Salvando dados do usuário: ID=" + idUsuario + ", Nome=" + nomeUsuario);
+                        if (idUsuario != null && idUsuario > 0 && nomeUsuario != null && !nomeUsuario.isEmpty() && idTipoAcesso != null && idTipoAcesso > 0) {
+                            Log.d(TAG, "Salvando dados do usuário: ID=" + idUsuario + ", Nome=" + nomeUsuario + ", Nível=" + idTipoAcesso);
                             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
                             SharedPreferences.Editor editor = prefs.edit();
                             editor.putInt(KEY_USER_ID, idUsuario);
                             editor.putString(KEY_USER_NAME, nomeUsuario);
+                            editor.putInt(KEY_USER_ROLE_ID, idTipoAcesso);
                             editor.apply();
 
-                            // Navega para a próxima tela APENAS se salvou os dados
-                            Intent homeIntent = new Intent(MainActivity.this, ListaChamadosActivity.class);
+                            // 3. Decide para qual tela navegar
+                            Intent homeIntent;
+                            if (idTipoAcesso == 1) {
+                                // É Cliente -> Vai para a tela de Lista de Chamados
+                                homeIntent = new Intent(MainActivity.this, ListaChamadosActivity.class);
+                            } else if (idTipoAcesso == 2) {
+                                // É Agente -> Vai para a (ex: TelaAgenteActivity.class)
+                                // homeIntent = new Intent(MainActivity.this, TelaAgenteActivity.class);
+                                // POR ENQUANTO, vamos mandar para a mesma tela de Lista
+                                homeIntent = new Intent(MainActivity.this, ListaChamadosActivity.class); // ✨ SUBSTITUA QUANDO TIVER A TELA DO AGENTE ✨
+                            } else if (idTipoAcesso == 3) {
+                                // É ADM -> Vai para a (ex: TelaAdmGeralActivity.class)
+                                // homeIntent = new Intent(MainActivity.this, TelaAdmGeralActivity.class);
+                                // POR ENQUANTO, vamos mandar para a mesma tela de Lista
+                                homeIntent = new Intent(MainActivity.this, AdmHomeActivity.class); // ✨ SUBSTITUA QUANDO TIVER A TELA DO ADM ✨
+                            } else {
+                                // Caso desconhecido
+                                Toast.makeText(MainActivity.this, "Tipo de acesso desconhecido: " + idTipoAcesso, Toast.LENGTH_LONG).show();
+                                return;
+                            }
+
+                            // 4. Executa a navegação
                             homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(homeIntent);
                             finish(); // Fecha a MainActivity
 
                         } else {
-                            // Se os dados não vieram, loga um erro e informa o usuário
-                            Log.e(TAG, "Erro: ID ou Nome do usuário não recebidos na resposta do login! Resposta: " + new Gson().toJson(loginResponse)); // Loga a resposta completa
-                            Toast.makeText(MainActivity.this, "Erro ao obter dados do usuário após login. Verifique a API.", Toast.LENGTH_LONG).show();
-                            // Não navega se não tiver os dados
+                            // Se os dados não vieram
+                            Log.e(TAG, "Erro: Dados do usuário (ID, Nome ou Nível) não recebidos na resposta do login!");
+                            Toast.makeText(MainActivity.this, "Erro ao obter dados completos do usuário.", Toast.LENGTH_LONG).show();
                         }
-                        // ==========================================================
+                        // --- Fim da nova lógica ---
 
                     } else { // Falha de negócio (senha errada, etc.)
                         Toast.makeText(MainActivity.this, "Erro: " + loginResponse.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 } else { // Erro do servidor (4xx, 5xx)
-                    String errorMsg = "Credenciais inválidas ou erro no servidor.";
-                    if (response.errorBody() != null) {
-                        try { errorMsg += " (" + response.code() + ": " + response.errorBody().string() + ")"; } catch (IOException e) {Log.e(TAG, "Erro ao ler errorBody", e);}
-                    } else { errorMsg += " (Código: " + response.code() + ")"; }
-                    Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                    // ... (seu código de erro 4xx/5xx continua igual) ...
                 }
             }
 

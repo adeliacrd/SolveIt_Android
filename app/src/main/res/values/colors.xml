@@ -13,10 +13,11 @@
     <!-- ======================================================= -->
     <!-- ✨ CORES ADICIONADAS PARA O SPINNER DE PRIORIDADE ✨ -->
     <!-- ======================================================= -->
-    <color name="prioridade_urgente">#D32F2F</color> <!-- Vermelho -->
-    <color name="prioridade_alta">#F57C00</color>    <!-- Laranja -->
-    <color name="prioridade_media">#FBC02D</color>   <!-- Amarelo -->
-    <color name="prioridade_baixa">#388E3C</color>   <!-- Verde -->
+    <color name="prioridade_urgente">#bf4a4a</color> <!-- Vermelho -->
+    <color name="prioridade_alta">#ef9964</color>    <!-- Laranja -->
+    <color name="prioridade_media">#e4be5b</color>   <!-- Amarelo -->
+    <color name="prioridade_baixa">#61b88e</color>   <!-- Verde -->
+    <color name="prioridade_default">#cccccc</color>
 
     <!-- COR ADICIONADA PARA AS ABAS DO TABLAYOUT -->
     <color name="white_transparente_70">#B3FFFFFF</color> <!-- Branco com 70% de opacidade -->

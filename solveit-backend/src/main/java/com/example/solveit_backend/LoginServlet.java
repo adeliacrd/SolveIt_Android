@@ -17,19 +17,21 @@ public class LoginServlet extends HttpServlet {
         boolean success;
         String message;
         Integer id_acesso;
+        Integer id_tipo_acesso;
         String nome_usuario; // ✨ NOVO CAMPO ✨
 
         // ✨ CORREÇÃO 2: Atualizar o construtor para receber o nome ✨
-        public LoginResponse(boolean success, String message, Integer id_acesso, String nome_usuario) {
+        public LoginResponse(boolean success, String message, Integer id_acesso, Integer id_tipo_acesso, String nome_usuario) {
             this.success = success;
             this.message = message;
             this.id_acesso = id_acesso;
+            this.id_tipo_acesso = id_tipo_acesso;
             this.nome_usuario = nome_usuario; // ✨ Atribui o nome ✨
         }
 
         // ✨ Construtor para respostas de erro (sem nome) ✨
         public LoginResponse(boolean success, String message) {
-            this(success, message, null, null);
+            this(success, message, null, null, null);
         }
     }
 
@@ -74,7 +76,7 @@ public class LoginServlet extends HttpServlet {
                     response.setStatus(HttpServletResponse.SC_OK);
                     // ✨ CORREÇÃO 4: Enviar o nome e o ID do usuário na resposta de sucesso ✨
                     // (Usando idUsuario como id_acesso para o app, ajuste se necessário)
-                    response.getWriter().write(gson.toJson(new LoginResponse(true, "Login bem-sucedido!", idUsuario, nomeDoBanco)));
+                    response.getWriter().write(gson.toJson(new LoginResponse(true, "Login bem-sucedido!", idUsuario, idAcesso, nomeDoBanco)));
                     return;
                 }
             }
