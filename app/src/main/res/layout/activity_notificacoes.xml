@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".NotificacoesActivity">
+
+    <!-- BARRA SUPERIOR AZUL -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/solveit_azul_primario"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <!-- Estrutura simplificada para garantir o alinhamento vertical -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingEnd="8dp">
+
+            <!-- 1. Botão de Voltar (seta) - Alinhado à esquerda e centralizado verticalmente -->
+            <ImageButton
+                android:id="@+id/btn_voltar_notificacoes"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Voltar"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@android:color/white" />
+
+            <!-- 2. Título "Notificações" - Centralizado -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:text="Notificações"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:drawableTint="@android:color/white"
+                android:paddingEnd="32dp"/>
+
+            <!-- 3. Ícones da Direita - Alinhados à Direita e ao Centro Vertical -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:orientation="horizontal">
+
+                <!-- Ícone de Adicionar (+) -->
+                <ImageButton
+                    android:id="@+id/action_add"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Adicionar"
+                    android:src="@drawable/ic_add"
+                    app:tint="@android:color/white" />
+
+                <!-- Ícone do Sino -->
+                <ImageButton
+                    android:id="@+id/action_notifications_icon"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Notificações"
+                    android:src="@drawable/notifications"
+                    app:tint="@android:color/white" />
+
+                <!-- Ícone de Perfil -->
+                <ImageButton
+                    android:id="@+id/action_profile"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Perfil"
+                    android:src="@drawable/ic_person_white"
+                    app:tint="@android:color/white" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- CONTEÚDO PRINCIPAL (Lista de Notificações) -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_notificacoes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="0dp"
+            android:background="@color/white" />
+
+        <TextView
+            android:id="@+id/text_view_nenhuma_notificacao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Nenhuma notificação a ser exibida"
+            android:textColor="#888888"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

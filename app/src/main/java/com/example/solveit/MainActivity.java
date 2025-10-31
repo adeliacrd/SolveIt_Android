@@ -1,4 +1,4 @@
-// CÓDIGO REESCRITO COM A LÓGICA DE ADMIN
+// Copie e cole este código inteiro para C:/Users/adeli/StudioProjects/SolveIt/app/src/main/java/com/example/solveit/MainActivity.java
 
 package com.example.solveit;
 
@@ -43,29 +43,49 @@ public class MainActivity extends AppCompatActivity {
         textViewForgotPasswordLink = findViewById(R.id.textViewForgotPassword);
         progressBarLogin = findViewById(R.id.progressBarLogin);
 
-        // A lógica para os links de "Criar Conta" e "Esqueci a Senha" permanece a mesma.
+
+        // ----- CÓDIGO PARA O TEXTVIEW DE CADASTRO (permanece igual) -----
         if (textViewGoToRegister != null) {
-            textViewGoToRegister.setOnClickListener(v -> {
-                Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
-                startActivity(intent);
+            textViewGoToRegister.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+                    startActivity(intent);
+                }
             });
+        } else {
+            Log.e(TAG, "TextView 'textViewCreateAccount' não foi encontrado.");
         }
+
+
+        // ----- CÓDIGO PARA O TEXTVIEW "ESQUECI A SENHA" (permanece igual) -----
         if (textViewForgotPasswordLink != null) {
-            textViewForgotPasswordLink.setOnClickListener(v -> {
-                Intent intent = new Intent(MainActivity.this, ForgotPasswordActivity.class);
-                startActivity(intent);
+            textViewForgotPasswordLink.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, ForgotPasswordActivity.class);
+                    startActivity(intent);
+                }
             });
+        } else {
+            Log.e(TAG, "TextView 'textViewForgotPassword' não foi encontrado.");
         }
+
 
         // Configurar o que acontece quando o botão de login é clicado
-        buttonLogin.setOnClickListener(v -> loginUser());
+        buttonLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginUser(v); // Chamar o método de login simulado
+            }
+        });
     }
 
-    private void loginUser() {
+    private void loginUser(View buttonView) {
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
-        // Validações de campos
+        // Validações de campos (seu código já faz isso bem)
         if (email.isEmpty()) {
             editTextEmail.setError("Por favor, insira o email.");
             editTextEmail.requestFocus();
@@ -81,16 +101,25 @@ public class MainActivity extends AppCompatActivity {
         progressBarLogin.setVisibility(View.VISIBLE);
         buttonLogin.setEnabled(false);
 
-        // Lógica de Login com Retrofit
+        // ======================================================================
+        // INÍCIO DA LÓGICA REAL DE LOGIN (AQUI ESTÁ A MÁGICA!)
+        // ======================================================================
+
+        // 1. Obtenha a instância do serviço da API através do Retrofit
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+
+        // 2. Crie a chamada para o endpoint de login
         Call<LoginResponse> call = apiService.loginUsuario(email, password);
 
+        // 3. Execute a chamada de forma assíncrona (em background)
         call.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                // Esconde a barra de progresso e reabilita o botão
                 progressBarLogin.setVisibility(View.GONE);
                 buttonLogin.setEnabled(true);
 
+                // Verifica se a resposta do servidor foi bem-sucedida (código 200-299)
                 if (response.isSuccessful() && response.body() != null) {
                     LoginResponse loginResponse = response.body();
 
@@ -98,25 +127,11 @@ public class MainActivity extends AppCompatActivity {
                         // SUCESSO! O backend validou o usuário.
                         Toast.makeText(MainActivity.this, "Login bem-sucedido!", Toast.LENGTH_SHORT).show();
 
-                        // ======================================================================
-                        // ✨✨✨ SUBSTITUIÇÃO DA NAVEGAÇÃO PARA INCLUIR A LÓGICA DE ADMIN ✨✨✨
-                        // ======================================================================
-
-                        // 1. Verifique se o usuário é um admin.
-                        //    (Estou assumindo que a sua classe LoginResponse tem um método 'isAdmin()')
-                        boolean ehAdmin = loginResponse.isAdmin();
-
-                        // 2. Crie a Intent para ir para a lista de chamados.
+                        // Navega para a próxima tela
                         Intent homeIntent = new Intent(MainActivity.this, ListaChamadosActivity.class);
-
-                        // 3. Adicione a "etiqueta" booleana que diz se é um admin ou não.
-                        homeIntent.putExtra("IS_ADMIN", ehAdmin);
-
-                        // 4. Limpe as telas anteriores e inicie a nova atividade com a etiqueta.
                         homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(homeIntent);
-                        finish(); // Fecha a tela de login para o usuário não voltar para ela
-
+                        finish();
                     } else {
                         // Falha de negócio (ex: senha errada)
                         Toast.makeText(MainActivity.this, "Erro: " + loginResponse.getMessage(), Toast.LENGTH_LONG).show();
@@ -129,8 +144,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
+                // Esconde a barra de progresso e reabilita o botão
                 progressBarLogin.setVisibility(View.GONE);
                 buttonLogin.setEnabled(true);
+
+                // Erro de rede (sem internet, firewall, servidor offline)
                 Log.e(TAG, "Falha na chamada de rede: ", t);
                 Toast.makeText(MainActivity.this, "Não foi possível conectar ao servidor. Verifique sua conexão.", Toast.LENGTH_LONG).show();
             }

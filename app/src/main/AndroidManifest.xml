@@ -15,7 +15,9 @@
         android:theme="@style/Theme.SolveIt"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
+        <activity
+            android:name=".NotificacoesActivity"
+            android:exported="false" />
         <activity
             android:name=".ListaChamadosActivity"
             android:exported="false"
@@ -36,6 +38,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

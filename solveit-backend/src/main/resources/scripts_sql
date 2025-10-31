@@ -127,3 +127,11 @@ GO
 
 PRINT 'Script concluído. Verifique manualmente a propriedade IDENTITY da coluna id_empresa na tabela Empresa.';
 GO
+
+✨// Alterações do SQL dia 29/10/2025✨
+
+ALTER TABLE Chamados
+ADD email_contato VARCHAR(255) NULL;
+-- Adicionamos como NULL (permite nulos),
+-- embora o seu app sempre vá enviar um valor.
+GO

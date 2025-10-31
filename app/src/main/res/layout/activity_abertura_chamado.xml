@@ -13,7 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/solveit_azul_primario"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+
+        android:fitsSystemWindows="true">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar_icones"
@@ -43,7 +45,7 @@
                     android:layout_marginEnd="8dp"
                     android:contentDescription="Logo SolveIT"
                     android:scaleType="fitStart"
-                    android:src="@drawable/solveit_logo2" />
+                    android:src="@drawable/ic_solveit_logo" />
 
                 <View
                     android:layout_width="0dp"
@@ -131,7 +133,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -169,6 +172,23 @@
                 android:paddingEnd="0dp">
                 <Spinner
                     android:id="@+id/spinner_prioridade"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp" />
+            </FrameLayout>
+
+            <TextView
+                style="@style/App.Form.Label"
+                android:layout_marginTop="16dp"
+                android:text="Categoria*" />
+            <FrameLayout
+                style="@style/App.Form.Input"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp">
+                <Spinner
+                    android:id="@+id/spinner_categoria"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"

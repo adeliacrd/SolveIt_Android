@@ -1,150 +1,209 @@
-// CÓDIGO REESCRITO E CORRIGIDO PARA FORÇAR A VISUALIZAÇÃO DE ADMIN
-
 package com.example.solveit;
 
+// IMPORTAÇÕES NECESSÁRIAS (ADICIONADAS)
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+// SUAS IMPORTAÇÕES EXISTENTES
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ListaChamadosActivity extends AppCompatActivity {
 
-    // Declaração dos componentes da interface
+    // --- Suas variáveis de classe (sem alterações) ---
+    private RecyclerView recyclerViewChamados;
+    private ChamadosAdapter chamadosAdapter;
+    private TextView textViewEmpty;
+    private View tableContainer;
     private TabLayout tabLayout;
-    private ViewPager2 viewPager;
-    private FloatingActionButton fabAdicionarChamado;
-    private TextView textViewAdminTitle;
-    private ImageButton btnSettings;
-    private ImageButton btnNotifications;
-    private ImageButton btnProfile;
-    private ImageButton btnAdd;
-    private RecyclerView recyclerViewAdmin;
+    private final List<Chamado> todosOsChamados = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_chamados);
 
-        // ======================================================================
-        // ✨✨✨ CORREÇÃO PRINCIPAL: FORÇANDO A TELA DE ADMIN ✨✨✨
-        // ======================================================================
-        // A linha original foi comentada para não depender mais do login.
-        // boolean isUserAdmin = getIntent().getBooleanExtra("IS_ADMIN", false);
-
-        // Forçamos a variável a ser 'true' para sempre exibir a tela de admin.
-        boolean isUserAdmin = true;
-        // ======================================================================
-
-        // --- Passo 2: Encontrar todos os componentes da tela ---
-        Toolbar toolbar = findViewById(R.id.toolbar_main);
+        // --- Configuração dos Componentes (sem alterações) ---
+        Toolbar toolbar = findViewById(R.id.toolbar_icones);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
+        recyclerViewChamados = findViewById(R.id.recyclerViewChamados);
+        textViewEmpty = findViewById(R.id.textViewEmpty);
+        tableContainer = findViewById(R.id.tableContainer);
         tabLayout = findViewById(R.id.tabLayout);
-        viewPager = findViewById(R.id.viewPager);
-        fabAdicionarChamado = findViewById(R.id.fabAdicionarChamado);
-        textViewAdminTitle = findViewById(R.id.textViewAdminTitle);
-        btnSettings = findViewById(R.id.ic_settings);
-        btnNotifications = findViewById(R.id.ic_notifications);
-        btnProfile = findViewById(R.id.ic_profile);
-        btnAdd = findViewById(R.id.ic_add);
-        recyclerViewAdmin = findViewById(R.id.recyclerViewAdmin);
 
-        // --- Passo 3: Lógica para configurar a tela baseada no tipo de usuário ---
-        // Como 'isUserAdmin' agora é sempre 'true', o bloco 'if' sempre será executado.
-        if (isUserAdmin) {
-            // --- CONFIGURAÇÃO PARA O ADMINISTRADOR ---
+        // --- Dados de Exemplo (Corretamente comentados) ---
+        // carregarChamadosDeExemplo();
 
-            // Mostra os componentes exclusivos do admin
-            if (textViewAdminTitle != null) textViewAdminTitle.setVisibility(View.VISIBLE);
-            if (btnSettings != null) btnSettings.setVisibility(View.VISIBLE);
-            if (btnAdd != null) btnAdd.setVisibility(View.VISIBLE);
+        // --- Configuração do RecyclerView e Adapter (sem alterações) ---
+        recyclerViewChamados.setLayoutManager(new LinearLayoutManager(this));
+        chamadosAdapter = new ChamadosAdapter(new ArrayList<>());
+        recyclerViewChamados.setAdapter(chamadosAdapter);
 
-            // Esconde os componentes do usuário comum
-            if (tabLayout != null) tabLayout.setVisibility(View.GONE);
-            if (viewPager != null) viewPager.setVisibility(View.GONE);
-            if (fabAdicionarChamado != null) fabAdicionarChamado.setVisibility(View.GONE);
+        // --- Configuração das Abas (sem alterações) ---
+        setupTabLayout();
 
-            // Deixa a lista do admin visível e a popula com dados
-            if (recyclerViewAdmin != null) recyclerViewAdmin.setVisibility(View.VISIBLE);
-            setupAdminRecyclerView();
+        // --- Exibição Inicial (sem alterações) ---
+        tabLayout.getTabAt(0).select();
+        filtrarEAtualizarLista(0);
 
-        } else {
-            // --- CONFIGURAÇÃO PARA O USUÁRIO NORMAL ---
-            // Este bloco de código agora nunca será executado enquanto a linha 'isUserAdmin = true' estiver ativa.
 
-            if (tabLayout != null) tabLayout.setVisibility(View.VISIBLE);
-            if (viewPager != null) viewPager.setVisibility(View.VISIBLE);
-            if (fabAdicionarChamado != null) fabAdicionarChamado.setVisibility(View.VISIBLE);
-
-            if (textViewAdminTitle != null) textViewAdminTitle.setVisibility(View.GONE);
-            if (btnSettings != null) btnSettings.setVisibility(View.GONE);
-            if (btnAdd != null) btnAdd.setVisibility(View.GONE);
-            if (recyclerViewAdmin != null) recyclerViewAdmin.setVisibility(View.GONE);
-
-            setupTabsForUser();
-        }
-
-        // --- Passo 4: Configurar os cliques dos botões ---
-        if (fabAdicionarChamado != null) {
-            fabAdicionarChamado.setOnClickListener(v -> {
+        // ================================================================
+        // ✨ CÓDIGO ADICIONADO PARA FAZER O BOTÃO FUNCIONAR ✨
+        // Configura o listener de clique para o FloatingActionButton (FAB).
+        // ================================================================
+        FloatingActionButton fabAdicionarChamado = findViewById(R.id.fabAdicionarChamado);
+        fabAdicionarChamado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Cria uma "Intenção" de navegar da tela atual para a tela de Abertura de Chamado.
                 Intent intent = new Intent(ListaChamadosActivity.this, AberturaChamadoActivity.class);
+                // Executa a navegação.
                 startActivity(intent);
-            });
+            }
+        });
+        // ================================================================
+
+    }
+
+    // --- carregarChamadosDeExemplo (sem alterações) ---
+    private void carregarChamadosDeExemplo() {
+        todosOsChamados.clear();
+        todosOsChamados.add(new Chamado(1, "Impressora travou no 2º andar", "Urgente", "Novo"));
+        todosOsChamados.add(new Chamado(2, "PC não liga na sala de reunião", "Alta", "Novo"));
+        todosOsChamados.add(new Chamado(3, "Mouse sem fio com bateria fraca", "Baixa", "Concluído"));
+        todosOsChamados.add(new Chamado(4, "Sistema de ponto com erro", "Urgente", "Em atendimento"));
+        todosOsChamados.add(new Chamado(5, "Solicitação de novo monitor", "Media", "Aberto"));
+        todosOsChamados.add(new Chamado(6, "Wi-Fi instável no escritório", "Alta", "Novo"));
+        todosOsChamados.add(new Chamado(7, "Troca de teclado", "Baixa", "Concluído"));
+    }
+
+    // --- setupTabLayout (sem alterações) ---
+    private void setupTabLayout() {
+        tabLayout.addTab(tabLayout.newTab().setText("Minhas Solicitações"));
+        tabLayout.addTab(tabLayout.newTab().setText("Encerrados"));
+
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+            TabLayout.Tab tab = tabLayout.getTabAt(i);
+            if (tab != null) {
+                TextView tabTextView = new TextView(this);
+                tab.setCustomView(tabTextView);
+                tabTextView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                tabTextView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                tabTextView.setText(tab.getText());
+                tabTextView.setTypeface(null, Typeface.BOLD);
+                tabTextView.setTextSize(18);
+
+                if (tab.getPosition() == 0) {
+                    tabTextView.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+                } else {
+                    tabTextView.setTextColor(ContextCompat.getColor(this, R.color.white_transparente_70));
+                }
+            }
         }
 
-        if (btnSettings != null) {
-            btnSettings.setOnClickListener(v -> {
-                Toast.makeText(this, "Botão de Configurações (Admin) clicado!", Toast.LENGTH_SHORT).show();
-            });
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                View customView = tab.getCustomView();
+                if (customView instanceof TextView) {
+                    ((TextView) customView).setTextColor(ContextCompat.getColor(ListaChamadosActivity.this, android.R.color.white));
+                }
+                filtrarEAtualizarLista(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                View customView = tab.getCustomView();
+                if (customView instanceof TextView) {
+                    ((TextView) customView).setTextColor(ContextCompat.getColor(ListaChamadosActivity.this, R.color.white_transparente_70));
+                }
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+    }
+
+    // --- filtrarEAtualizarLista (sem alterações) ---
+    private void filtrarEAtualizarLista(int position) {
+        List<Chamado> listaFiltrada;
+
+        if (position == 0) {
+            listaFiltrada = todosOsChamados.stream()
+                    .filter(c -> !c.getStatus().equals("Concluído"))
+                    .collect(Collectors.toList());
+        } else {
+            listaFiltrada = todosOsChamados.stream()
+                    .filter(c -> c.getStatus().equals("Concluído"))
+                    .collect(Collectors.toList());
+        }
+
+        chamadosAdapter.atualizarLista(listaFiltrada);
+        atualizarVisibilidade(listaFiltrada, position);
+    }
+
+    // --- atualizarVisibilidade (sem alterações) ---
+    private void atualizarVisibilidade(List<Chamado> listaExibida, int position) {
+        if (listaExibida.isEmpty()) {
+            tableContainer.setVisibility(View.GONE);
+            textViewEmpty.setVisibility(View.VISIBLE);
+
+            if (position == 0) {
+                textViewEmpty.setText("Você não possui chamados em aberto");
+            } else {
+                textViewEmpty.setText("Você não possui chamados encerrados");
+            }
+        } else {
+            tableContainer.setVisibility(View.VISIBLE);
+            textViewEmpty.setVisibility(View.GONE);
         }
     }
 
-    private void setupTabsForUser() {
-        // Método para o usuário normal, não será usado por enquanto.
-    }
+    // --- Funções do Menu (sem alterações) ---
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
 
-    /**
-     * Configura o RecyclerView para a visão do administrador.
-     */
-    private void setupAdminRecyclerView() {
-        if (recyclerViewAdmin == null) {
-            return;
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem menuItem = menu.getItem(i);
+            Drawable drawable = menuItem.getIcon();
+
+            if (drawable != null) {
+                drawable = DrawableCompat.wrap(drawable);
+                DrawableCompat.setTint(drawable, ContextCompat.getColor(this, android.R.color.white));
+                menuItem.setIcon(drawable);
+            }
         }
 
-        // Cria uma lista de dados de teste para popular a tela
-        List<Chamado> listaDeTodosOsChamados = new ArrayList<>();
-        listaDeTodosOsChamados.add(new Chamado(1, "PC não liga na sala de reunião", "Urgente", "Em atendimento"));
-        listaDeTodosOsChamados.add(new Chamado(2, "Impressora travou o papel", "Urgente", "Aberto"));
-        listaDeTodosOsChamados.add(new Chamado(3, "Monitor com listra vertical", "Urgente", "Aberto"));
-        listaDeTodosOsChamados.add(new Chamado(4, "Sistema de BI está lento", "Alta", "Aberto"));
-        listaDeTodosOsChamados.add(new Chamado(5, "Solicitação de novo mouse", "Alta", "Aberto"));
-        listaDeTodosOsChamados.add(new Chamado(6, "Wi-Fi desconectando no 3º andar", "Média", "Aberto"));
-        listaDeTodosOsChamados.add(new Chamado(7, "Erro ao salvar arquivo no servidor", "Média", "Concluído"));
-        listaDeTodosOsChamados.add(new Chamado(8, "Instalação de software de edição", "Média", "Aberto"));
-        listaDeTodosOsChamados.add(new Chamado(9, "Formatar notebook do novo estagiário", "Baixa", "Aberto"));
-        listaDeTodosOsChamados.add(new Chamado(10, "Planilha com fórmula quebrada", "Baixa", "Concluído"));
+        return true;
+    }
 
-        // Conecta o Adapter ao RecyclerView para exibir os dados
-        ChamadosAdminAdapter adminAdapter = new ChamadosAdminAdapter(this, listaDeTodosOsChamados);
-        recyclerViewAdmin.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewAdmin.setAdapter(adminAdapter);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.ic_notifications || id == R.id.btn_profile) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
