@@ -3,7 +3,6 @@
 package com.example.solveit;
 
 // Imports necessários
-import java.io.IOException;
 import android.content.SharedPreferences;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -19,7 +18,7 @@ import android.widget.Toast;
 import com.example.solveit.api.ApiService;
 import com.example.solveit.api.LoginResponse;
 import com.example.solveit.api.RetrofitClient;
-import com.google.gson.Gson; // ✨ IMPORT NECESSÁRIO (para o log de erro) ✨
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -120,17 +119,17 @@ public class MainActivity extends AppCompatActivity {
                             Intent homeIntent;
                             if (idTipoAcesso == 1) {
                                 // É Cliente -> Vai para a tela de Lista de Chamados
-                                homeIntent = new Intent(MainActivity.this, ListaChamadosActivity.class);
+                                homeIntent = new Intent(MainActivity.this, HomeActivity.class);
                             } else if (idTipoAcesso == 2) {
                                 // É Agente -> Vai para a (ex: TelaAgenteActivity.class)
                                 // homeIntent = new Intent(MainActivity.this, TelaAgenteActivity.class);
                                 // POR ENQUANTO, vamos mandar para a mesma tela de Lista
-                                homeIntent = new Intent(MainActivity.this, ListaChamadosActivity.class); // ✨ SUBSTITUA QUANDO TIVER A TELA DO AGENTE ✨
+                                homeIntent = new Intent(MainActivity.this, HomeActivity.class); // ✨ SUBSTITUA QUANDO TIVER A TELA DO AGENTE ✨
                             } else if (idTipoAcesso == 3) {
                                 // É ADM -> Vai para a (ex: TelaAdmGeralActivity.class)
                                 // homeIntent = new Intent(MainActivity.this, TelaAdmGeralActivity.class);
                                 // POR ENQUANTO, vamos mandar para a mesma tela de Lista
-                                homeIntent = new Intent(MainActivity.this, AdmHomeActivity.class); // ✨ SUBSTITUA QUANDO TIVER A TELA DO ADM ✨
+                                homeIntent = new Intent(MainActivity.this, HomeActivity.class); // ✨ SUBSTITUA QUANDO TIVER A TELA DO ADM ✨
                             } else {
                                 // Caso desconhecido
                                 Toast.makeText(MainActivity.this, "Tipo de acesso desconhecido: " + idTipoAcesso, Toast.LENGTH_LONG).show();

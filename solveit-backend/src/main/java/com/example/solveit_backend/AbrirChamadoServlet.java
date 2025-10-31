@@ -28,14 +28,19 @@ public class AbrirChamadoServlet extends HttpServlet {
         String titulo;
         String desc_prioridade;
         String desc_status;
+        int id_usuario;
 
         // Construtor usado no `doGet`
-        public ChamadoDTO(int id_chamado, String titulo, String desc_prioridade, String desc_status) {
+        public ChamadoDTO(int id_chamado, String titulo, String desc_prioridade, String desc_status, int id_usuario) {
             this.id_chamado = id_chamado;
             this.titulo = titulo;
             this.desc_prioridade = desc_prioridade;
             this.desc_status = desc_status;
+            this.id_usuario = id_usuario;
         }
+
+        // ✨ NOVO GETTER (Opcional para o backend, mas bom ter) ✨
+        public int getId_usuario() {return id_usuario;}
     }
 
     /**
@@ -227,7 +232,7 @@ public class AbrirChamadoServlet extends HttpServlet {
         // Query SIMPLES com JOINs para a lista
         // ✨ ATENÇÃO: Confirme se os nomes das tabelas 'Prioridade' e 'Status' estão corretos ✨
         String sql = "SELECT " +
-                "  c.id_chamado, c.titulo, " +
+                "  c.id_chamado, c.titulo, c.id_usuario, " +
                 "  p.desc_prioridade, s.desc_status " +
                 "FROM Chamados c " +
                 "JOIN Prioridades p ON c.id_prioridade = p.niv_prioridade " +
@@ -244,7 +249,8 @@ public class AbrirChamadoServlet extends HttpServlet {
                         rs.getInt("id_chamado"),
                         rs.getString("titulo"),
                         rs.getString("desc_prioridade"),
-                        rs.getString("desc_status")
+                        rs.getString("desc_status"),
+                        rs.getInt("id_usuario")
                 ));
             }
             response.setStatus(HttpServletResponse.SC_OK);

@@ -7,10 +7,12 @@ public class ChamadoDTO {
     private String titulo;
     private String desc_prioridade;
     private String desc_status;
+    private int id_usuario;
 
     // Getters (essenciais para o Gson)
     public int getId_chamado() { return id_chamado; }
     public String getTitulo() { return titulo; }
     public String getDesc_prioridade() { return desc_prioridade; }
     public String getDesc_status() { return desc_status; }
+    public int getId_usuario() {return id_usuario;}
 }
