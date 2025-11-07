@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar_padrao"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/solveit_azul_primario"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+    android:elevation="4dp"
+    app:contentInsetStart="0dp"
+    app:contentInsetEnd="0dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- 1. Botão de Voltar (Seta) -->
+        <ImageButton
+            android:id="@+id/toolbar_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Voltar"
+            android:paddingStart="16dp"
+            android:paddingEnd="8dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@android:color/white"
+            android:visibility="gone" />
+
+        <!-- 2. Logo "SolveIT" (permanece aqui, mas vamos escondê-lo na tela de perfil) -->
+        <ImageView
+            android:id="@+id/toolbar_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_toEndOf="@id/toolbar_back_button"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_solveit_logo"
+            android:adjustViewBounds="true"
+            android:contentDescription="Logo SolveIT"/>
+
+        <!-- 3. TÍTULO DA TELA (NOVO!) - Centralizado e invisível por padrão -->
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Título"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone" /> <!-- COMEÇA INVISÍVEL -->
+
+        <!-- 4. Ícones da Direita -->
+        <LinearLayout
+            android:id="@+id/toolbar_icons_container"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal">
+
+            <!-- Ícones de Adicionar, Notificações e Perfil... -->
+            <ImageButton
+                android:id="@+id/toolbar_icon_add"
+                style="@style/ToolbarImageButton"
+                android:contentDescription="Adicionar"
+                android:src="@drawable/ic_add_circle_outline_white"
+                app:tint="@android:color/white" />
+
+            <ImageButton
+                android:id="@+id/toolbar_icon_notifications"
+                style="@style/ToolbarImageButton"
+                android:contentDescription="Notificações"
+                android:src="@drawable/notifications"
+                app:tint="@android:color/white" />
+
+            <ImageButton
+                android:id="@+id/toolbar_icon_profile"
+                style="@style/ToolbarImageButton"
+                android:contentDescription="Perfil"
+                android:src="@drawable/ic_person_white"
+                app:tint="@android:color/white" />
+        </LinearLayout>
+    </RelativeLayout>
+</androidx.appcompat.widget.Toolbar>
