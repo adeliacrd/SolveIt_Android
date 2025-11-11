@@ -46,6 +46,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+        <!-- ✨ DECLARAÇÃO DA TELA DE PERFIL ADICIONADA ✨ -->
+        <activity android:name=".PerfilActivity" />
+
     </application>
 
 </manifest>

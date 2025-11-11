@@ -2,6 +2,7 @@ package com.example.solveit.api; // O seu pacote
 
 // ✨ IMPORTS CORRIGIDOS E LIMPOS ✨
 // Importa todos os "moldes" (DTOs) que seu app vai usar
+import com.example.solveit.Notificacao;
 import com.example.solveit.api.LoginResponse;
 import com.example.solveit.api.RegisterResponse;
 import com.example.solveit.api.AbrirChamadoResponse;
@@ -75,4 +76,8 @@ public interface ApiService {
     // 2. DETALHE: Busca um chamado COMPLETO pelo seu ID
     @GET("api/chamados")
     Call<ChamadoCompletoDTO> getDetalhesChamado(@Query("id_chamado") int idChamado);
+
+
+    @GET("api/notificacoes") // ou o caminho exato da sua API de notificações
+    Call<List<Notificacao>> getNotificacoes();
 }

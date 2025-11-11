@@ -60,5 +60,10 @@ dependencies {
     // Interceptor de Logs (Opcional, mas útil para debug de rede)
     implementation(libs.logging.interceptor)
 
+    implementation("de.hdodenhof:circleimageview:3.1.0")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
+    // Glide - Biblioteca poderosa para carregamento e manipulação de imagens
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
     // ... (As dependências do Firebase foram removidas daqui.)
 }

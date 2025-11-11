@@ -1,5 +1,3 @@
-// Copie e cole este código inteiro para C:/Users/adeli/StudioProjects/SolveIt/app/src/main/java/com/example/solveit/MainActivity.java
-
 package com.example.solveit;
 
 // Imports necessários
@@ -34,12 +32,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView textViewForgotPasswordLink;
     private ProgressBar progressBarLogin;
 
-    // ✨ Constantes para as chaves do SharedPreferences (CORRETO) ✨
     public static final String PREFS_NAME = "AppPrefs";
     public static final String KEY_USER_ID = "ID_USUARIO_LOGADO";
     public static final String KEY_USER_NAME = "NOME_USUARIO_LOGADO";
-    public static final String KEY_USER_ROLE_ID = "ID_TIPO_ACESSO_LOGADO"; // ✨ NOVA CONSTANTE ✨
-
+    public static final String KEY_USER_ROLE_ID = "ID_TIPO_ACESSO_LOGADO";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         textViewForgotPasswordLink = findViewById(R.id.textViewForgotPassword);
         progressBarLogin = findViewById(R.id.progressBarLogin);
 
-        // --- Listeners para ir para Registro e Esqueci Senha (CORRETO) ---
         if (textViewGoToRegister != null) {
             textViewGoToRegister.setOnClickListener(v -> {
                 Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
@@ -67,23 +62,19 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        // --- Listener do Botão de Login (CORRETO) ---
         buttonLogin.setOnClickListener(v -> loginUser());
     }
 
-    // ✨ Método de Login com a lógica correta (CORRETO) ✨
     private void loginUser() {
         String email = editTextEmail.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
-        // Validações
         if (email.isEmpty()) { editTextEmail.setError("Por favor, insira o email."); editTextEmail.requestFocus(); return; }
         if (password.isEmpty()) { editTextPassword.setError("Por favor, insira a senha."); editTextPassword.requestFocus(); return; }
 
         progressBarLogin.setVisibility(View.VISIBLE);
         buttonLogin.setEnabled(false);
 
-        // --- Chamada da API ---
         ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
         Call<LoginResponse> call = apiService.loginUsuario(email, password);
 
@@ -97,14 +88,12 @@ public class MainActivity extends AppCompatActivity {
                     LoginResponse loginResponse = response.body();
 
                     if (loginResponse.isSuccess()) {
+                        // --- SUCESSO NO LOGIN ---
                         Toast.makeText(MainActivity.this, "Login bem-sucedido!", Toast.LENGTH_SHORT).show();
 
-                        // ==========================================================
-                        // ✨ LÓGICA DE SALVAR DADOS DO USUÁRIO (A MUDANÇA IMPORTANTE) ✨
-                        // ==========================================================
-                        Integer idUsuario = loginResponse.getIdAcesso(); // Pega o ID
-                        String nomeUsuario = loginResponse.getNomeUsuario(); // Pega o NOME
-                        Integer idTipoAcesso = loginResponse.getIdTipoAcesso(); // Pega o nível de Acesso
+                        Integer idUsuario = loginResponse.getIdAcesso();
+                        String nomeUsuario = loginResponse.getNomeUsuario();
+                        Integer idTipoAcesso = loginResponse.getIdTipoAcesso();
 
                         if (idUsuario != null && idUsuario > 0 && nomeUsuario != null && !nomeUsuario.isEmpty() && idTipoAcesso != null && idTipoAcesso > 0) {
                             Log.d(TAG, "Salvando dados do usuário: ID=" + idUsuario + ", Nome=" + nomeUsuario + ", Nível=" + idTipoAcesso);
@@ -115,44 +104,29 @@ public class MainActivity extends AppCompatActivity {
                             editor.putInt(KEY_USER_ROLE_ID, idTipoAcesso);
                             editor.apply();
 
-                            // 3. Decide para qual tela navegar
-                            Intent homeIntent;
-                            if (idTipoAcesso == 1) {
-                                // É Cliente -> Vai para a tela de Lista de Chamados
-                                homeIntent = new Intent(MainActivity.this, HomeActivity.class);
-                            } else if (idTipoAcesso == 2) {
-                                // É Agente -> Vai para a (ex: TelaAgenteActivity.class)
-                                // homeIntent = new Intent(MainActivity.this, TelaAgenteActivity.class);
-                                // POR ENQUANTO, vamos mandar para a mesma tela de Lista
-                                homeIntent = new Intent(MainActivity.this, HomeActivity.class); // ✨ SUBSTITUA QUANDO TIVER A TELA DO AGENTE ✨
-                            } else if (idTipoAcesso == 3) {
-                                // É ADM -> Vai para a (ex: TelaAdmGeralActivity.class)
-                                // homeIntent = new Intent(MainActivity.this, TelaAdmGeralActivity.class);
-                                // POR ENQUANTO, vamos mandar para a mesma tela de Lista
-                                homeIntent = new Intent(MainActivity.this, HomeActivity.class); // ✨ SUBSTITUA QUANDO TIVER A TELA DO ADM ✨
-                            } else {
-                                // Caso desconhecido
-                                Toast.makeText(MainActivity.this, "Tipo de acesso desconhecido: " + idTipoAcesso, Toast.LENGTH_LONG).show();
-                                return;
-                            }
-
-                            // 4. Executa a navegação
+                            Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
                             homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(homeIntent);
-                            finish(); // Fecha a MainActivity
+                            finish();
 
                         } else {
-                            // Se os dados não vieram
                             Log.e(TAG, "Erro: Dados do usuário (ID, Nome ou Nível) não recebidos na resposta do login!");
                             Toast.makeText(MainActivity.this, "Erro ao obter dados completos do usuário.", Toast.LENGTH_LONG).show();
                         }
-                        // --- Fim da nova lógica ---
-
-                    } else { // Falha de negócio (senha errada, etc.)
-                        Toast.makeText(MainActivity.this, "Erro: " + loginResponse.getMessage(), Toast.LENGTH_LONG).show();
+                    } else {
+                        // ==========================================================
+                        // ✨ AQUI ESTÁ A SUA CORREÇÃO ✨
+                        // ==========================================================
+                        // A API respondeu, mas o login falhou (isSuccess() == false).
+                        // Exibimos a mensagem padrão que você pediu.
+                        Toast.makeText(MainActivity.this, "Login ou senha incorreto!", Toast.LENGTH_LONG).show();
                     }
-                } else { // Erro do servidor (4xx, 5xx)
-                    // ... (seu código de erro 4xx/5xx continua igual) ...
+                } else {
+                    // ==========================================================
+                    // ✨ AQUI ESTÁ A SUA CORREÇÃO (Parte 2) ✨
+                    // ==========================================================
+                    // Erro de servidor (401, 404, etc.) também deve ser tratado como login incorreto.
+                    Toast.makeText(MainActivity.this, "Usuário ou senha inválidos. Por favor, tente novamente", Toast.LENGTH_LONG).show();
                 }
             }
 

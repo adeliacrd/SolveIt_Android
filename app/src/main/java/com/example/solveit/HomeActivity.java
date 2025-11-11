@@ -112,8 +112,10 @@ public class HomeActivity extends AppCompatActivity {
         iconConfig.setVisibility(idTipoAcessoLogado == 3 ? View.VISIBLE : View.GONE);
         iconConfig.setOnClickListener(v -> Toast.makeText(this, "Configurações (ADM) clicado!", Toast.LENGTH_SHORT).show());
         iconAdd.setOnClickListener(v -> startActivity(new Intent(this, AberturaChamadoActivity.class)));
-        iconNotificacoes.setOnClickListener(v -> Toast.makeText(this, "Notificações clicado!", Toast.LENGTH_SHORT).show());
-        iconPerfil.setOnClickListener(v -> Toast.makeText(this, "Perfil clicado!", Toast.LENGTH_SHORT).show());
+// ✨ Linha NOVA E CORRETA ✨
+        iconNotificacoes.setOnClickListener(v -> startActivity(new Intent(this, NotificacoesActivity.class)));        // ✨ Linha NOVA E CORRETA ✨
+        iconPerfil.setOnClickListener(v -> startActivity(new Intent(this, PerfilActivity.class)));
+
     }
 
     private void prepararTelaAdm() {

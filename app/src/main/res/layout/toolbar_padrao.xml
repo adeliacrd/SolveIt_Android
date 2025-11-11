@@ -6,83 +6,88 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:background="@color/solveit_azul_primario"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     android:elevation="4dp"
-    app:contentInsetStart="0dp"
-    app:contentInsetEnd="0dp">
+    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-        <!-- 1. Botão de Voltar (Seta) -->
+        <!-- BOTÃO DE VOLTAR (OPCIONAL, CONTROLE VIA JAVA) -->
         <ImageButton
-            android:id="@+id/toolbar_back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Voltar"
-            android:paddingStart="16dp"
-            android:paddingEnd="8dp"
+            android:id="@+id/btn_voltar_toolbar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/ic_arrow_back"
-            app:tint="@android:color/white"
-            android:visibility="gone" />
+            android:contentDescription="Voltar"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="center"
+            android:visibility="gone" /> <!-- Começa invisível -->
 
-        <!-- 2. Logo "SolveIT" (permanece aqui, mas vamos escondê-lo na tela de perfil) -->
-        <ImageView
-            android:id="@+id/toolbar_logo"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_toEndOf="@id/toolbar_back_button"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_solveit_logo"
-            android:adjustViewBounds="true"
-            android:contentDescription="Logo SolveIT"/>
-
-        <!-- 3. TÍTULO DA TELA (NOVO!) - Centralizado e invisível por padrão -->
+        <!-- TÍTULO DA TOOLBAR -->
         <TextView
-            android:id="@+id/toolbar_title"
-            android:layout_width="wrap_content"
+            android:id="@+id/titulo_toolbar"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Título"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:text="Seu Perfil"
             android:textColor="@android:color/white"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:visibility="gone" /> <!-- COMEÇA INVISÍVEL -->
+            android:textStyle="bold" />
 
-        <!-- 4. Ícones da Direita -->
+        <!-- ÍCONES À DIREITA (SE NECESSÁRIO) -->
         <LinearLayout
-            android:id="@+id/toolbar_icons_container"
+            android:id="@+id/container_icones_toolbar"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="end|center_vertical">
 
-            <!-- Ícones de Adicionar, Notificações e Perfil... -->
+            <!--
+            =============================================================
+            AQUI ESTÁ A CORREÇÃO: A LINHA 'style' FOI REMOVIDA E OS
+            ATRIBUTOS FORAM COLOCADOS DIRETAMENTE NOS BOTÕES.
+            =============================================================
+            -->
+
+            <!-- Ícone de Configurações -->
             <ImageButton
-                android:id="@+id/toolbar_icon_add"
-                style="@style/ToolbarImageButton"
-                android:contentDescription="Adicionar"
+                android:id="@+id/icon_config_toolbar"
+                android:src="@drawable/ic_settings"
+                android:contentDescription="Configurações"
+                android:visibility="gone"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="center"
+                android:background="?attr/selectableItemBackgroundBorderless" />
+
+            <!-- Ícone de Adicionar -->
+            <ImageButton
+                android:id="@+id/icon_add_toolbar"
                 android:src="@drawable/ic_add_circle_outline_white"
-                app:tint="@android:color/white" />
+                android:contentDescription="Adicionar"
+                android:visibility="gone"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="center"
+                android:background="?attr/selectableItemBackgroundBorderless" />
 
+            <!-- Ícone de Notificações -->
             <ImageButton
-                android:id="@+id/toolbar_icon_notifications"
-                style="@style/ToolbarImageButton"
-                android:contentDescription="Notificações"
+                android:id="@+id/icon_notificacoes_toolbar"
                 android:src="@drawable/notifications"
-                app:tint="@android:color/white" />
+                android:contentDescription="Notificações"
+                android:visibility="gone"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="center"
+                android:background="?attr/selectableItemBackgroundBorderless" />
 
-            <ImageButton
-                android:id="@+id/toolbar_icon_profile"
-                style="@style/ToolbarImageButton"
-                android:contentDescription="Perfil"
-                android:src="@drawable/ic_person_white"
-                app:tint="@android:color/white" />
         </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
+
 </androidx.appcompat.widget.Toolbar>
