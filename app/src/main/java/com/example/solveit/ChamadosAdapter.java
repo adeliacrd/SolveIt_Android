@@ -1,36 +1,40 @@
 package com.example.solveit;
 
 import android.content.Context;
-import android.graphics.Color; // Importe a classe Color
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat; // Importe ContextCompat
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.solveit.api.ChamadoDTO; // Importe seu ChamadoDTO
+import com.example.solveit.api.ChamadoDTO;
 
 import java.util.List;
-import android.graphics.drawable.GradientDrawable;
 
 public class ChamadosAdapter extends RecyclerView.Adapter<ChamadosAdapter.ChamadoViewHolder> {
 
-    private List<ChamadoDTO> chamadosList;
-    private Context context;
-    private OnItemClickListener listener;
+    private final List<ChamadoDTO> chamadosList;
+    private final Context context;
+    private OnItemClickListener listener; // A interface para o clique
 
+    // =========================================================================
+    // ✨ MELHORIA: A interface agora passa o objeto DTO inteiro. ✨
+    // Isso dá mais flexibilidade para a Activity, que não precisará buscar o
+    // chamado novamente na lista.
+    // =========================================================================
     public interface OnItemClickListener {
-        void onItemClick(int idChamado);
+        void onItemClick(ChamadoDTO chamado); // Em vez de apenas o ID, passamos o objeto todo
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 
-    // Construtor (já estava correto)
+    // Construtor
     public ChamadosAdapter(Context context, List<ChamadoDTO> chamadosList) {
         this.context = context;
         this.chamadosList = chamadosList;
@@ -39,7 +43,6 @@ public class ChamadosAdapter extends RecyclerView.Adapter<ChamadosAdapter.Chamad
     @NonNull
     @Override
     public ChamadoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // ✨ CORREÇÃO AQUI: Infla o layout correto do ADM ✨
         View view = LayoutInflater.from(context).inflate(R.layout.item_chamado_adm, parent, false);
         return new ChamadoViewHolder(view);
     }
@@ -48,16 +51,14 @@ public class ChamadosAdapter extends RecyclerView.Adapter<ChamadosAdapter.Chamad
     public void onBindViewHolder(@NonNull ChamadoViewHolder holder, int position) {
         ChamadoDTO chamado = chamadosList.get(position);
 
-        // Preenche os TextViews com os dados do chamado
-        // (A linha 55, que quebrava, era uma destas)
         holder.tvId.setText(String.valueOf(chamado.getId_chamado()));
         holder.tvTitulo.setText(chamado.getTitulo());
         holder.tvPrioridade.setText(chamado.getDesc_prioridade());
         holder.tvStatus.setText(chamado.getDesc_status());
 
-        // Lógica de Cor (já estava correta)
+        // Sua lógica de cor, que já está perfeita, continua aqui
         int corFundo;
-        switch (chamado.getDesc_prioridade().toLowerCase()) { // Usando toLowerCase() por segurança
+        switch (chamado.getDesc_prioridade().toLowerCase()) {
             case "urgente":
                 corFundo = ContextCompat.getColor(context, R.color.prioridade_urgente);
                 break;
@@ -76,11 +77,7 @@ public class ChamadosAdapter extends RecyclerView.Adapter<ChamadosAdapter.Chamad
                 break;
         }
 
-        // 2. Pega o "molde" (bg_rounded_tag.xml) do TextView
-        // Precisamos importar android.graphics.drawable.GradientDrawable
         GradientDrawable background = (GradientDrawable) holder.tvPrioridade.getBackground();
-
-        // 3. Pinta o "molde" com a cor correta
         background.setColor(corFundo);
     }
 
@@ -89,30 +86,32 @@ public class ChamadosAdapter extends RecyclerView.Adapter<ChamadosAdapter.Chamad
         return chamadosList.size();
     }
 
-    // Método para atualizar a lista (já estava correto)
     public void updateChamados(List<ChamadoDTO> novosChamados) {
         this.chamadosList.clear();
         this.chamadosList.addAll(novosChamados);
         notifyDataSetChanged();
     }
 
-    // ViewHolder que "segura" as Views de cada linha
+    // ViewHolder
     public class ChamadoViewHolder extends RecyclerView.ViewHolder {
-        // ✨ Garante que os nomes das variáveis batem com os IDs do XML ✨
         TextView tvId, tvTitulo, tvPrioridade, tvStatus;
 
         public ChamadoViewHolder(@NonNull View itemView) {
             super(itemView);
-            // ✨ Garante que os IDs R.id.* batem com o arquivo item_chamado_adm.xml ✨
             tvId = itemView.findViewById(R.id.tv_item_id);
             tvTitulo = itemView.findViewById(R.id.tv_item_titulo);
             tvPrioridade = itemView.findViewById(R.id.tv_item_prioridade);
             tvStatus = itemView.findViewById(R.id.tv_item_status);
 
-            // Configura o clique no item da lista
+            // =========================================================================
+            // ✨ SEU CÓDIGO DE CLIQUE, AGORA USANDO A INTERFACE MELHORADA ✨
+            // =========================================================================
             itemView.setOnClickListener(v -> {
-                if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    listener.onItemClick(chamadosList.get(getAdapterPosition()).getId_chamado());
+                int position = getAdapterPosition();
+                // Verifica se o listener não é nulo e se a posição é válida
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    // Passa o objeto ChamadoDTO inteiro da posição clicada
+                    listener.onItemClick(chamadosList.get(position));
                 }
             });
         }

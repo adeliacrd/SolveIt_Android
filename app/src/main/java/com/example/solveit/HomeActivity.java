@@ -88,10 +88,20 @@ public class HomeActivity extends AppCompatActivity {
         chamadosAdapter = new ChamadosAdapter(this, new ArrayList<>());
         recyclerViewChamados.setAdapter(chamadosAdapter);
 
-        chamadosAdapter.setOnItemClickListener(idChamado -> {
-            Toast.makeText(this, "Chamado #" + idChamado + " clicado!", Toast.LENGTH_SHORT).show();
-            // (Aqui abriremos a tela de Detalhes)
+        chamadosAdapter.setOnItemClickListener(chamadoClicado -> {
+            // PASSO 3: MUDANÇA DE DESTINO
+            // A Intent agora aponta para a nova tela que criamos.
+            Intent intent = new Intent(HomeActivity.this, ConversaChamadoActivity.class);
+
+            // Por enquanto, vamos enviar o ID do chamado. A nova tela usará esse ID
+            // para buscar todos os detalhes da API no futuro.
+            intent.putExtra("CHAMADO_ID", chamadoClicado.getId_chamado());
+
+            // Inicia a nova tela
+            startActivity(intent);
         });
+
+
 
         // --- 6. A MÁGICA: Decide o layout com base no acesso ---
         if (idTipoAcessoLogado == 3) { // 3 = ADM

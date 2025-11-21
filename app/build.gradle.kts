@@ -65,5 +65,7 @@ dependencies {
     // Glide - Biblioteca poderosa para carregamento e manipulação de imagens
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
-    // ... (As dependências do Firebase foram removidas daqui.)
+    implementation("com.android.volley:volley:1.2.1")
+
+
 }

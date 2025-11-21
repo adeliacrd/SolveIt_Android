@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F2F5"
+    android:orientation="vertical"
+    tools:context=".ConversaChamadoActivity">
+
+    <!--
+        1. BARRA SUPERIOR (TOOLBAR)
+        Usa o layout genérico e reutilizável. O título "Informações" e a seta de voltar
+        são configurados no código Java desta Activity.
+    -->
+    <include layout="@layout/toolbar_padrao" />
+
+    <!--
+        2. CONTEÚDO PRINCIPAL ROLÁVEL
+        O layout_weight="1" faz esta seção ocupar todo o espaço vertical disponível,
+        empurrando a caixa de resposta e os botões para baixo.
+    -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Bloco de Cabeçalho com informações do chamado -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/tv_conversa_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold"
+                    tools:text="Chamado (ID 08)" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_conversa_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/tag_background"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        tools:backgroundTint="#27AE60"
+                        tools:text="Em Atendimento" />
+
+                    <TextView
+                        android:id="@+id/tv_conversa_prioridade"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/tag_background"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold"
+                        tools:backgroundTint="#E74C3C"
+                        tools:text="Urgente" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_conversa_titulo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Título do chamado"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="#555555" />
+
+                <TextView
+                    android:id="@+id/tv_conversa_titulo_valor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    tools:text="Problema na impressora do 2º andar" />
+
+                <TextView
+                    android:id="@+id/tv_conversa_solicitante"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:drawableStart="@drawable/ic_person"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                    tools:text="Solicitante: NomeUsuário\nnomeusuario@nomeempresa.com" />
+
+                <TextView
+                    android:id="@+id/tv_conversa_agente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:drawableStart="@drawable/ic_support_agent"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                    tools:text="Agente: NomeAgente" />
+
+            </LinearLayout>
+
+            <!-- Lista de Mensagens -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_mensagens"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:paddingVertical="8dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_mensagem" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!--
+        3. SEÇÃO DE RESPOSTA
+        Fica fora do ScrollView para estar sempre visível.
+    -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_responder_iniciais"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/circle_background"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            tools:text="NA" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Responder"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/et_responder_mensagem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/edittext_background"
+                android:gravity="top"
+                android:hint="Digite sua mensagem aqui..."
+                android:inputType="textMultiLine"
+                android:minHeight="80dp"
+                android:padding="10dp" />
+
+            <TextView
+                android:id="@+id/tv_anexar_arquivo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Para anexar arquivos, clique aqui"
+                android:textColor="#666666"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <!--
+        4. BARRA DE AÇÕES INFERIOR
+        Contém os botões principais.
+    -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@android:color/white"
+        android:elevation="4dp"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <Button
+            android:id="@+id/btn_concluido"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Concluído" />
+
+        <Button
+            android:id="@+id/btn_cancelar"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:text="Cancelar" />
+
+        <Button
+            android:id="@+id/btn_encerrar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:text="Encerrar"
+            app:backgroundTint="#666666" />
+    </LinearLayout>
+
+</LinearLayout>

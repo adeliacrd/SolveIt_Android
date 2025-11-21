@@ -9,13 +9,16 @@
     tools:context=".PerfilActivity">
 
     <!-- Toolbar Padrão (Sem alterações) -->
+
+    <!-- Conteúdo com Rolagem (Sem alterações) -->
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <include layout="@layout/toolbar_padrao" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Conteúdo com Rolagem (Sem alterações) -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -45,14 +45,14 @@
         android:background="@drawable/borda_edittext"/>
 
     <TextView
-    android:id="@+id/tv_item_status"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_weight="1.2"
-    android:text="Aberto"
-    android:gravity="end"
-    android:textSize="12sp"
-    android:textColor="@color/solveit_texto_secundario"
-    android:lines="1"
-    android:ellipsize="end"/>
+        android:id="@+id/tv_item_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.2"
+        android:text="Aberto"
+        android:gravity="end"
+        android:textSize="12sp"
+        android:textColor="@color/solveit_texto_secundario"
+        android:lines="1"
+        android:ellipsize="end"/>
 </LinearLayout>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp">
+
+    <!-- Círculo com as Iniciais (Ex: NC, NA) -->
+    <TextView
+        android:id="@+id/tv_mensagem_iniciais"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/circle_background"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:text="NC" />
+
+    <!-- Container para o conteúdo da mensagem -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="12dp"
+        android:padding="12dp"
+        android:background="@drawable/message_bubble_background">
+
+        <!-- Cabeçalho da Mensagem (Nome e Data) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_mensagem_nome_usuario"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                tools:text="NomeCliente" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="  |  "
+                android:textColor="#888888"/>
+
+            <TextView
+                android:id="@+id/tv_mensagem_tipo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                tools:text="Descrição" />
+
+            <TextView
+                android:id="@+id/tv_mensagem_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                tools:text="29/04/25 às 16h32" />
+
+        </LinearLayout>
+
+        <!-- Texto da Mensagem -->
+        <TextView
+            android:id="@+id/tv_mensagem_texto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@android:color/black"
+            tools:text="Mensagem ou descrição da interação entra aqui. Pode ter várias linhas de texto." />
+
+    </LinearLayout>
+
+</LinearLayout>

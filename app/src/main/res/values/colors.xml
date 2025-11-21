@@ -22,4 +22,6 @@
     <!-- COR ADICIONADA PARA AS ABAS DO TABLAYOUT -->
     <color name="white_transparente_70">#B3FFFFFF</color> <!-- Branco com 70% de opacidade -->
 
+    <color name="azul_link">#007BFF</color>
+
 </resources>
