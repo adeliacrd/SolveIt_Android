@@ -11,7 +11,8 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.view.View; // << CORREÇÃO: Usar android.view.View
+import android.view.View;
+import android.widget.Button; // ✅ 1. IMPORT DO BOTÃO
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,11 +28,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class ConversaChamadoActivity extends AppCompatActivity {
 
     // Variáveis para os componentes visuais
     private TextView tvChamadoId, tvStatus, tvPrioridade, tvTituloValor, tvSolicitante, tvAgente, tvAnexarArquivo;
+    private Button btnEditarChamado; // ✅ 2. DECLARAÇÃO DO BOTÃO
     private RecyclerView rvMensagens;
 
     // Lançador para o seletor de arquivos
@@ -53,7 +54,6 @@ public class ConversaChamadoActivity extends AppCompatActivity {
                             Toast.makeText(this, "Arquivo selecionado: " + arquivoUri.getPath(), Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        // CORREÇÃO: LENGTH_SHORT em vez de LENGT_SHORT
                         Toast.makeText(this, "Nenhum arquivo selecionado.", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -66,10 +66,6 @@ public class ConversaChamadoActivity extends AppCompatActivity {
         configurarLinkAnexo();
     }
 
-    // =====================================================================================
-    //  ✨ CORREÇÃO: Todos os métodos que estavam faltando foram adicionados de volta abaixo ✨
-    // =====================================================================================
-
     private void conectarComponentes() {
         tvChamadoId = findViewById(R.id.tv_conversa_id);
         tvStatus = findViewById(R.id.tv_conversa_status);
@@ -79,28 +75,20 @@ public class ConversaChamadoActivity extends AppCompatActivity {
         tvAgente = findViewById(R.id.tv_conversa_agente);
         rvMensagens = findViewById(R.id.rv_mensagens);
         tvAnexarArquivo = findViewById(R.id.tv_anexar_arquivo);
+        btnEditarChamado = findViewById(R.id.btn_editar_chamado); // ✅ 3. CONEXÃO DO BOTÃO
     }
 
     private void configurarToolbar() {
-        // Encontra a Toolbar no layout
         Toolbar toolbar = findViewById(R.id.toolbar_padrao);
-
-        // ✨ PASSO 1: Define o título diretamente no componente Toolbar.
         toolbar.setTitle("Informações");
-
-        // ✨ PASSO 2: Agora sim, promove a Toolbar (já com o título) para ser a ActionBar oficial.
         setSupportActionBar(toolbar);
 
-        // ✨ PASSO 3: Adiciona o botão de "voltar" (seta) na ActionBar.
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        // ✨ PASSO 4: Define a ação de clique para o botão de voltar.
         toolbar.setNavigationOnClickListener(v -> finish());
     }
-
-
 
     private void preencherComDadosDeExemplo() {
         tvChamadoId.setText("Chamado (ID 08)");
@@ -112,6 +100,31 @@ public class ConversaChamadoActivity extends AppCompatActivity {
         tvAgente.setVisibility(View.VISIBLE);
         configurarTag(tvStatus, "Em Atendimento");
         configurarTag(tvPrioridade, "Urgente");
+
+        // =========================================================
+        // ✅ 4. LÓGICA DO BOTÃO "EDITAR"
+        // =========================================================
+        // Pega o status que foi definido acima
+        String statusAtual = tvStatus.getText().toString();
+
+        // Regra de exemplo: só mostra o botão se o status NÃO for "Concluído"
+        if (!"Concluído".equalsIgnoreCase(statusAtual) && !"Cancelado".equalsIgnoreCase(statusAtual)) {
+            // Torna o botão visível
+            btnEditarChamado.setVisibility(View.VISIBLE);
+
+            // Define a ação de clique
+            btnEditarChamado.setOnClickListener(v -> {
+                // Lógica para quando o botão for clicado
+                Toast.makeText(this, "Ação de editar chamado", Toast.LENGTH_SHORT).show();
+                // No futuro, aqui você abriria a tela de edição:
+                // Intent intent = new Intent(this, EdicaoChamadoActivity.class);
+                // startActivity(intent);
+            });
+        } else {
+            // Se o status for "Concluído" ou "Cancelado", o botão fica escondido
+            btnEditarChamado.setVisibility(View.GONE);
+        }
+        // =========================================================
     }
 
     private void configurarTag(TextView textView, String texto) {
@@ -142,7 +155,7 @@ public class ConversaChamadoActivity extends AppCompatActivity {
 
         ClickableSpan clickableSpan = new ClickableSpan() {
             @Override
-            public void onClick(View widget) { // << CORREÇÃO: Usar android.view.View
+            public void onClick(View widget) {
                 abrirSeletorDeArquivos();
             }
             @Override

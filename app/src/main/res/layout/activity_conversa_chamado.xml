@@ -77,6 +77,20 @@
                         android:textStyle="bold"
                         tools:backgroundTint="#E74C3C"
                         tools:text="Urgente" />
+
+                    <!-- ✅ BOTÃO DE EDITAR COM O NOVO ESTILO -->
+                    <!-- Fundo cinza sólido e texto branco -->
+                    <Button
+                        android:id="@+id/btn_editar_chamado"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="8dp"
+                        android:backgroundTint="#808080"
+                        android:text="Editar"
+                        android:textColor="@android:color/white"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
                 </LinearLayout>
 
                 <TextView

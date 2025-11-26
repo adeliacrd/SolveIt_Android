@@ -1,0 +1,30 @@
+* [33m9146d94[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m feat: Implementa tela de detalhes ao clicar em um chamado da lista
+* [33m601c37a[m Adiciona arquivos e ícones finais
+* [33m9fc1dcf[m feat: Adiciona tela de perfil de usuário com toolbar e ícones
+* [33m05e8f87[m feat: Adiciona tela de notificacoes
+* [33m021716e[m[33m ([m[1;31morigin/Teste_TelasJuntas[m[33m)[m Unifiquei as telas, mas ainda estou configurando (adicionando detalhes e consertando erros (chamado amarelo))
+* [33m94521b5[m PONTO DE RESTAURAÇÃO: Antes de unificar as telas Home
+* [33m59d5dfd[m Abertura de chamados conectado ao banco, e ajeitei a barra de cima que estava sobrepondo a barra de bateria. (Tem alterações de script de SQL)
+*   [33m7637b37[m Merge branch 'main' of https://github.com/adeliacrd/SolveIt_Android
+[32m|[m[33m\[m  
+[32m|[m * [33m58c2dcb[m[33m ([m[1;31morigin/main[m[33m)[m tela de notificação
+[32m|[m * [33mec27fae[m Adiciona tela de esqueci a senha e item de lista expansível
+[32m|[m *   [33m4b3d6ac[m Merge remote-tracking branch 'origin/master'
+[32m|[m [34m|[m[35m\[m  
+[32m|[m * [35m|[m [33m7f9dbe9[m chore: Atualiza arquivos de configuração do IDE
+* [35m|[m [35m|[m [33m73b2ba7[m Cadastro atualizado e adicionado ao SQL, criando usuários com sucesso! <!-- Scripts SQL para alteração local adicionado em uma pasta junto das config.properties -->
+* [35m|[m [35m|[m [33m10743bb[m Logins do banco configurados para melhor utilização em cada maquina.
+[35m|[m [35m|[m[35m/[m  
+[35m|[m[35m/[m[35m|[m   
+* [35m|[m [33m4bc9f29[m Banco e Barras superiores ajeitados.
+* [35m|[m [33m5f6ee23[m Banco de Dados Funcionando - Login e Cadastro
+[35m|[m[35m/[m  
+* [33m28bf1f7[m feat: Implementa spinner de prioridade customizado
+* [33m6b124db[m Versão final da tela de abertura de chamado com correções
+* [33m1874181[m Finaliza layout da lista e corrige cores do icone:wq
+* [33m83e3eba[m Feature: Refinamento completo da UI da tela de chamados
+* [33ma9372ac[m feat: Conclusão do visual da Abertura de Chamado (Layout, Validação e Ícone) e alterações no visual de Login, Registro e "Esqueci a senha".
+* [33m4bea04a[m Implementa Esqueci a Senha e atualiza telas de Login/Registro
+* [33m6041633[m ajusta tamanho e cor do texto no spinner na tela de registro
+* [33mcea6340[m Inicial commits of solve it project
+* [33m35e0290[m Inicial commits of solve it project
