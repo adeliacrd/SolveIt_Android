@@ -3,6 +3,6 @@
     android:shape="rectangle">
 
     <!-- O raio grande deixa o botão com cantos totalmente arredondados -->
-    <corners android:radius="20dp" />
+    <corners android:radius="10dp" />
 
 </shape>

@@ -9,6 +9,7 @@ import com.example.solveit.api.AbrirChamadoResponse;
 import com.example.solveit.api.CategoriaDTO;
 import com.example.solveit.api.ChamadoDTO;           // O "molde" da lista Mestre
 import com.example.solveit.api.ChamadoCompletoDTO; // O "molde" da tela de Detalhe
+import com.example.solveit.api.AtribuicaoResponse;
 
 // Imports do Java e Retrofit
 import java.util.List;
@@ -80,4 +81,11 @@ public interface ApiService {
 
     @GET("api/notificacoes") // ou o caminho exato da sua API de notificações
     Call<List<Notificacao>> getNotificacoes();
+
+    @FormUrlEncoded
+    @POST("api/atribuir") // O endereço que vai bater no backend
+    Call<AtribuicaoResponse> assumirChamado(
+            @Field("id_chamado") int idChamado,
+            @Field("id_usuario") int idUsuario
+    );
 }

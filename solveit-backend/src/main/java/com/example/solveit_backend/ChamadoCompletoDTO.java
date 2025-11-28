@@ -18,6 +18,7 @@ public class ChamadoCompletoDTO {
     private String nome_solicitante;
     private String nome_agente;
     private int id_usuario; // ✨ ESSENCIAL: ID DO CRIADOR DO CHAMADO
+    private Integer id_usuario_atribuido;
 
     // NOVOS CAMPOS
     private String email_solicitante;
@@ -37,6 +38,7 @@ public class ChamadoCompletoDTO {
                               String email_solicitante, String email_agente, // E-mails
                               int sla_horas, // SLA
                               int id_usuario, // ✨ ID DO CRIADOR (O MAIS IMPORTANTE) ✨
+                              Integer id_usuario_atribuido,
                               List<InteracaoDTO> timeline) { // Timeline
 
         this.id_chamado = id_chamado;
@@ -55,6 +57,7 @@ public class ChamadoCompletoDTO {
         this.email_agente = email_agente;
         this.sla_horas = sla_horas;
         this.id_usuario = id_usuario; // ✨ ATRIBUIÇÃO CORRETA
+        this.id_usuario_atribuido = id_usuario_atribuido;
         this.timeline = timeline;
     }
 
@@ -74,6 +77,7 @@ public class ChamadoCompletoDTO {
     public String getNome_solicitante() { return nome_solicitante; }
     public String getNome_agente() { return nome_agente; }
     public int getId_usuario() { return id_usuario; } // ✨ O GETTER FOI MANTIDO
+    public Integer getId_usuario_atribuido() { return id_usuario_atribuido; }
     public String getEmail_solicitante() { return email_solicitante; }
     public String getEmail_agente() { return email_agente; }
     public int getSla_horas() { return sla_horas; }
