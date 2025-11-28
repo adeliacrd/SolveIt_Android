@@ -1,6 +1,6 @@
 package com.example.solveit;
 
-// Imports básicos
+// Imports básicosimport android.content.Intent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -114,19 +114,19 @@ public class ConversaChamadoActivity extends AppCompatActivity {
             btnEditarChamado.setVisibility(View.VISIBLE);
 
             // =========================================================
-            // ✅ CORREÇÃO: Define a ação de clique para abrir a tela de edição
+            // Define a ação de clique para abrir a tela de edição
             // =========================================================
             btnEditarChamado.setOnClickListener(v -> {
-                // 1. Cria a intenção de abrir a nova tela EdicaoChamadoActivity
-                Intent intent = new Intent(ConversaChamadoActivity.this, EdicaoChamadoActivity.class);
+                // 1. ✅ CORREÇÃO: Cria a intenção de abrir a NOVA tela com abas
+                Intent intent = new Intent(ConversaChamadoActivity.this, AdminEdicaoActivity.class);
 
-                // 2. Coleta os dados da tela atual para enviar à tela de edição
+                // 2. Coleta os dados da tela atual para enviar à tela de edição (IMPORTANTE MANTER)
                 String tituloAtual = tvTituloValor.getText().toString();
                 String solicitanteCompleto = tvSolicitante.getText().toString();
                 // Pega apenas a primeira linha do texto do solicitante, que é o nome
                 String nomeSolicitante = solicitanteCompleto.split("\n")[0];
 
-                // 3. Adiciona os dados na "bagagem" da Intent
+                // 3. Adiciona os dados na "bagagem" da Intent (IMPORTANTE MANTER)
                 intent.putExtra("CHAMADO_TITULO", tituloAtual);
                 intent.putExtra("CHAMADO_SOLICITANTE", nomeSolicitante);
                 // Você pode adicionar mais dados que precise na tela de edição

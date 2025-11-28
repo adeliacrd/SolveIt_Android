@@ -54,6 +54,9 @@
         </activity> <!-- ✨ DECLARAÇÃO DA TELA DE PERFIL ADICIONADA ✨ -->
         <activity android:name=".PerfilActivity" />
         <activity android:name=".ConversaChamadoActivity" />
+
+        <activity android:name=".AdminEdicaoActivity" />
+
     </application>
 
 </manifest>
