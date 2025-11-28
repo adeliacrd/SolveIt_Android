@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:layout_marginBottom="1dp">
+
+    <LinearLayout
+    android:id="@+id/layout_cabecalho"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingVertical="12dp"
     android:paddingHorizontal="16dp"
     android:gravity="center_vertical"
-    android:background="@android:color/white">
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/tv_item_id"
@@ -23,7 +34,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2.5"
-        android:text="Título do chamado aqui"
+        android:text="Título do chamado"
         android:textSize="14sp"
         android:textColor="@color/black"
         android:lines="1"
@@ -45,14 +56,92 @@
         android:background="@drawable/borda_edittext"/>
 
     <TextView
-    android:id="@+id/tv_item_status"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_weight="1.2"
-    android:text="Aberto"
-    android:gravity="end"
-    android:textSize="12sp"
-    android:textColor="@color/solveit_texto_secundario"
-    android:lines="1"
-    android:ellipsize="end"/>
+        android:id="@+id/tv_item_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.2"
+        android:text="Aberto"
+        android:gravity="end"
+        android:textSize="14sp"
+        android:textColor="@color/solveit_texto_secundario"
+        android:lines="1"
+        android:ellipsize="end"/>
+</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_detalhes_expandidos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#E4EBF4"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_expandido_titulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Título Completo do Chamado"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="4dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/tv_expandido_solicitante"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                tools:text="Solicitante: Nome"
+                android:textSize="14sp"
+                android:textColor="#616161"/>
+
+            <TextView
+                android:id="@+id/tv_expandido_tempo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="0d 03h 45m"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:background="@drawable/borda_edittext"
+                app:backgroundTint="@color/prioridade_baixa"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_expandido_descricao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/borda_edittext"
+            app:backgroundTint="@android:color/white"
+            android:padding="12dp"
+            tools:text="Descrição detalhada..."
+            android:textColor="#424242"
+            android:textSize="14sp"
+            android:layout_marginBottom="16dp"/>
+
+        <Button
+            android:id="@+id/btn_ir_para_chamado"
+            android:layout_width="200dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_height="40dp"
+            android:text="Ir para o chamado"
+            android:textAllCaps="false"
+            android:background="@drawable/borda_edittext"
+            app:backgroundTint="@color/solveit_azul_primario"
+            android:textColor="@color/white"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0"/>
+    </LinearLayout>
 </LinearLayout>

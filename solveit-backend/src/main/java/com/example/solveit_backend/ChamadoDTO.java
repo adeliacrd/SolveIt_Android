@@ -7,8 +7,19 @@ public class ChamadoDTO {
     private String titulo;
     private String desc_prioridade;
     private String desc_status;
-    // Adicione mais campos se a sua tela de ADM precisar (ex: nome do usuário)
-    // private String nome_usuario;
+    private int id_usuario;
+    private Integer id_usuario_atribuido;
+
+    private String dt_atualizacao;
+    private String nota_avaliacao;
+    private String dt_avaliacao;
+
+    // ✨ NOVOS CAMPOS PARA A EXPANSÃO ✨
+    private String desc_chamado;     // Descrição completa
+    private String nome_solicitante; // Nome de quem abriu
+
+    // ✨ CAMPO DE CONTROLE DE UI (Não vem do banco) ✨
+    private boolean isExpanded = false; // Começa fechado
 
     // Construtor
     public ChamadoDTO(int id_chamado, String titulo, String desc_prioridade, String desc_status) {
@@ -23,4 +34,17 @@ public class ChamadoDTO {
     public String getTitulo() { return titulo; }
     public String getDesc_prioridade() { return desc_prioridade; }
     public String getDesc_status() { return desc_status; }
+    public int getId_usuario() {return id_usuario;}
+    public Integer getId_usuario_atribuido() {return id_usuario_atribuido;}
+    public String getDt_atualizacao() {return dt_atualizacao;}
+    public String getNota_avaliacao() {return nota_avaliacao;}
+    public String getDt_avaliacao() {return dt_avaliacao;}
+
+    // ✨ NOVOS GETTERS ✨
+    public String getDesc_chamado() { return desc_chamado; }
+    public String getNome_solicitante() { return nome_solicitante; }
+
+    // ✨ GETTER E SETTER PARA O ESTADO EXPANDIDO ✨
+    public boolean isExpanded() { return isExpanded; }
+    public void setExpanded(boolean expanded) { isExpanded = expanded; }
 }

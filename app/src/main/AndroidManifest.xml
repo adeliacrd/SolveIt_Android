@@ -47,6 +47,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".DetalheChamadoActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SolveIt.BlueStatusBar" />
+
 
         <!-- ✨ DECLARAÇÃO DA TELA DE PERFIL ADICIONADA ✨ -->
         <activity android:name=".PerfilActivity" />

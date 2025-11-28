@@ -1,5 +1,7 @@
 package com.example.solveit_backend;
 
+import java.util.List;
+
 // DTO para a tela de "Informações" (detalhe completo)
 public class ChamadoCompletoDTO {
     // Info do Chamado
@@ -16,6 +18,11 @@ public class ChamadoCompletoDTO {
     private String desc_categoria;
     private String nome_solicitante; // Nome do usuário que abriu
     private String nome_agente; // Nome do agente/adm atribuído (pode ser nulo)
+
+    private List<InteracaoDTO> timeline;
+
+    // Getters para a timeline
+    public List<InteracaoDTO> getTimeline() { return timeline; }
 
     // Construtor (Getters são necessários para o Gson)
     // (Um construtor completo é grande, podemos omitir para focar nos Getters,

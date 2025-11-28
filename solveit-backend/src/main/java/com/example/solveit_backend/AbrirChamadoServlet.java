@@ -13,96 +13,87 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class AbrirChamadoServlet extends HttpServlet {
 
+    // ==========================================================
+    // ✨ DTOs INTERNOS (CLASSES DE DADOS) ✨
+    // ==========================================================
+
     /**
-     * DTO (Molde) para a lista RESUMIDA de chamados (Tela Mestre).
-     * Contém apenas os 4 campos para a lista do ADM.
+     * DTO para uma única interação/mensagem na Timeline.
+     */
+    private static class InteracaoDTO {
+        private int id_interacoes;
+        private int id_chamado;
+        private int id_usuario;
+        private String nome_usuario; // Nome de quem enviou
+        private String mensagem;
+        private String dt_interacao;
+
+        public InteracaoDTO(int id_interacoes, int id_chamado, int id_usuario, String nome_usuario, String mensagem, String dt_interacao) {
+            this.id_interacoes = id_interacoes;
+            this.id_chamado = id_chamado;
+            this.id_usuario = id_usuario;
+            this.nome_usuario = nome_usuario;
+            this.mensagem = mensagem;
+            this.dt_interacao = dt_interacao;
+        }
+    }
+
+    /**
+     * DTO para a lista RESUMIDA de chamados (Tela Mestre/Listas).
      */
     private static class ChamadoDTO {
-        int id_chamado;
-        String titulo;
-        String desc_prioridade;
-        String desc_status;
-        int id_usuario;
+        int id_chamado; String titulo; String desc_prioridade; String desc_status;
+        int id_usuario; Integer id_usuario_atribuido;
+        String dt_atualizacao; String nota_avaliacao; String dt_avaliacao;
+        String desc_chamado; String nome_solicitante;
 
-        // Construtor usado no `doGet`
-        public ChamadoDTO(int id_chamado, String titulo, String desc_prioridade, String desc_status, int id_usuario) {
-            this.id_chamado = id_chamado;
-            this.titulo = titulo;
-            this.desc_prioridade = desc_prioridade;
-            this.desc_status = desc_status;
-            this.id_usuario = id_usuario;
+        public ChamadoDTO(int id, String t, String p, String s, int u, Integer a, String dta, String nota, String dtv, String desc, String nome) {
+            this.id_chamado = id; this.titulo = t; this.desc_prioridade = p; this.desc_status = s;
+            this.id_usuario = u; this.id_usuario_atribuido = a;
+            this.dt_atualizacao = dta; this.nota_avaliacao = nota; this.dt_avaliacao = dtv;
+            this.desc_chamado = desc; this.nome_solicitante = nome;
         }
-
-        // ✨ NOVO GETTER (Opcional para o backend, mas bom ter) ✨
-        public int getId_usuario() {return id_usuario;}
     }
 
     /**
-     * DTO (Molde) para a visão COMPLETA do chamado (Tela Detalhe).
-     * Contém todos os campos necessários para a tela de "Informações".
+     * DTO para a visão COMPLETA do chamado (Tela Detalhe).
      */
     private static class ChamadoCompletoDTO {
-        // Campos (Gson pode acessar campos privados de classes internas)
-        int id_chamado;
-        String titulo;
-        String desc_chamado;
-        String dt_abertura;
-        String dt_fechamento;
-        String email_contato;
-        String desc_prioridade;
-        String desc_status;
-        String desc_categoria;
-        String nome_solicitante;
-        String nome_agente;
+        int id_chamado; String titulo; String desc_chamado; String dt_abertura;
+        String dt_fechamento; String email_contato; String desc_prioridade;
+        String desc_status; String desc_categoria; String nome_solicitante; String nome_agente;
+        List<InteracaoDTO> timeline; // Lista de mensagens
 
-        // Construtor usado no `doGet`
-        public ChamadoCompletoDTO(int id_chamado, String titulo, String desc_chamado,
-                                  String dt_abertura, String dt_fechamento, String email_contato,
-                                  String desc_prioridade, String desc_status, String desc_categoria,
-                                  String nome_solicitante, String nome_agente) {
-            this.id_chamado = id_chamado;
-            this.titulo = titulo;
-            this.desc_chamado = desc_chamado;
-            this.dt_abertura = dt_abertura;
-            this.dt_fechamento = dt_fechamento;
-            this.email_contato = email_contato;
-            this.desc_prioridade = desc_prioridade;
-            this.desc_status = desc_status;
-            this.desc_categoria = desc_categoria;
-            this.nome_solicitante = nome_solicitante;
-            this.nome_agente = nome_agente;
+        public ChamadoCompletoDTO(int id, String t, String d, String da, String df, String e,
+                                  String dp, String ds, String dc, String ns, String na,
+                                  List<InteracaoDTO> tl) {
+            id_chamado = id; titulo = t; desc_chamado = d; dt_abertura = da; dt_fechamento = df; email_contato = e;
+            desc_prioridade = dp; desc_status = ds; desc_categoria = dc; nome_solicitante = ns; nome_agente = na;
+            timeline = tl;
         }
     }
 
-    // Classe interna para a resposta JSON (sem alterações)
+    // Resposta JSON padrão para o doPost
     private static class AbrirChamadoResponse {
-        boolean success;
-        String message;
-        Integer id_chamado;
-
-        public AbrirChamadoResponse(boolean success, String message, Integer id_chamado) {
-            this.success = success;
-            this.message = message;
-            this.id_chamado = id_chamado;
-        }
-        public AbrirChamadoResponse(boolean success, String message) {
-            this(success, message, null);
-        }
+        boolean success; String message; Integer id_chamado;
+        public AbrirChamadoResponse(boolean s, String m, Integer id) { success = s; message = m; id_chamado = id; }
+        public AbrirChamadoResponse(boolean s, String m) { this(s, m, null); }
     }
 
+    // ==========================================================
+    // MÉTODO doPost (CRIAR NOVO CHAMADO)
+    // ==========================================================
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Gson gson = new Gson();
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        // --- 1. Leitura dos Parâmetros (sem alterações) ---
         String titulo = request.getParameter("titulo");
         String idUsuarioAberturaStr = request.getParameter("id_usuario_abertura");
         String prioridadeTexto = request.getParameter("prioridade");
@@ -110,20 +101,17 @@ public class AbrirChamadoServlet extends HttpServlet {
         String email = request.getParameter("email");
         String descricao = request.getParameter("descricao");
 
-        // --- 2. Validação dos Parâmetros (sem alterações) ---
         if (titulo == null || titulo.trim().isEmpty() ||
                 idUsuarioAberturaStr == null || idUsuarioAberturaStr.trim().isEmpty() ||
                 prioridadeTexto == null || prioridadeTexto.equals("Selecione") ||
                 idCategoriaStr == null || idCategoriaStr.trim().isEmpty() ||
                 email == null || email.trim().isEmpty() ||
                 descricao == null || descricao.trim().isEmpty()) {
-
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write(gson.toJson(new AbrirChamadoResponse(false, "Todos os campos marcados com * são obrigatórios.")));
             return;
         }
 
-        // --- 3. Lógica de "Tradução" da Prioridade (sem alterações) ---
         int idCategoria = -1;
         int idUsuarioAbertura = -1;
         int idPrioridade = -1;
@@ -146,10 +134,8 @@ public class AbrirChamadoServlet extends HttpServlet {
             return;
         }
 
-        // --- 4. Lógica de Inserção no Banco (COM A COLUNA E VALOR CORRIGIDOS) ---
-
-        // ✨ CORREÇÃO AQUI: 'st_chamado' -> 'id_status' E 'Novo' -> 1 ✨
-        String sql = "INSERT INTO Chamados (titulo, id_usuario, id_prioridade, email_contato, desc_chamado, id_categoria, dt_abertura, id_status) VALUES (?, ?, ?, ?, ?, ?, GETDATE(), 1)";
+        // INSERT inicial: id_status = 1 (Novo/Aberto), dt_atualizacao = dt_abertura
+        String sql = "INSERT INTO Chamados (titulo, id_usuario, id_prioridade, email_contato, desc_chamado, id_categoria, dt_abertura, dt_atualizacao, id_status) VALUES (?, ?, ?, ?, ?, ?, GETDATE(), GETDATE(), 1)";
 
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -158,13 +144,9 @@ public class AbrirChamadoServlet extends HttpServlet {
 
         try {
             conn = DriverManager.getConnection(
-                    DatabaseConfig.getDbUrl(),
-                    DatabaseConfig.getDbUsername(),
-                    DatabaseConfig.getDbPassword()
-            );
+                    DatabaseConfig.getDbUrl(), DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
             pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            // Define os parâmetros (a ordem não muda, pois os últimos 2 valores são fixos)
             pstmt.setString(1, titulo);
             pstmt.setInt(2, idUsuarioAbertura);
             pstmt.setInt(3, idPrioridade);
@@ -181,9 +163,8 @@ public class AbrirChamadoServlet extends HttpServlet {
                 response.getWriter().write(gson.toJson(new AbrirChamadoResponse(true, "Chamado aberto com sucesso!", idChamadoGerado)));
             } else {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write(gson.toJson(new AbrirChamadoResponse(false, "Falha ao inserir chamado no banco de dados (0 linhas afetadas).")));
+                response.getWriter().write(gson.toJson(new AbrirChamadoResponse(false, "Falha ao inserir chamado no banco de dados.")));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -199,20 +180,22 @@ public class AbrirChamadoServlet extends HttpServlet {
         }
     }
 
+    // ==========================================================
+    // MÉTODO doGet (BUSCAR LISTA OU DETALHE)
+    // ==========================================================
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Gson gson = new Gson();
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        // Tenta pegar o ID da URL (ex: /api/chamados?id_chamado=1)
         String idChamadoParam = request.getParameter("id_chamado");
 
         if (idChamadoParam == null || idChamadoParam.isEmpty()) {
-            // --- CASO 1: NENHUM ID FOI PASSADO. RETORNA A LISTA SIMPLES. ---
+            // Se não tem ID, busca a lista
             buscarListaDeChamados(response, gson);
         } else {
-            // --- CASO 2: UM ID FOI PASSADO. RETORNA OS DETALHES DAQUELE CHAMADO. ---
+            // Se tem ID, busca os detalhes
             try {
                 int idChamado = Integer.parseInt(idChamadoParam);
                 buscarChamadoPorId(response, gson, idChamado);
@@ -229,15 +212,20 @@ public class AbrirChamadoServlet extends HttpServlet {
     private void buscarListaDeChamados(HttpServletResponse response, Gson gson) throws IOException {
         List<ChamadoDTO> chamados = new ArrayList<>();
 
-        // Query SIMPLES com JOINs para a lista
-        // ✨ ATENÇÃO: Confirme se os nomes das tabelas 'Prioridade' e 'Status' estão corretos ✨
+        // ✨ QUERY CORRIGIDA E ATUALIZADA COM OS NOVOS CAMPOS ✨
         String sql = "SELECT " +
-                "  c.id_chamado, c.titulo, c.id_usuario, " +
-                "  p.desc_prioridade, s.desc_status " +
+                "  c.id_chamado, c.titulo, c.id_usuario, c.nota_avaliacao, c.desc_chamado, " +
+                "  CONVERT(varchar(20), c.dt_avaliacao, 103) AS dt_avaliacao_txt, " +
+                "  CONVERT(varchar(20), c.dt_atualizacao, 120) AS dt_atualizacao_txt, " +
+                "  p.desc_prioridade, s.desc_status, " +
+                "  atrib.id_usuario_atribuido, " + // Alias do LEFT JOIN
+                "  u.nome_usuario AS nome_solicitante " +
                 "FROM Chamados c " +
-                "JOIN Prioridades p ON c.id_prioridade = p.niv_prioridade " +
-                "JOIN StatusChamado s ON c.id_status = s.id_status " +
-                "ORDER BY c.id_chamado DESC";
+                "JOIN Prioridades p ON c.id_prioridade = p.niv_prioridade " + // Nome da tabela: Prioridades
+                "JOIN StatusChamado s ON c.id_status = s.id_status " + // Nome da tabela: StatusChamado
+                "JOIN Usuarios u ON c.id_usuario = u.id_usuario " + // JOIN para pegar nome do solicitante
+                "LEFT JOIN AtribuicoesChamado atrib ON c.id_chamado = atrib.id_chamado " +
+                "ORDER BY c.dt_atualizacao DESC";
 
         try (Connection conn = DriverManager.getConnection(
                 DatabaseConfig.getDbUrl(), DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
@@ -245,21 +233,33 @@ public class AbrirChamadoServlet extends HttpServlet {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
+                Integer idAgente = (Integer) rs.getObject("id_usuario_atribuido");
+                String nota = rs.getString("nota_avaliacao");
+                String dataAvaliacao = rs.getString("dt_avaliacao_txt");
+                String dataAtualizacao = rs.getString("dt_atualizacao_txt");
+                String descricao = rs.getString("desc_chamado");
+                String nomeSolicitante = rs.getString("nome_solicitante");
+
                 chamados.add(new ChamadoDTO(
                         rs.getInt("id_chamado"),
                         rs.getString("titulo"),
                         rs.getString("desc_prioridade"),
                         rs.getString("desc_status"),
-                        rs.getInt("id_usuario")
+                        rs.getInt("id_usuario"),
+                        idAgente,
+                        dataAtualizacao,
+                        nota,
+                        dataAvaliacao,
+                        descricao,
+                        nomeSolicitante
                 ));
             }
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write(gson.toJson(chamados));
-
         } catch (SQLException e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"success\": false, \"message\": \"Erro ao buscar lista de chamados: " + e.getMessage() + "\"}");
+            response.getWriter().write("{\"success\": false, \"message\": \"Erro SQL ao buscar lista: " + e.getMessage() + "\"}");
         }
     }
 
@@ -268,8 +268,9 @@ public class AbrirChamadoServlet extends HttpServlet {
      */
     private void buscarChamadoPorId(HttpServletResponse response, Gson gson, int idChamado) throws IOException {
 
-        // Query COMPLEXA com todos os JOINs
-        // ✨ ATENÇÃO: Confirme os nomes das tabelas (Prioridade, Status, Categoria, Usuarios, atribuicao_chamado) ✨
+        List<InteracaoDTO> timeline = buscarTimelineDoChamado(idChamado);
+
+        // ✨ Query corrigida com os nomes das tabelas corretos ✨
         String sql = "SELECT " +
                 "  c.id_chamado, c.titulo, c.desc_chamado, CONVERT(varchar, c.dt_abertura, 103) AS dt_abertura, " +
                 "  CONVERT(varchar, c.dt_fechamento, 103) AS dt_fechamento, c.email_contato, " +
@@ -279,12 +280,12 @@ public class AbrirChamadoServlet extends HttpServlet {
                 "  u_sol.nome_usuario AS nome_solicitante, " +
                 "  u_agente.nome_usuario AS nome_agente " +
                 "FROM Chamados c " +
-                "JOIN Prioridade p ON c.id_prioridade = p.id_prioridade " +
-                "JOIN Status s ON c.id_status = s.id_status " +
-                "JOIN Categoria cat ON c.id_categoria = cat.id_categoria " +
-                "JOIN Usuarios u_sol ON c.id_usuario = u_sol.id_usuario " + // Join para o solicitante
-                "LEFT JOIN atribuicao_chamado atrib ON c.id_chamado = atrib.id_chamado " + // LEFT JOIN caso não haja agente
-                "LEFT JOIN Usuarios u_agente ON atrib.id_usuario = u_agente.id_usuario " + // Join para o agente
+                "JOIN Prioridades p ON c.id_prioridade = p.niv_prioridade " +
+                "JOIN StatusChamado s ON c.id_status = s.id_status " +
+                "JOIN Categorias cat ON c.id_categoria = cat.id_categoria " +
+                "JOIN Usuarios u_sol ON c.id_usuario = u_sol.id_usuario " +
+                "LEFT JOIN AtribuicoesChamado atrib ON c.id_chamado = atrib.id_chamado " +
+                "LEFT JOIN Usuarios u_agente ON atrib.id_usuario_atribuido = u_agente.id_usuario " +
                 "WHERE c.id_chamado = ?";
 
         try (Connection conn = DriverManager.getConnection(
@@ -295,33 +296,62 @@ public class AbrirChamadoServlet extends HttpServlet {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    // Monta o objeto DTO completo
                     ChamadoCompletoDTO chamado = new ChamadoCompletoDTO(
-                            rs.getInt("id_chamado"),
-                            rs.getString("titulo"),
-                            rs.getString("desc_chamado"),
-                            rs.getString("dt_abertura"),
-                            rs.getString("dt_fechamento"),
-                            rs.getString("email_contato"),
-                            rs.getString("desc_prioridade"),
-                            rs.getString("desc_status"),
-                            rs.getString("desc_categoria"),
-                            rs.getString("nome_solicitante"),
-                            rs.getString("nome_agente")
+                            rs.getInt("id_chamado"), rs.getString("titulo"), rs.getString("desc_chamado"),
+                            rs.getString("dt_abertura"), rs.getString("dt_fechamento"), rs.getString("email_contato"),
+                            rs.getString("desc_prioridade"), rs.getString("desc_status"), rs.getString("desc_categoria"),
+                            rs.getString("nome_solicitante"), rs.getString("nome_agente"),
+                            timeline
                     );
                     response.setStatus(HttpServletResponse.SC_OK);
-                    response.getWriter().write(gson.toJson(chamado)); // Envia o objeto único
+                    response.getWriter().write(gson.toJson(chamado));
                 } else {
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND); // Erro 404
                     response.getWriter().write("{\"success\": false, \"message\": \"Chamado não encontrado.\"}");
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"success\": false, \"message\": \"Erro ao buscar detalhes do chamado: " + e.getMessage() + "\"}");
+            response.getWriter().write("{\"success\": false, \"message\": \"Erro SQL ao buscar detalhes: " + e.getMessage() + "\"}");
         }
     }
 
-} // Fim da classe AbrirChamadoServlet
+    /**
+     * MÉTODO AUXILIAR 3: Busca a timeline de interações para um chamado.
+     */
+    private List<InteracaoDTO> buscarTimelineDoChamado(int idChamado) throws IOException {
+        List<InteracaoDTO> timeline = new ArrayList<>();
+
+        String sql = "SELECT " +
+                "  i.id_interacoes, i.id_chamado, i.id_usuario, i.mensagem, CONVERT(varchar, i.dt_interacao, 108) AS dt_interacao_formatada, " +
+                "  u.nome_usuario " +
+                "FROM InteracoesChamado i " +
+                "JOIN Usuarios u ON i.id_usuario = u.id_usuario " +
+                "WHERE i.id_chamado = ? ORDER BY i.dt_interacao ASC";
+
+        try (Connection conn = DriverManager.getConnection(
+                DatabaseConfig.getDbUrl(), DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, idChamado);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    timeline.add(new InteracaoDTO(
+                            rs.getInt("id_interacoes"),
+                            rs.getInt("id_chamado"),
+                            rs.getInt("id_usuario"),
+                            rs.getString("nome_usuario"),
+                            rs.getString("mensagem"),
+                            rs.getString("dt_interacao_formatada")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro SQL ao buscar timeline: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return timeline;
+    }
+}

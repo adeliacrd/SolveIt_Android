@@ -86,7 +86,7 @@ public class ListaChamadosActivity extends AppCompatActivity {
         // --- Configuração do RecyclerView e Adapter (COM A CORREÇÃO) ---
         recyclerViewChamados.setLayoutManager(new LinearLayoutManager(this));
         // ✨ CORREÇÃO: Passa o Context (this) e a lista (que pode estar vazia) ✨
-        chamadosAdapter = new ChamadosAdapter(this, new ArrayList<>());
+        chamadosAdapter = new ChamadosAdapter(this, new ArrayList<>(), idUsuarioLogado);
         recyclerViewChamados.setAdapter(chamadosAdapter);
 
         // ✨ Opcional: Clique para abrir detalhes (igual ao ADM) ✨

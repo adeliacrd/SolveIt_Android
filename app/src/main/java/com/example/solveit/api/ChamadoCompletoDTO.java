@@ -1,5 +1,7 @@
 package com.example.solveit.api;
 
+import java.util.List;
+
 // Este é o "molde" para a visão COMPLETA de um chamado
 public class ChamadoCompletoDTO {
     // Info do Chamado
@@ -16,6 +18,11 @@ public class ChamadoCompletoDTO {
     private String desc_categoria;
     private String nome_solicitante;
     private String nome_agente;
+
+    private List<InteracaoDTO> timeline;
+
+    // Getters para a timeline
+    public List<InteracaoDTO> getTimeline() { return timeline; }
 
     // Getters para todos os campos (essenciais para o Gson)
     public int getId_chamado() { return id_chamado; }

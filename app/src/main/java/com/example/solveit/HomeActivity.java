@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout; // Importar LinearLayout
 import android.widget.TextView; // Importar TextView
 import android.widget.Toast;
+import java.util.Objects;
 
 import androidx.annotation.NonNull; // Importar
 import androidx.appcompat.app.AppCompatActivity;
@@ -85,12 +86,16 @@ public class HomeActivity extends AppCompatActivity {
         // --- 5. Configura o RecyclerView ---
         recyclerViewChamados = findViewById(R.id.recyclerView_adm_chamados);
         recyclerViewChamados.setLayoutManager(new LinearLayoutManager(this));
-        chamadosAdapter = new ChamadosAdapter(this, new ArrayList<>());
+
+        // ✨ CORREÇÃO: Passa o idUsuarioLogado para o Adapter ✨
+        chamadosAdapter = new ChamadosAdapter(this, new ArrayList<>(), idUsuarioLogado);
+
         recyclerViewChamados.setAdapter(chamadosAdapter);
 
         chamadosAdapter.setOnItemClickListener(idChamado -> {
-            Toast.makeText(this, "Chamado #" + idChamado + " clicado!", Toast.LENGTH_SHORT).show();
-            // (Aqui abriremos a tela de Detalhes)
+            Intent intent = new Intent(HomeActivity.this, DetalheChamadoActivity.class);
+            intent.putExtra("ID_CHAMADO", idChamado); // Manda o ID para a próxima tela
+            startActivity(intent);
         });
 
         // --- 6. A MÁGICA: Decide o layout com base no acesso ---
@@ -134,9 +139,18 @@ public class HomeActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setText("Encerrados"));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override public void onTabSelected(TabLayout.Tab tab) { filtrarListaParaCliente(tab.getPosition()); }
-            @Override public void onTabUnselected(TabLayout.Tab tab) { }
-            @Override public void onTabReselected(TabLayout.Tab tab) { }
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                filtrarListaParaCliente(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
         });
     }
 
@@ -144,9 +158,25 @@ public class HomeActivity extends AppCompatActivity {
         Log.d(TAG, "Preparando UI para Agente...");
         layoutCabecalhoAdm.setVisibility(View.GONE);
         tabLayout.setVisibility(View.VISIBLE);
+
         tabLayout.removeAllTabs();
-        tabLayout.addTab(tabLayout.newTab().setText("Disponíveis"));
-        tabLayout.addTab(tabLayout.newTab().setText("Meus Atendimentos"));
+        tabLayout.addTab(tabLayout.newTab().setText("Home"));
+        tabLayout.addTab(tabLayout.newTab().setText("Meus Chamados"));
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                filtrarListaParaAgente(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
     }
 
     // --- Métodos de Busca de Dados ---
@@ -170,18 +200,23 @@ public class HomeActivity extends AppCompatActivity {
                     } else if (idTipoAcessoLogado == 1) { // Cliente
                         filtrarListaParaCliente(tabLayout.getSelectedTabPosition());
                     } else if (idTipoAcessoLogado == 2) { // Agente
-                        chamadosAdapter.updateChamados(listaDeChamadosCompleta); // (Placeholder)
-                        atualizarVisibilidadeLista(listaDeChamadosCompleta, "Nenhum chamado disponível."); // (Placeholder)
+                        filtrarListaParaAgente(tabLayout.getSelectedTabPosition());
                     }
                 } else {
                     String errorMsg = "Falha ao buscar chamados. Código: " + response.code();
-                    try { if(response.errorBody() != null) errorMsg += " - " + response.errorBody().string(); } catch (IOException e) { e.printStackTrace(); }
+                    try {
+                        if (response.errorBody() != null)
+                            errorMsg += " - " + response.errorBody().string();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     Log.e(TAG, errorMsg);
                     Toast.makeText(HomeActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                     // Mostra erro na lista
                     atualizarVisibilidadeLista(new ArrayList<>(), "Falha ao carregar chamados.");
                 }
             }
+
             @Override
             public void onFailure(Call<List<ChamadoDTO>> call, Throwable t) {
                 Log.e(TAG, "Erro de rede ao buscar chamados: " + t.getMessage(), t);
@@ -225,6 +260,59 @@ public class HomeActivity extends AppCompatActivity {
         atualizarVisibilidadeLista(listaFiltrada, msgVazio);
     }
 
+    // --- Lógica de Filtro para Agente (ATUALIZADA) ---
+    private void filtrarListaParaAgente(int tabPosition) {
+        if (listaDeChamadosCompleta.isEmpty()) {
+            atualizarVisibilidadeLista(new ArrayList<>(), "Nenhum chamado encontrado.");
+            return;
+        }
+
+        List<ChamadoDTO> listaFiltrada;
+        String msgVazio;
+
+        if (tabPosition == 0) {
+            // Aba "Home": (Não atribuídos) OU (Atribuídos a MIM)
+            // REGRA: Mostra trabalho a fazer.
+            // NÃO mostra chamados criados por mim que estão com OUTROS agentes.
+            Log.d(TAG, "Filtrando para Agente - Aba 0 (Home)");
+
+            listaFiltrada = listaDeChamadosCompleta.stream()
+                    .filter(c ->
+                            // 1. Não tem dono
+                            c.getId_usuario_atribuido() == null ||
+                                    // 2. OU o dono sou eu
+                                    Objects.equals(c.getId_usuario_atribuido(), idUsuarioLogado)
+                    )
+                    .filter(c -> // E não está fechado
+                            !"Concluído".equalsIgnoreCase(c.getDesc_status()) &&
+                                    !"Cancelado".equalsIgnoreCase(c.getDesc_status())
+                    )
+                    .collect(Collectors.toList());
+
+            msgVazio = "Nenhum chamado disponível ou atribuído a você.";
+
+        } else {
+            // Aba "Meus Chamados":
+            // 1. Atribuídos a MIM (meu trabalho)
+            // 2. OU Criados por MIM (meus problemas pessoais)
+            Log.d(TAG, "Filtrando para Agente - Aba 1 (Meus Chamados)");
+
+            listaFiltrada = listaDeChamadosCompleta.stream()
+                    .filter(c ->
+                            // Sou o Agente responsável?
+                            (c.getId_usuario_atribuido() != null && Objects.equals(c.getId_usuario_atribuido(), idUsuarioLogado)) ||
+                                    // ✨ NOVA REGRA: OU sou o Solicitante (quem criou)? ✨
+                                    (c.getId_usuario() == idUsuarioLogado)
+                    )
+                    .collect(Collectors.toList());
+
+            msgVazio = "Você não possui chamados atribuídos ou abertos por você.";
+        }
+
+        chamadosAdapter.updateChamados(listaFiltrada);
+        atualizarVisibilidadeLista(listaFiltrada, msgVazio);
+    }
+
     // --- ✨ MÉTODO CORRIGIDO: Para mostrar/esconder a lista ✨ ---
     private void atualizarVisibilidadeLista(List<ChamadoDTO> listaExibida, String mensagemVazio) {
 
@@ -251,5 +339,39 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
         // Recarrega a lista toda vez que a tela volta
         buscarChamadosDaApi();
+    }
+
+    /**
+     * Ordena a lista baseado no perfil e na aba.
+     */
+    private void ordenarLista(List<ChamadoDTO> lista, String tipoOrdenacao) {
+        java.util.Collections.sort(lista, (c1, c2) -> {
+
+            // Lógica para ADM e Agente (Home)
+            if (tipoOrdenacao.equals("PRIORIDADE_SEM_ATRIBUICAO")) {
+                boolean c1SemAgente = c1.getId_usuario_atribuido() == null || c1.getId_usuario_atribuido() == 0;
+                boolean c2SemAgente = c2.getId_usuario_atribuido() == null || c2.getId_usuario_atribuido() == 0;
+
+                // 1. Sem atribuição vem primeiro (topo)
+                if (c1SemAgente && !c2SemAgente) return -1;
+                if (!c1SemAgente && c2SemAgente) return 1;
+
+                // 2. Se ambos forem sem atribuição, ordena por ID (mais novo primeiro)
+                if (c1SemAgente) {
+                    return Integer.compare(c2.getId_chamado(), c1.getId_chamado());
+                }
+
+                // 3. Se ambos tiverem atribuição, ordena por ATUALIZAÇÃO (mensagem recente)
+                String data1 = c1.getDt_atualizacao() != null ? c1.getDt_atualizacao() : "";
+                String data2 = c2.getDt_atualizacao() != null ? c2.getDt_atualizacao() : "";
+                return data2.compareTo(data1); // Decrescente (mais recente primeiro)
+            }
+
+            // Lógica Padrão (Data de Atualização - Mais recente primeiro)
+            // Usado para "Meus Chamados"
+            String data1 = c1.getDt_atualizacao() != null ? c1.getDt_atualizacao() : "";
+            String data2 = c2.getDt_atualizacao() != null ? c2.getDt_atualizacao() : "";
+            return data2.compareTo(data1);
+        });
     }
 }
