@@ -246,12 +246,15 @@ public class HomeActivity extends AppCompatActivity {
         // 2. Filtra por STATUS (Abertos vs. Encerrados)
         if (tabPosition == 0) { // Aba "Meus Chamados" (Abertos)
             listaFiltrada = meusChamados.stream()
-                    .filter(c -> !"Concluído".equalsIgnoreCase(c.getDesc_status()) && !"Cancelado".equalsIgnoreCase(c.getDesc_status()))
+                    .filter(c -> !"Concluído".equalsIgnoreCase(c.getDesc_status())
+                            && !"Cancelado".equalsIgnoreCase(c.getDesc_status()))
                     .collect(Collectors.toList());
             msgVazio = "Você não possui chamados em aberto.";
-        } else { // Aba "Encerrados"
+        } else { // "Encerrados"
             listaFiltrada = meusChamados.stream()
-                    .filter(c -> "Concluído".equalsIgnoreCase(c.getDesc_status()) || "Cancelado".equalsIgnoreCase(c.getDesc_status()))
+                    // ✨ CORREÇÃO: REMOVER O "|| Cancelado" DAQUI ✨
+                    .filter(c -> "Concluído".equalsIgnoreCase(c.getDesc_status()))
+                    // Agora só mostra Concluído. Cancelado some.
                     .collect(Collectors.toList());
             msgVazio = "Você não possui chamados encerrados.";
         }

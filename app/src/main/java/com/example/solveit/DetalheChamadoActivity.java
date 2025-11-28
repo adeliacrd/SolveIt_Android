@@ -14,6 +14,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+// Adicione estes imports:
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.OpenableColumns;
+import androidx.annotation.Nullable; // Para o @Nullable
+import java.io.File;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -56,6 +67,8 @@ public class DetalheChamadoActivity extends AppCompatActivity {
     private TextView btnAnexarChat;
     // ✨ ADICIONE ESTA LINHA ✨
     private TextView tvIniciaisResponder;
+
+    private android.net.Uri uriAnexoChat = null; // ✨ Variável nova
 
     private ApiService apiService;
     private ChamadoCompletoDTO chamadoAtual;
@@ -123,6 +136,9 @@ public class DetalheChamadoActivity extends AppCompatActivity {
         if (btnAnexarChat != null) {
             String textoAnexo = "Para anexar arquivos, <font color='#1976D2'>clique aqui</font>";
             btnAnexarChat.setText(android.text.Html.fromHtml(textoAnexo, android.text.Html.FROM_HTML_MODE_LEGACY));
+
+            // ✨ ADICIONE O LISTENER AQUI ✨
+            btnAnexarChat.setOnClickListener(v -> abrirSeletorArquivo());
         }
     }
 
@@ -276,7 +292,7 @@ public class DetalheChamadoActivity extends AppCompatActivity {
         boolean souAgenteAtribuido = (idAgenteAtribuido != null && idAgenteAtribuido == idUsuarioLogado);
         boolean estaSemDono = (idAgenteAtribuido == null || idAgenteAtribuido == 0);
         String status = chamadoAtual.getDesc_status().toLowerCase();
-        boolean isEncerrado = status.contains("concluído") || status.contains("cancelado");
+        boolean isEncerrado = status.contains("concluído") || status.contains("concluido") || status.contains("cancelado");
 
         layoutResponder.setVisibility(View.GONE);
         btnConcluir.setVisibility(View.GONE);
@@ -312,54 +328,105 @@ public class DetalheChamadoActivity extends AppCompatActivity {
         }
     }
 
-    private Uri uriAnexoChat; // Variável para guardar o anexo do chat (preencher no onActivityResult)
 
     private void enviarResposta() {
         String texto = editResposta.getText().toString().trim();
-
-        // Validação: Precisa ter texto OU arquivo
-        if (texto.isEmpty() && uriAnexoChat == null) {
-            Toast.makeText(this, "Escreva algo ou anexe um arquivo.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (texto.isEmpty() && uriAnexoChat == null) return;
 
         btnEnviarResposta.setEnabled(false);
 
-        // Passo 1: Enviar Texto (Se houver)
+        // 1. Envia Texto (se houver)
         if (!texto.isEmpty()) {
             apiService.enviarComentario(idChamado, idUsuarioLogado, texto).enqueue(new Callback<AtribuicaoResponse>() {
                 @Override
                 public void onResponse(Call<AtribuicaoResponse> call, Response<AtribuicaoResponse> response) {
-                    // Se tiver anexo, envia agora. Se não, atualiza a tela.
-                    if (uriAnexoChat != null) {
-                        enviarAnexoChat();
-                    } else {
-                        limparEAtualizarChat();
-                    }
+                    // Se tiver arquivo, envia agora
+                    if (uriAnexoChat != null) enviarAnexoChat();
+                    else limparEAtualizarChat();
                 }
                 @Override public void onFailure(Call<AtribuicaoResponse> call, Throwable t) { btnEnviarResposta.setEnabled(true); }
             });
-        } else {
-            // Se só tem anexo, envia direto
+        } else if (uriAnexoChat != null) {
+            // Só arquivo
             enviarAnexoChat();
         }
     }
 
+    // ✨ Lógica de Upload no Chat (Encadeada) ✨
     private void enviarAnexoChat() {
-        // Reutilize a mesma lógica do uploadArquivo() acima, mas chamando:
-        // apiService.uploadArquivo(...)
-        // No onResponse: limparEAtualizarChat();
+        if (uriAnexoChat == null) return;
 
-        // IMPORTANTE: Para aparecer no chat, precisamos também criar uma "Interacao" dizendo que enviou arquivo.
-        // Então, dentro do sucesso do upload, chame enviarComentario(..., "[Arquivo Enviado]")
+        try {
+            // 1. Prepara o arquivo usando sua classe utilitária
+            File file = com.example.solveit.utils.FileUtils.getFileFromUri(this, uriAnexoChat);
+
+            // 2. Monta as partes da requisição Multipart
+            // Define que é um arquivo de formulário
+            RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            // Cria o "corpo" do arquivo com o nome da chave "arquivo" (tem que bater com o Servlet)
+            MultipartBody.Part body = MultipartBody.Part.createFormData("arquivo", file.getName(), requestFile);
+            // Cria o "corpo" do ID do chamado como texto simples
+            RequestBody idBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(idChamado));
+
+            // Feedback visual rápido
+            Toast.makeText(this, "Enviando arquivo...", Toast.LENGTH_SHORT).show();
+
+            // 3. Chama a API de Upload
+            apiService.uploadArquivo(idBody, body).enqueue(new Callback<AtribuicaoResponse>() {
+                @Override
+                public void onResponse(Call<AtribuicaoResponse> call, Response<AtribuicaoResponse> response) {
+                    if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+
+                        // 4. SUCESSO NO UPLOAD: Agora registra na timeline
+                        // Envia uma mensagem automática para ficar registrado visualmente no chat
+                        String msgAutomatica = "📎 Enviou um arquivo: " + file.getName();
+
+                        apiService.enviarComentario(idChamado, idUsuarioLogado, msgAutomatica).enqueue(new Callback<AtribuicaoResponse>() {
+                            @Override
+                            public void onResponse(Call<AtribuicaoResponse> call, Response<AtribuicaoResponse> response) {
+                                // Tudo certo: Limpa o campo, reseta a variavel de anexo e recarrega a lista
+                                limparEAtualizarChat();
+                                Toast.makeText(DetalheChamadoActivity.this, "Arquivo enviado com sucesso!", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onFailure(Call<AtribuicaoResponse> call, Throwable t) {
+                                // Se o arquivo foi, mas o comentário falhou, recarrega mesmo assim para não travar
+                                limparEAtualizarChat();
+                            }
+                        });
+
+                    } else {
+                        Toast.makeText(DetalheChamadoActivity.this, "Erro no servidor ao salvar arquivo.", Toast.LENGTH_SHORT).show();
+                        btnEnviarResposta.setEnabled(true); // Reabilita o botão para tentar de novo
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AtribuicaoResponse> call, Throwable t) {
+                    Log.e(TAG, "Falha no upload: ", t);
+                    Toast.makeText(DetalheChamadoActivity.this, "Erro de rede no upload.", Toast.LENGTH_SHORT).show();
+                    btnEnviarResposta.setEnabled(true);
+                }
+            });
+
+        } catch (Exception e) {
+            Log.e(TAG, "Erro ao preparar arquivo: " + e.getMessage());
+            Toast.makeText(this, "Erro ao processar o arquivo selecionado.", Toast.LENGTH_SHORT).show();
+            btnEnviarResposta.setEnabled(true);
+        }
     }
 
     private void limparEAtualizarChat() {
         editResposta.setText("");
         uriAnexoChat = null;
-        btnAnexarChat.setText("Anexar arquivo"); // Reseta texto
+        // Reseta o texto do botão
+        String textoAnexo = "Para anexar arquivos, <font color='#1976D2'>clique aqui</font>";
+        btnAnexarChat.setText(android.text.Html.fromHtml(textoAnexo, android.text.Html.FROM_HTML_MODE_LEGACY));
+        btnAnexarChat.setTextColor(ContextCompat.getColor(this, R.color.solveit_texto_secundario)); // Cinza
+
         btnEnviarResposta.setEnabled(true);
-        buscarDetalhesChamado(); // Recarrega a lista para mostrar a msg nova
+        buscarDetalhesChamado(); // Recarrega
     }
 
     private void assumirChamado() {
@@ -427,5 +494,53 @@ public class DetalheChamadoActivity extends AppCompatActivity {
         });
     }
 
+    // ====================================================================
+    // ✨ MÉTODOS PARA ANEXAR ARQUIVO NO CHAT (Adicione no final da classe) ✨
+    // ====================================================================
+
+    private void abrirSeletorArquivo() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*"); // Aceita qualquer tipo de arquivo
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        try {
+            // Usamos o código 202 para identificar que é o anexo do CHAT
+            startActivityForResult(Intent.createChooser(intent, "Selecione o arquivo"), 202);
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(this, "Nenhum gerenciador de arquivos encontrado.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Verifica se o retorno é do nosso pedido de arquivo (Código 202)
+        if (requestCode == 202 && resultCode == RESULT_OK && data != null) {
+            uriAnexoChat = data.getData(); // ✨ Guarda a URI na variável global que criamos ✨
+
+            // Lógica para pegar o nome do arquivo e mostrar na tela
+            String nomeArquivo = "Arquivo selecionado";
+            if (uriAnexoChat != null) {
+                try (Cursor cursor = getContentResolver().query(uriAnexoChat, null, null, null, null)) {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                        if (nameIndex != -1) {
+                            nomeArquivo = cursor.getString(nameIndex);
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Erro ao obter nome do arquivo", e);
+                }
+            }
+
+            // Atualiza o texto do link "Anexar arquivo" para mostrar o nome do arquivo escolhido
+            if (btnAnexarChat != null) {
+                btnAnexarChat.setText("📎 " + nomeArquivo);
+                btnAnexarChat.setTextColor(Color.parseColor("#4CAF50")); // Muda cor para Verde
+            }
+
+            Toast.makeText(this, "Arquivo pronto para enviar!", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 }
