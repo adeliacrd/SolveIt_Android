@@ -69,4 +69,36 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
+    <!-- ✅ AJUSTE FINAL DE CORES E ESTILOS -->
+    <style name="Widget.App.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <!-- Cantos arredondados (já tínhamos) -->
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+
+        <!-- ✅ NOVO: Define a cor do texto do HINT (placeholder) para um cinza claro -->
+        <item name="hintTextColor">#A0A0A0</item>
+
+        <!-- ✅ NOVO: Define a cor da borda para um cinza claro -->
+        <item name="boxStrokeColor">@color/box_stroke_color</item>
+    </style>
+
+    <!-- ✅ NOVO ESTILO: Combina o nosso design com o menu dropdown -->
+    <style name="Widget.App.TextInputLayout.ExposedDropdownMenu" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <!-- Re-aplica os cantos arredondados -->
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+
+        <!-- Re-aplica a cor do texto do HINT (placeholder) -->
+        <item name="hintTextColor">#A0A0A0</item>
+
+        <!-- Re-aplica a cor da borda -->
+        <item name="boxStrokeColor">@color/box_stroke_color</item>
+    </style>
+
+
+
 </resources>

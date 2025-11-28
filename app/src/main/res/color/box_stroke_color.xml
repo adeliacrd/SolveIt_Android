@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Cor da borda quando o campo está focado (cor primária do app) -->
+    <item android:color="?attr/colorPrimary" android:state_focused="true"/>
+
+    <!-- Cor da borda quando o campo está desativado -->
+    <item android:color="#D0D0D0" android:state_enabled="false"/>
+
+    <!-- Cor da borda em estado normal (não focado) -->
+    <item android:color="#D0D0D0"/>
+</selector>

@@ -3,13 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools">
     <!-- A linha 'package="com.example.solveit"' foi REMOVIDA daqui, como recomendado pelo Android Studio -->
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
-
     <application
-
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -21,27 +19,27 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".EdicaoChamadoActivity"
+            android:exported="false" />
+        <activity
             android:name=".HomeActivity"
             android:exported="false"
-            android:theme="@style/Theme.SolveIt"/>
-        "
-            />
+            android:theme="@style/Theme.SolveIt" />
         <activity
             android:name=".NotificacoesActivity"
             android:exported="false" />
         <activity
             android:name=".ListaChamadosActivity"
             android:exported="false"
-            android:theme="@style/Theme.SolveIt"/>
+            android:theme="@style/Theme.SolveIt" />
         <activity
             android:name=".AberturaChamadoActivity"
             android:exported="false"
-            android:theme="@style/Theme.SolveIt"/>
+            android:theme="@style/Theme.SolveIt" />
         <activity
             android:name=".ForgotPasswordActivity"
             android:exported="false"
-            android:theme="@style/Theme.SolveIt"
-            />
+            android:theme="@style/Theme.SolveIt" />
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
@@ -53,16 +51,9 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-
-        <!-- ✨ DECLARAÇÃO DA TELA DE PERFIL ADICIONADA ✨ -->
-        <activity android:name=".PerfilActivity"/>
-
-
+        </activity> <!-- ✨ DECLARAÇÃO DA TELA DE PERFIL ADICIONADA ✨ -->
+        <activity android:name=".PerfilActivity" />
         <activity android:name=".ConversaChamadoActivity" />
-
-
     </application>
 
 </manifest>

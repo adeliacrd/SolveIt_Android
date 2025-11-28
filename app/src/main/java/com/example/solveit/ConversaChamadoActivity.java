@@ -2,6 +2,7 @@ package com.example.solveit;
 
 // Imports básicos
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -12,7 +13,7 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
-import android.widget.Button; // ✅ 1. IMPORT DO BOTÃO
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,7 +33,7 @@ public class ConversaChamadoActivity extends AppCompatActivity {
 
     // Variáveis para os componentes visuais
     private TextView tvChamadoId, tvStatus, tvPrioridade, tvTituloValor, tvSolicitante, tvAgente, tvAnexarArquivo;
-    private Button btnEditarChamado; // ✅ 2. DECLARAÇÃO DO BOTÃO
+    private Button btnEditarChamado;
     private RecyclerView rvMensagens;
 
     // Lançador para o seletor de arquivos
@@ -43,7 +44,6 @@ public class ConversaChamadoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversa_chamado);
 
-        // Inicializa o lançador do seletor de arquivos ANTES de ser usado
         seletorDeArquivosLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -58,10 +58,9 @@ public class ConversaChamadoActivity extends AppCompatActivity {
                     }
                 });
 
-        // Chama os métodos de configuração
         conectarComponentes();
         configurarToolbar();
-        preencherComDadosDeExemplo();
+        preencherComDadosDeExemplo(); // Este método agora conterá a lógica principal
         configurarListaDeMensagens();
         configurarLinkAnexo();
     }
@@ -75,7 +74,7 @@ public class ConversaChamadoActivity extends AppCompatActivity {
         tvAgente = findViewById(R.id.tv_conversa_agente);
         rvMensagens = findViewById(R.id.rv_mensagens);
         tvAnexarArquivo = findViewById(R.id.tv_anexar_arquivo);
-        btnEditarChamado = findViewById(R.id.btn_editar_chamado); // ✅ 3. CONEXÃO DO BOTÃO
+        btnEditarChamado = findViewById(R.id.btn_editar_chamado);
     }
 
     private void configurarToolbar() {
@@ -86,11 +85,11 @@ public class ConversaChamadoActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
         toolbar.setNavigationOnClickListener(v -> finish());
     }
 
     private void preencherComDadosDeExemplo() {
+        // --- Preenchimento dos dados (seu código atual) ---
         tvChamadoId.setText("Chamado (ID 08)");
         tvTituloValor.setText("Impressora não funciona na sala de reuniões");
         tvStatus.setText("Em Atendimento");
@@ -101,32 +100,52 @@ public class ConversaChamadoActivity extends AppCompatActivity {
         configurarTag(tvStatus, "Em Atendimento");
         configurarTag(tvPrioridade, "Urgente");
 
-        // =========================================================
-        // ✅ 4. LÓGICA DO BOTÃO "EDITAR"
-        // =========================================================
-        // Pega o status que foi definido acima
-        String statusAtual = tvStatus.getText().toString();
+        // ======================================================================
+        // LÓGICA DE VISIBILIDADE E AÇÃO DO BOTÃO "EDITAR"
+        // ======================================================================
 
-        // Regra de exemplo: só mostra o botão se o status NÃO for "Concluído"
-        if (!"Concluído".equalsIgnoreCase(statusAtual) && !"Cancelado".equalsIgnoreCase(statusAtual)) {
-            // Torna o botão visível
+        // 1. Lê as informações salvas no momento do login
+        SharedPreferences prefs = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
+        int idTipoAcesso = prefs.getInt(MainActivity.KEY_USER_ROLE_ID, 0);
+
+        // 2. Verifica se o ID do perfil é de Administrador (ID = 3)
+        if (idTipoAcesso == 3) {
+            // Se for ADM, torna o botão visível
             btnEditarChamado.setVisibility(View.VISIBLE);
 
-            // Define a ação de clique
+            // =========================================================
+            // ✅ CORREÇÃO: Define a ação de clique para abrir a tela de edição
+            // =========================================================
             btnEditarChamado.setOnClickListener(v -> {
-                // Lógica para quando o botão for clicado
-                Toast.makeText(this, "Ação de editar chamado", Toast.LENGTH_SHORT).show();
-                // No futuro, aqui você abriria a tela de edição:
-                // Intent intent = new Intent(this, EdicaoChamadoActivity.class);
-                // startActivity(intent);
+                // 1. Cria a intenção de abrir a nova tela EdicaoChamadoActivity
+                Intent intent = new Intent(ConversaChamadoActivity.this, EdicaoChamadoActivity.class);
+
+                // 2. Coleta os dados da tela atual para enviar à tela de edição
+                String tituloAtual = tvTituloValor.getText().toString();
+                String solicitanteCompleto = tvSolicitante.getText().toString();
+                // Pega apenas a primeira linha do texto do solicitante, que é o nome
+                String nomeSolicitante = solicitanteCompleto.split("\n")[0];
+
+                // 3. Adiciona os dados na "bagagem" da Intent
+                intent.putExtra("CHAMADO_TITULO", tituloAtual);
+                intent.putExtra("CHAMADO_SOLICITANTE", nomeSolicitante);
+                // Você pode adicionar mais dados que precise na tela de edição
+                // intent.putExtra("CHAMADO_ID", idDoChamado);
+                // intent.putExtra("CHAMADO_DESCRICAO", descricaoOriginal);
+
+                // 4. Inicia a nova tela, levando os dados com ela
+                startActivity(intent);
             });
+            // =========================================================
+
         } else {
-            // Se o status for "Concluído" ou "Cancelado", o botão fica escondido
+            // Se NÃO for ADM, o botão fica completamente escondido
             btnEditarChamado.setVisibility(View.GONE);
         }
-        // =========================================================
     }
 
+    // O resto do seu código permanece exatamente igual
+    // ...
     private void configurarTag(TextView textView, String texto) {
         GradientDrawable background = (GradientDrawable) textView.getBackground().mutate();
         int cor;
