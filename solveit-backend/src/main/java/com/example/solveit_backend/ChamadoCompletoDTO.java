@@ -2,7 +2,6 @@ package com.example.solveit_backend;
 
 import java.util.List;
 
-// DTO para a tela de "Informações" (detalhe completo)
 public class ChamadoCompletoDTO {
     // Info do Chamado
     private int id_chamado;
@@ -16,27 +15,30 @@ public class ChamadoCompletoDTO {
     private String desc_prioridade;
     private String desc_status;
     private String desc_categoria;
-    private String nome_solicitante; // Nome do usuário que abriu
-    private String nome_agente; // Nome do agente/adm atribuído (pode ser nulo)
-    private int id_usuario;
+    private String nome_solicitante;
+    private String nome_agente;
+    private int id_usuario; // ✨ ESSENCIAL: ID DO CRIADOR DO CHAMADO
 
-    // ✨ NOVOS CAMPOS ✨
-    private String email_solicitante; // E-mail do cadastro do solicitante
-    private String email_agente;      // E-mail do cadastro do agente
-    private int sla_horas;            // Horas do SLA
+    // NOVOS CAMPOS
+    private String email_solicitante;
+    private String email_agente;
+    private int sla_horas;
 
     private List<InteracaoDTO> timeline;
 
-    // Getters para a timeline
-    public List<InteracaoDTO> getTimeline() { return timeline; }
-
-    // Construtor (Getters são necessários para o Gson)
-    // (Um construtor completo é grande, podemos omitir para focar nos Getters,
-    // mas vamos adicionar um para preencher no Servlet)
+    // =========================================================================================
+    // ✨ CONSTRUTOR COMPLETO E CORRIGIDO (15 ARGUMENTOS) ✨
+    // Deve ser idêntico à chamada no AbrirChamadoServlet.
+    // =========================================================================================
     public ChamadoCompletoDTO(int id_chamado, String titulo, String desc_chamado,
                               String dt_abertura, String dt_fechamento, String email_contato,
                               String desc_prioridade, String desc_status, String desc_categoria,
-                              String nome_solicitante, String nome_agente, Integer sla_horas) {
+                              String nome_solicitante, String nome_agente,
+                              String email_solicitante, String email_agente, // E-mails
+                              int sla_horas, // SLA
+                              int id_usuario, // ✨ ID DO CRIADOR (O MAIS IMPORTANTE) ✨
+                              List<InteracaoDTO> timeline) { // Timeline
+
         this.id_chamado = id_chamado;
         this.titulo = titulo;
         this.desc_chamado = desc_chamado;
@@ -48,10 +50,18 @@ public class ChamadoCompletoDTO {
         this.desc_categoria = desc_categoria;
         this.nome_solicitante = nome_solicitante;
         this.nome_agente = nome_agente;
+
+        this.email_solicitante = email_solicitante;
+        this.email_agente = email_agente;
         this.sla_horas = sla_horas;
+        this.id_usuario = id_usuario; // ✨ ATRIBUIÇÃO CORRETA
+        this.timeline = timeline;
     }
 
-    // Os Getters (O Retrofit/Gson usa isso para ler os dados)
+    // Construtor vazio para o GSON (opcional, mas boa prática)
+    public ChamadoCompletoDTO() {}
+
+    // Os Getters (Corretos)
     public int getId_chamado() { return id_chamado; }
     public String getTitulo() { return titulo; }
     public String getDesc_chamado() { return desc_chamado; }
@@ -63,10 +73,9 @@ public class ChamadoCompletoDTO {
     public String getDesc_categoria() { return desc_categoria; }
     public String getNome_solicitante() { return nome_solicitante; }
     public String getNome_agente() { return nome_agente; }
-    public int getId_usuario() { return id_usuario; }
-
-    // ✨ NOVOS GETTERS ✨
+    public int getId_usuario() { return id_usuario; } // ✨ O GETTER FOI MANTIDO
     public String getEmail_solicitante() { return email_solicitante; }
     public String getEmail_agente() { return email_agente; }
     public int getSla_horas() { return sla_horas; }
+    public List<InteracaoDTO> getTimeline() { return timeline; }
 }

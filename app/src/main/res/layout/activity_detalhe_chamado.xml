@@ -246,17 +246,17 @@
                 android:id="@+id/tv_detalhe_tempo"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
-                android:minWidth="120dp"
                 android:gravity="center"
-                android:textAlignment="center"
                 tools:text="0d 00h 00m"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 android:textStyle="bold"
+                android:paddingHorizontal="12dp"
                 android:background="@drawable/borda_edittext"
                 android:layout_marginEnd="8dp"
                 app:drawableStartCompat="@drawable/ic_clock"
-                app:drawableTint="@color/white" />
+                app:drawableTint="@color/white"
+                android:drawablePadding="4dp"/>
 
             <TextView
                 android:id="@+id/btn_sla"

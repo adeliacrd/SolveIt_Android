@@ -66,20 +66,39 @@ public class AbrirChamadoServlet extends HttpServlet {
 
     // 1. Atualize o DTO Interno (Adicione 'sla_horas')
     private static class ChamadoCompletoDTO {
-        int id_chamado; String titulo; String desc_chamado; String dt_abertura;
-        String dt_fechamento; String email_contato; String desc_prioridade;
-        String desc_status; String desc_categoria; String nome_solicitante; String nome_agente;
-
-        int sla_horas; // ✨ NOVO CAMPO ✨
-
+        int id_chamado;
+        String titulo;
+        String desc_chamado;
+        String dt_abertura;
+        String dt_fechamento;
+        String email_contato;
+        String desc_prioridade;
+        String desc_status;
+        String desc_categoria;
+        String nome_solicitante;
+        String nome_agente;
+        String email_solicitante;
+        String email_agente;
+        int sla_horas;
+        int id_usuario; // ✨ ID do Criador
         List<InteracaoDTO> timeline;
 
-        public ChamadoCompletoDTO(int id, String t, String d, String da, String df, String e,
-                                  String dp, String ds, String dc, String ns, String na, String emailSolicitante, String emailAgente, int sla, // ✨ Recebe SLA
-                                  int idUsuario, List<InteracaoDTO> tl) {
-            id_chamado = id; titulo = t; desc_chamado = d; dt_abertura = da; dt_fechamento = df; email_contato = e;
-            desc_prioridade = dp; desc_status = ds; desc_categoria = dc; nome_solicitante = ns; nome_agente = na;
-            sla_horas = sla; // ✨ Atribui
+        public ChamadoCompletoDTO(int id, String t, String d, String da, String df, String e, String dp, String ds, String dc, String ns, String na, String es, String ea, int sla, int uid, List<InteracaoDTO> tl) {
+            id_chamado = id;
+            titulo = t;
+            desc_chamado = d;
+            dt_abertura = da;
+            dt_fechamento = df;
+            email_contato = e;
+            desc_prioridade = dp;
+            desc_status = ds;
+            desc_categoria = dc;
+            nome_solicitante = ns;
+            nome_agente = na;
+            email_solicitante = es;
+            email_agente = ea;
+            sla_horas = sla;
+            id_usuario = uid;
             timeline = tl;
         }
     }
@@ -266,17 +285,24 @@ public class AbrirChamadoServlet extends HttpServlet {
     }
 
     // 2. Atualize a Query no método buscarChamadoPorId
+    /**
+     * MÉTODO AUXILIAR 2: Busca todos os detalhes de UM chamado específico (para a tela Detalhe).
+     */
     private void buscarChamadoPorId(HttpServletResponse response, Gson gson, int idChamado) throws IOException {
+
+        // 1. Busca a timeline primeiro
         List<InteracaoDTO> timeline = buscarTimelineDoChamado(idChamado);
 
+        // ✨ CORREÇÃO CRÍTICA NA QUERY SQL ✨
+        // Damos um apelido único ao ID do Criador e garantimos todos os campos
         String sql = "SELECT " +
-                "  c.id_chamado, c.titulo, c.desc_chamado, CONVERT(varchar, c.dt_abertura, 103) + ' ' + CONVERT(varchar, c.dt_abertura, 108) AS dt_abertura, " +
-                "  CONVERT(varchar, c.dt_fechamento, 103) + ' ' + CONVERT(varchar, c.dt_fechamento, 108) AS dt_fechamento, c.email_contato, " +
+                "  c.id_chamado, c.titulo, c.desc_chamado, CONVERT(varchar(20), c.dt_abertura, 103) + ' ' + CONVERT(varchar, c.dt_abertura, 108) AS dt_abertura, " +
+                "  CONVERT(varchar(20), c.dt_fechamento, 103) + ' ' + CONVERT(varchar, c.dt_fechamento, 108) AS dt_fechamento, c.email_contato, " +
                 "  p.desc_prioridade, s.desc_status, cat.desc_categoria, " +
-                "  u_sol.nome_usuario AS nome_solicitante, u_sol.email AS email_solicitante, " + // ✨ PEGA O EMAIL DO SOLICITANTE
-                "  u_agente.nome_usuario AS nome_agente, u_agente.email AS email_agente, " +    // ✨ PEGA O EMAIL DO AGENTE
-                "  sla.temp_solucao_horas AS sla_horas, " + // ✨ PEGA SLA HORAS
-                "  c.id_usuario " + // ✨ ID DO CRIADOR DO CHAMADO
+                "  u_sol.nome_usuario AS nome_solicitante, u_sol.email AS email_solicitante, " +
+                "  u_agente.nome_usuario AS nome_agente, u_agente.email AS email_agente, " +
+                "  sla.temp_solucao_horas AS sla_horas, " + // SLA Horas
+                "  c.id_usuario AS id_criador_chamado " + // ✨ APELIDO ÚNICO PARA O ID DO CRIADOR ✨
                 "FROM Chamados c " +
                 "JOIN Prioridades p ON c.id_prioridade = p.niv_prioridade " +
                 "JOIN StatusChamado s ON c.id_status = s.id_status " +
@@ -295,22 +321,18 @@ public class AbrirChamadoServlet extends HttpServlet {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
+                    // Monta o objeto DTO completo, usando o NOVO apelido (id_criador_chamado)
                     ChamadoCompletoDTO chamado = new ChamadoCompletoDTO(
-                            rs.getInt("id_chamado"),
-                            rs.getString("titulo"),
-                            rs.getString("desc_chamado"),
-                            rs.getString("dt_abertura"), // A query agora traz data e hora completas
+                            rs.getInt("id_chamado"), rs.getString("titulo"), rs.getString("desc_chamado"),
+                            rs.getString("dt_abertura"),
                             rs.getString("dt_fechamento"),
                             rs.getString("email_contato"),
-                            rs.getString("desc_prioridade"),
-                            rs.getString("desc_status"),
-                            rs.getString("desc_categoria"),
-                            rs.getString("nome_solicitante"),
-                            rs.getString("nome_agente"),
-                            rs.getString("email_solicitante"), // Adicionado
-                            rs.getString("email_agente"), // Adicionado
-                            rs.getInt("sla_horas"), // SLA
-                            rs.getInt("id_usuario"), // ✨ O ID DO CRIADOR (O MAIS IMPORTANTE) ✨
+                            rs.getString("desc_prioridade"), rs.getString("desc_status"), rs.getString("desc_categoria"),
+                            rs.getString("nome_solicitante"), rs.getString("nome_agente"),
+                            rs.getString("email_solicitante"),
+                            rs.getString("email_agente"),
+                            rs.getInt("sla_horas"),
+                            rs.getInt("id_criador_chamado"), // ✨ LÊ O APELIDO AQUI ✨
                             timeline
                     );
                     response.setStatus(HttpServletResponse.SC_OK);

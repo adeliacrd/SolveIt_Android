@@ -46,47 +46,46 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         holder.tvAutorData.setText(cabecalho);
         holder.tvMensagem.setText(interacao.getMensagem());
 
-        // 2. Avatar (Lógica de Foto vs Iniciais)
-        // Por enquanto, usamos sempre iniciais (pois não temos URL da foto no DTO ainda)
+        // 2. Iniciais
         String iniciais = getIniciais(interacao.getNome_usuario());
         holder.tvAvatarInitials.setText(iniciais);
         holder.tvAvatarInitials.setVisibility(View.VISIBLE);
-        holder.imgAvatarPhoto.setVisibility(View.GONE); // Esconde a foto por enquanto
-
-        // (Futuramente, se tiver URL da foto:)
-        // if (interacao.getFotoUrl() != null) {
-        //    carregarImagem(interacao.getFotoUrl(), holder.imgAvatarPhoto);
-        //    holder.imgAvatarPhoto.setVisibility(View.VISIBLE);
-        //    holder.tvAvatarInitials.setVisibility(View.GONE);
-        // }
+        holder.imgAvatarPhoto.setVisibility(View.GONE);
 
         // 3. Alinhamento e Cores
+        // ✨ AQUI ESTÁ A VARIÁVEL (Declarada uma vez só) ✨
         LinearLayout.LayoutParams avatarParams = (LinearLayout.LayoutParams) holder.avatarCard.getLayoutParams();
 
         if (interacao.getId_usuario() == idUsuarioLogado) {
-            // MINHA MENSAGEM (Direita)
+            // --- MINHA MENSAGEM (Direita) ---
             holder.rootLayout.setGravity(Gravity.END);
             holder.rootLayout.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
             holder.boxMensagem.setBackgroundResource(R.drawable.bg_balao_meu);
             holder.tvMensagem.setTextColor(Color.WHITE);
 
-            // Margens para RTL (Start é a direita visualmente)
-            avatarParams.setMarginStart(dpToPx(8));
-            avatarParams.setMarginEnd(0);
+            // ✨ ESPAÇAMENTO (CORRIGIDO) ✨
+            // MarginEnd = Espaço entre Avatar e Balão (8dp para não grudar)
+            avatarParams.setMarginEnd(dpToPx(8));
+            // MarginStart = Espaço entre Avatar e a Borda da Tela (0dp pois já tem padding no layout pai)
+            avatarParams.setMarginStart(0);
 
         } else {
-            // OUTRA MENSAGEM (Esquerda)
+            // --- MENSAGEM DO OUTRO (Esquerda) ---
             holder.rootLayout.setGravity(Gravity.START);
             holder.rootLayout.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
 
             holder.boxMensagem.setBackgroundResource(R.drawable.bg_balao_outro);
             holder.tvMensagem.setTextColor(Color.BLACK);
 
-            // Margens Normais
+            // ✨ ESPAÇAMENTO (CORRIGIDO) ✨
+            // MarginEnd = Espaço entre Avatar e Balão (8dp)
             avatarParams.setMarginEnd(dpToPx(8));
+            // MarginStart = Espaço entre Avatar e a Borda da Tela (0dp)
             avatarParams.setMarginStart(0);
         }
+
+        // Aplica as margens que configuramos acima
         holder.avatarCard.setLayoutParams(avatarParams);
     }
 

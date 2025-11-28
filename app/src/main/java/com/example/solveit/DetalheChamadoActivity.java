@@ -180,21 +180,27 @@ public class DetalheChamadoActivity extends AppCompatActivity {
 
         // --- 3. SLA (SEMPRE CINZA) ---
         btnSla.setText("SLA: " + (chamadoAtual.getSla_horas() > 0 ? chamadoAtual.getSla_horas() + "h" : "--"));
-        aplicarCorTag(btnSla, ContextCompat.getColor(this, R.color.prioridade_default)); // Força a cor cinza
+        aplicarCorTag(btnSla, ContextCompat.getColor(this, R.color.solveit_texto_secundario)); // Força a cor cinza
 
         // --- 4. TEMPO (CALCULADO) ---
         calcularTempoECorSla(); // Este método cuida da cor e texto do tvTempo
 
-        // --- 5. TIMELINE ---
+        // --- 5. TIMELINE (COM DESCRIÇÃO INICIAL) ---
         List<InteracaoDTO> listaCompleta = new ArrayList<>();
-        // ... (resto da lógica de timeline com descrição inicial) ...
+
+        // ✨ LOG DE VERIFICAÇÃO FINAL ✨
+        Log.d(TAG, "ID CRIADOR (DTO): " + chamadoAtual.getId_usuario());
+        Log.d(TAG, "ID LOGADO (PREFS): " + idUsuarioLogado);
+        Log.d(TAG, "Resultado da Comparação: " + (chamadoAtual.getId_usuario() == idUsuarioLogado));
+
+        // Cria o DTO falso para a descrição inicial (A LINHA QUE DÁ PROBLEMA)
         InteracaoDTO descricaoInicial = new InteracaoDTO(
-                0, // id_interacoes
-                idChamado, // id_chamado
-                chamadoAtual.getId_usuario(), // ID do Solicitante
+                0,
+                idChamado,
+                chamadoAtual.getId_usuario(), // ESTE É O ID DO CRIADOR
                 chamadoAtual.getNome_solicitante(),
-                chamadoAtual.getDesc_chamado(), // Descrição
-                chamadoAtual.getDt_abertura() // Data de Abertura
+                chamadoAtual.getDesc_chamado(),
+                chamadoAtual.getDt_abertura()
         );
         listaCompleta.add(descricaoInicial);
 
