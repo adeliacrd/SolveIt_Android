@@ -1,7 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- 1. SEU TEMA BASE (já estava correto) -->
-    <!-- Este é o tema "pai" de todos os outros. Ele herda de MaterialComponents e define as cores primárias. -->
+    <!-- 1. SEU TEMA BASE -->
     <style name="Base.Theme.SolveIt" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/solveit_azul_primario</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -10,24 +10,17 @@
         <item name="android:windowBackground">@color/white</item>
     </style>
 
-    <!-- 2. SEU TEMA PRINCIPAL (correto) -->
-    <!-- Apenas herda do tema base. Usado como padrão no app. -->
+    <!-- 2. SEU TEMA PRINCIPAL -->
     <style name="Theme.SolveIt" parent="Base.Theme.SolveIt" />
 
-    <!-- 3. TEMA PARA TELAS COM BARRA DE STATUS AZUL (correto) -->
-    <!-- Herda do tema base e apenas muda a cor da barra de status. -->
+    <!-- 3. TEMA PARA TELAS COM BARRA DE STATUS AZUL -->
     <style name="Theme.SolveIt.BlueStatusBar" parent="Base.Theme.SolveIt">
         <item name="android:statusBarColor" tools:targetApi="l">@color/solveit_azul_primario</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
     </style>
 
-    <!-- ===================================================================== -->
-    <!-- ✨ A CORREÇÃO ESTÁ AQUI ✨ -->
-    <!-- Este tema agora herda de "Base.Theme.SolveIt" e não mais diretamente de "Theme.MaterialComponents...". -->
-    <!-- Isso garante que ele conheça suas cores e estilos personalizados. -->
-    <!-- ===================================================================== -->
+    <!-- TEMA MATERIAL NO ACTION BAR -->
     <style name="Theme.SolveIt.MaterialNoActionBar" parent="Base.Theme.SolveIt">
-        <!-- As propriedades que você definiu aqui continuam, mas agora elas sobrescrevem o tema base se necessário. -->
         <item name="colorPrimary">@color/solveit_azul_primario</item>
         <item name="colorPrimaryVariant">@color/solveit_azul_primario</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -35,13 +28,13 @@
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>
 
-    <!-- ESTILO EXISTENTE PARA AS ABAS DO TABLAYOUT (sem alteração) -->
+    <!-- ESTILO PARA AS ABAS DO TABLAYOUT -->
     <style name="App.Custom.Tabs" parent="TextAppearance.Design.Tab">
         <item name="android:textAllCaps">false</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <!-- ESTILOS PARA O FORMULÁRIO (sem alteração) -->
+    <!-- ESTILOS PARA O FORMULÁRIO -->
     <style name="App.Form.Label" parent="Widget.AppCompat.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -64,41 +57,38 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-
     <style name="EstiloDasMinhasAbas" parent="TextAppearance.Design.Tab">
         <item name="android:textAllCaps">false</item>
     </style>
 
-    <!-- ✅ AJUSTE FINAL DE CORES E ESTILOS -->
+    <!-- ESTILOS PARA OS TEXTINPUTLAYOUT COM CANTOS DE 12DP -->
     <style name="Widget.App.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <!-- Cantos arredondados (já tínhamos) -->
         <item name="boxCornerRadiusTopStart">12dp</item>
         <item name="boxCornerRadiusTopEnd">12dp</item>
         <item name="boxCornerRadiusBottomStart">12dp</item>
         <item name="boxCornerRadiusBottomEnd">12dp</item>
-
-        <!-- ✅ NOVO: Define a cor do texto do HINT (placeholder) para um cinza claro -->
         <item name="hintTextColor">#A0A0A0</item>
-
-        <!-- ✅ NOVO: Define a cor da borda para um cinza claro -->
         <item name="boxStrokeColor">@color/box_stroke_color</item>
     </style>
 
-    <!-- ✅ NOVO ESTILO: Combina o nosso design com o menu dropdown -->
     <style name="Widget.App.TextInputLayout.ExposedDropdownMenu" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
-        <!-- Re-aplica os cantos arredondados -->
         <item name="boxCornerRadiusTopStart">12dp</item>
         <item name="boxCornerRadiusTopEnd">12dp</item>
         <item name="boxCornerRadiusBottomStart">12dp</item>
         <item name="boxCornerRadiusBottomEnd">12dp</item>
-
-        <!-- Re-aplica a cor do texto do HINT (placeholder) -->
         <item name="hintTextColor">#A0A0A0</item>
-
-        <!-- Re-aplica a cor da borda -->
         <item name="boxStrokeColor">@color/box_stroke_color</item>
     </style>
 
+    <!-- ✅ NOVO: Estilo para os campos de texto com cantos totalmente arredondados (FORMATO AMENDOADO) -->
+    <style name="EstiloCaixaTextoAmendoada" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Amendoado</item>
+    </style>
 
+    <!-- ✅ NOVO: Definição da forma com 50% de arredondamento -->
+    <style name="ShapeAppearance.Amendoado" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 
 </resources>

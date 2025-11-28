@@ -24,4 +24,9 @@
 
     <color name="azul_link">#007BFF</color>
 
+    <!-- Cores para os novos botões -->
+    <color name="azul_botao">#007BFF</color>
+    <color name="cinza_fundo_botao">#EFEFEF</color>
+    <color name="cinza_claro">#888888</color>
+
 </resources>
