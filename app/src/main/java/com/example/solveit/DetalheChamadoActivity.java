@@ -3,6 +3,7 @@ package com.example.solveit;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -311,8 +312,54 @@ public class DetalheChamadoActivity extends AppCompatActivity {
         }
     }
 
+    private Uri uriAnexoChat; // Variável para guardar o anexo do chat (preencher no onActivityResult)
+
     private void enviarResposta() {
-        Toast.makeText(this, "Enviar resposta: Em breve...", Toast.LENGTH_SHORT).show();
+        String texto = editResposta.getText().toString().trim();
+
+        // Validação: Precisa ter texto OU arquivo
+        if (texto.isEmpty() && uriAnexoChat == null) {
+            Toast.makeText(this, "Escreva algo ou anexe um arquivo.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        btnEnviarResposta.setEnabled(false);
+
+        // Passo 1: Enviar Texto (Se houver)
+        if (!texto.isEmpty()) {
+            apiService.enviarComentario(idChamado, idUsuarioLogado, texto).enqueue(new Callback<AtribuicaoResponse>() {
+                @Override
+                public void onResponse(Call<AtribuicaoResponse> call, Response<AtribuicaoResponse> response) {
+                    // Se tiver anexo, envia agora. Se não, atualiza a tela.
+                    if (uriAnexoChat != null) {
+                        enviarAnexoChat();
+                    } else {
+                        limparEAtualizarChat();
+                    }
+                }
+                @Override public void onFailure(Call<AtribuicaoResponse> call, Throwable t) { btnEnviarResposta.setEnabled(true); }
+            });
+        } else {
+            // Se só tem anexo, envia direto
+            enviarAnexoChat();
+        }
+    }
+
+    private void enviarAnexoChat() {
+        // Reutilize a mesma lógica do uploadArquivo() acima, mas chamando:
+        // apiService.uploadArquivo(...)
+        // No onResponse: limparEAtualizarChat();
+
+        // IMPORTANTE: Para aparecer no chat, precisamos também criar uma "Interacao" dizendo que enviou arquivo.
+        // Então, dentro do sucesso do upload, chame enviarComentario(..., "[Arquivo Enviado]")
+    }
+
+    private void limparEAtualizarChat() {
+        editResposta.setText("");
+        uriAnexoChat = null;
+        btnAnexarChat.setText("Anexar arquivo"); // Reseta texto
+        btnEnviarResposta.setEnabled(true);
+        buscarDetalhesChamado(); // Recarrega a lista para mostrar a msg nova
     }
 
     private void assumirChamado() {
@@ -341,11 +388,44 @@ public class DetalheChamadoActivity extends AppCompatActivity {
         });
     }
 
+    // --- AÇÕES DOS BOTÕES ---
+
     private void concluirChamado() {
-        Toast.makeText(this, "Concluir Chamado: Em breve...", Toast.LENGTH_SHORT).show();
+        // ID 4 = Concluído
+        enviarAtualizacaoDeStatus(4, "Concluindo chamado...");
     }
 
     private void cancelarChamado() {
-        Toast.makeText(this, "Cancelar Chamado: Em breve...", Toast.LENGTH_SHORT).show();
+        // ID 5 = Cancelado
+        enviarAtualizacaoDeStatus(5, "Cancelando chamado...");
     }
+
+    // Método auxiliar para não repetir código
+    private void enviarAtualizacaoDeStatus(int novoStatus, String loadingMsg) {
+        if (chamadoAtual == null) return;
+
+        // Opcional: Mostrar um ProgressDialog ou desabilitar botões
+        Toast.makeText(this, loadingMsg, Toast.LENGTH_SHORT).show();
+
+        Call<AtribuicaoResponse> call = apiService.atualizarStatus(chamadoAtual.getId_chamado(), novoStatus);
+
+        call.enqueue(new Callback<AtribuicaoResponse>() {
+            @Override
+            public void onResponse(Call<AtribuicaoResponse> call, Response<AtribuicaoResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(DetalheChamadoActivity.this, "Sucesso!", Toast.LENGTH_SHORT).show();
+                    // Recarrega a tela para atualizar o visual (status cinza, botões somem)
+                    buscarDetalhesChamado();
+                } else {
+                    Toast.makeText(DetalheChamadoActivity.this, "Falha ao atualizar status.", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<AtribuicaoResponse> call, Throwable t) {
+                Toast.makeText(DetalheChamadoActivity.this, "Erro de conexão.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 }

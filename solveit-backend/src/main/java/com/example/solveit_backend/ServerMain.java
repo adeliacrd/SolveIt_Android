@@ -34,6 +34,9 @@ public class ServerMain {
         context.addServlet(new ServletHolder(RegisterServlet.class), "/api/register");
         context.addServlet(new ServletHolder(CategoriaServlet.class), "/api/categorias");
         context.addServlet(new ServletHolder(AbrirChamadoServlet.class), "/api/chamados");
+        context.addServlet(new ServletHolder(AtualizarStatusServlet.class), "/api/status"); // ✨ NOVO ENDPOINT ✨
+        context.addServlet(new ServletHolder(ComentarioServlet.class), "/api/comentarios");
+        context.addServlet(new ServletHolder(UploadServlet.class), "/api/upload");
 
         server.setHandler(context);
 

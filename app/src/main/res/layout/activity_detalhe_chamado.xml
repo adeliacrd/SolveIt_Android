@@ -8,13 +8,11 @@
     android:background="#FAFAFA"
     tools:context=".DetalheChamadoActivity">
 
-    <!-- 1. TOOLBAR CUSTOMIZADA (SEM ALTERAÇÕES) -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/solveit_azul_primario"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-
         android:fitsSystemWindows="true">
 
         <androidx.appcompat.widget.Toolbar
@@ -89,7 +87,6 @@
             android:gravity="center_vertical"
             android:paddingBottom="0dp">
 
-
             <LinearLayout
                 android:layout_width="395dp"
                 android:layout_height="wrap_content"
@@ -113,7 +110,6 @@
                     android:background="@color/white" />
 
             </LinearLayout>
-
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -121,14 +117,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:layout_marginBottom="80dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="250dp"
+            android:clipToPadding="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -233,7 +232,6 @@
                     tools:text="Agente: NomeAgente\nnomeagente@nomeempresa.com"
                     android:textColor="#616161"
                     android:textSize="14sp"/>
-
             </LinearLayout>
 
             <LinearLayout
@@ -242,37 +240,37 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:layout_marginBottom="4dp">
-            <TextView
-                android:id="@+id/tv_detalhe_tempo"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:gravity="center"
-                tools:text="0d 00h 00m"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:paddingHorizontal="12dp"
-                android:background="@drawable/borda_edittext"
-                android:layout_marginEnd="8dp"
-                app:drawableStartCompat="@drawable/ic_clock"
-                app:drawableTint="@color/white"
-                android:drawablePadding="4dp"/>
+                <TextView
+                    android:id="@+id/tv_detalhe_tempo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:gravity="center"
+                    tools:text="0d 00h 00m"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="12dp"
+                    android:background="@drawable/borda_edittext"
+                    android:layout_marginEnd="8dp"
+                    app:drawableStartCompat="@drawable/ic_clock"
+                    app:drawableTint="@color/white"
+                    android:drawablePadding="4dp"/>
 
-            <TextView
-                android:id="@+id/btn_sla"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:minWidth="50dp"
-                android:gravity="center"
-                android:text="SLA"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="6dp"
-                android:background="@drawable/borda_edittext"
-                android:clickable="true"
-                android:focusable="true"/>
+                <TextView
+                    android:id="@+id/btn_sla"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:minWidth="50dp"
+                    android:gravity="center"
+                    android:text="SLA"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="6dp"
+                    android:background="@drawable/borda_edittext"
+                    android:clickable="true"
+                    android:focusable="true"/>
             </LinearLayout>
 
             <View
@@ -320,7 +318,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="0dp"
+                app:cardElevation="6dp"
                 app:cardBackgroundColor="@android:color/white"
                 android:layout_marginBottom="16dp">
 
@@ -330,15 +328,15 @@
                     android:orientation="vertical"
                     android:background="@drawable/borda_edittext">
                     <EditText
-                    android:id="@+id/edit_resposta"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="80dp"
-                    android:background="@android:color/white"
-                    android:gravity="top|start"
-                    android:hint="Escreva sua mensagem..."
-                    android:padding="12dp"
-                    android:textSize="14sp" />
+                        android:id="@+id/edit_resposta"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="80dp"
+                        android:background="@android:color/white"
+                        android:gravity="top|start"
+                        android:hint="Escreva sua mensagem..."
+                        android:padding="12dp"
+                        android:textSize="14sp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -455,6 +453,5 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

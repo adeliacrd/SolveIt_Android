@@ -19,6 +19,17 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query; // ✨ ESTE É O IMPORT CORRETO PARA @Query ✨
+// ✨ IMPORTS NOVOS NECESSÁRIOS PARA UPLOAD ✨
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.Multipart; // Import para @Multipart
+import retrofit2.http.POST;
+import retrofit2.http.Part;      // Import para @Part
+import retrofit2.http.Query;
 
 
 /**
@@ -87,5 +98,30 @@ public interface ApiService {
     Call<AtribuicaoResponse> assumirChamado(
             @Field("id_chamado") int idChamado,
             @Field("id_usuario") int idUsuario
+    );
+
+    // ✨ ATUALIZAR STATUS (CONCLUIR/CANCELAR) ✨
+    @FormUrlEncoded
+    @POST("api/status")
+    Call<AtribuicaoResponse> atualizarStatus(
+            @Field("id_chamado") int idChamado,
+            @Field("novo_status") int novoStatus // 4 ou 5
+    );
+
+    // 1. Enviar Mensagem de Texto
+    @FormUrlEncoded
+    @POST("api/comentarios")
+    Call<AtribuicaoResponse> enviarComentario(
+            @Field("id_chamado") int idChamado,
+            @Field("id_usuario") int idUsuario,
+            @Field("mensagem") String mensagem
+    );
+
+    // 2. Enviar Arquivo (Multipart)
+    @Multipart
+    @POST("api/upload")
+    Call<AtribuicaoResponse> uploadArquivo(
+            @Part("id_chamado") okhttp3.RequestBody idChamado,
+            @Part okhttp3.MultipartBody.Part arquivo
     );
 }
