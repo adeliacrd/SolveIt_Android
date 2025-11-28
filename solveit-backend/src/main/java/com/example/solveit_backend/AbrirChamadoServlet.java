@@ -26,13 +26,15 @@ public class AbrirChamadoServlet extends HttpServlet {
      * DTO para uma única interação/mensagem na Timeline.
      */
     private static class InteracaoDTO {
+        // Campos (seus nomes devem ser idênticos aos do JSON)
         private int id_interacoes;
         private int id_chamado;
         private int id_usuario;
         private String nome_usuario; // Nome de quem enviou
         private String mensagem;
-        private String dt_interacao;
+        private String dt_interacao; // Data formatada
 
+        // ✨ CORREÇÃO AQUI: ADICIONANDO O CONSTRUTOR COMPLETO ✨
         public InteracaoDTO(int id_interacoes, int id_chamado, int id_usuario, String nome_usuario, String mensagem, String dt_interacao) {
             this.id_interacoes = id_interacoes;
             this.id_chamado = id_chamado;
@@ -41,6 +43,8 @@ public class AbrirChamadoServlet extends HttpServlet {
             this.mensagem = mensagem;
             this.dt_interacao = dt_interacao;
         }
+
+        // (Você pode manter o construtor vazio ou padrão, mas este é o que o seu código precisa)
     }
 
     /**
@@ -52,7 +56,7 @@ public class AbrirChamadoServlet extends HttpServlet {
         String dt_atualizacao; String nota_avaliacao; String dt_avaliacao;
         String desc_chamado; String nome_solicitante;
 
-        public ChamadoDTO(int id, String t, String p, String s, int u, Integer a, String dta, String nota, String dtv, String desc, String nome) {
+        public ChamadoDTO(int id, String t, String p, String s, int u, Integer a, String dta, String nota, String dtv, String desc, String nome, Integer slaHoras) {
             this.id_chamado = id; this.titulo = t; this.desc_prioridade = p; this.desc_status = s;
             this.id_usuario = u; this.id_usuario_atribuido = a;
             this.dt_atualizacao = dta; this.nota_avaliacao = nota; this.dt_avaliacao = dtv;
@@ -60,20 +64,22 @@ public class AbrirChamadoServlet extends HttpServlet {
         }
     }
 
-    /**
-     * DTO para a visão COMPLETA do chamado (Tela Detalhe).
-     */
+    // 1. Atualize o DTO Interno (Adicione 'sla_horas')
     private static class ChamadoCompletoDTO {
         int id_chamado; String titulo; String desc_chamado; String dt_abertura;
         String dt_fechamento; String email_contato; String desc_prioridade;
         String desc_status; String desc_categoria; String nome_solicitante; String nome_agente;
-        List<InteracaoDTO> timeline; // Lista de mensagens
+
+        int sla_horas; // ✨ NOVO CAMPO ✨
+
+        List<InteracaoDTO> timeline;
 
         public ChamadoCompletoDTO(int id, String t, String d, String da, String df, String e,
-                                  String dp, String ds, String dc, String ns, String na,
-                                  List<InteracaoDTO> tl) {
+                                  String dp, String ds, String dc, String ns, String na, String emailSolicitante, String emailAgente, int sla, // ✨ Recebe SLA
+                                  int idUsuario, List<InteracaoDTO> tl) {
             id_chamado = id; titulo = t; desc_chamado = d; dt_abertura = da; dt_fechamento = df; email_contato = e;
             desc_prioridade = dp; desc_status = ds; desc_categoria = dc; nome_solicitante = ns; nome_agente = na;
+            sla_horas = sla; // ✨ Atribui
             timeline = tl;
         }
     }
@@ -212,19 +218,22 @@ public class AbrirChamadoServlet extends HttpServlet {
     private void buscarListaDeChamados(HttpServletResponse response, Gson gson) throws IOException {
         List<ChamadoDTO> chamados = new ArrayList<>();
 
-        // ✨ QUERY CORRIGIDA E ATUALIZADA COM OS NOVOS CAMPOS ✨
+        // ✨ QUERY COMPLETA E CORRIGIDA ✨
         String sql = "SELECT " +
                 "  c.id_chamado, c.titulo, c.id_usuario, c.nota_avaliacao, c.desc_chamado, " +
-                "  CONVERT(varchar(20), c.dt_avaliacao, 103) AS dt_avaliacao_txt, " +
-                "  CONVERT(varchar(20), c.dt_atualizacao, 120) AS dt_atualizacao_txt, " +
+                "  CONVERT(VARCHAR(20), c.dt_avaliacao, 103) AS dt_avaliacao_txt, " +
+                "  CONVERT(VARCHAR(20), c.dt_atualizacao, 120) AS dt_atualizacao_txt, " +
                 "  p.desc_prioridade, s.desc_status, " +
-                "  atrib.id_usuario_atribuido, " + // Alias do LEFT JOIN
-                "  u.nome_usuario AS nome_solicitante " +
+                "  atrib.id_usuario_atribuido, " +
+                "  u.nome_usuario AS nome_solicitante, " +
+                "  sla.temp_solucao_horas AS sla_horas " + // ✨ COLUNA SLA CORRIGIDA E INCLUÍDA ✨
                 "FROM Chamados c " +
-                "JOIN Prioridades p ON c.id_prioridade = p.niv_prioridade " + // Nome da tabela: Prioridades
-                "JOIN StatusChamado s ON c.id_status = s.id_status " + // Nome da tabela: StatusChamado
-                "JOIN Usuarios u ON c.id_usuario = u.id_usuario " + // JOIN para pegar nome do solicitante
-                "LEFT JOIN AtribuicoesChamado atrib ON c.id_chamado = atrib.id_chamado " +
+                "JOIN Prioridades p ON c.id_prioridade = p.niv_prioridade " +
+                "JOIN StatusChamado s ON c.id_status = s.id_status " +
+                "JOIN Usuarios u ON c.id_usuario = u.id_usuario " + // Join para Solicitante
+                "LEFT JOIN AtribuicoesChamado atrib ON c.id_chamado = atrib.id_chamado " + // Agente Atribuído
+                // ✨ A LINHA QUE QUEBRAVA, AGORA CORRIGIDA ✨
+                "LEFT JOIN SLA sla ON p.id_prioridade = sla.id_prioridade " + // JOIN com a tabela SLA
                 "ORDER BY c.dt_atualizacao DESC";
 
         try (Connection conn = DriverManager.getConnection(
@@ -239,19 +248,12 @@ public class AbrirChamadoServlet extends HttpServlet {
                 String dataAtualizacao = rs.getString("dt_atualizacao_txt");
                 String descricao = rs.getString("desc_chamado");
                 String nomeSolicitante = rs.getString("nome_solicitante");
+                Integer slaHoras = (Integer) rs.getObject("sla_horas"); // LÊ O SLA
 
                 chamados.add(new ChamadoDTO(
-                        rs.getInt("id_chamado"),
-                        rs.getString("titulo"),
-                        rs.getString("desc_prioridade"),
-                        rs.getString("desc_status"),
-                        rs.getInt("id_usuario"),
-                        idAgente,
-                        dataAtualizacao,
-                        nota,
-                        dataAvaliacao,
-                        descricao,
-                        nomeSolicitante
+                        rs.getInt("id_chamado"), rs.getString("titulo"), rs.getString("desc_prioridade"), rs.getString("desc_status"),
+                        rs.getInt("id_usuario"), idAgente, dataAtualizacao, nota, dataAvaliacao, descricao, nomeSolicitante,
+                        slaHoras // Passa o valor do SLA
                 ));
             }
             response.setStatus(HttpServletResponse.SC_OK);
@@ -263,22 +265,18 @@ public class AbrirChamadoServlet extends HttpServlet {
         }
     }
 
-    /**
-     * MÉTODO AUXILIAR 2: Busca todos os detalhes de UM chamado específico (para a tela Detalhe).
-     */
+    // 2. Atualize a Query no método buscarChamadoPorId
     private void buscarChamadoPorId(HttpServletResponse response, Gson gson, int idChamado) throws IOException {
-
         List<InteracaoDTO> timeline = buscarTimelineDoChamado(idChamado);
 
-        // ✨ Query corrigida com os nomes das tabelas corretos ✨
         String sql = "SELECT " +
-                "  c.id_chamado, c.titulo, c.desc_chamado, CONVERT(varchar, c.dt_abertura, 103) AS dt_abertura, " +
-                "  CONVERT(varchar, c.dt_fechamento, 103) AS dt_fechamento, c.email_contato, " +
-                "  p.desc_prioridade, " +
-                "  s.desc_status, " +
-                "  cat.desc_categoria, " +
-                "  u_sol.nome_usuario AS nome_solicitante, " +
-                "  u_agente.nome_usuario AS nome_agente " +
+                "  c.id_chamado, c.titulo, c.desc_chamado, CONVERT(varchar, c.dt_abertura, 103) + ' ' + CONVERT(varchar, c.dt_abertura, 108) AS dt_abertura, " +
+                "  CONVERT(varchar, c.dt_fechamento, 103) + ' ' + CONVERT(varchar, c.dt_fechamento, 108) AS dt_fechamento, c.email_contato, " +
+                "  p.desc_prioridade, s.desc_status, cat.desc_categoria, " +
+                "  u_sol.nome_usuario AS nome_solicitante, u_sol.email AS email_solicitante, " + // ✨ PEGA O EMAIL DO SOLICITANTE
+                "  u_agente.nome_usuario AS nome_agente, u_agente.email AS email_agente, " +    // ✨ PEGA O EMAIL DO AGENTE
+                "  sla.temp_solucao_horas AS sla_horas, " + // ✨ PEGA SLA HORAS
+                "  c.id_usuario " + // ✨ ID DO CRIADOR DO CHAMADO
                 "FROM Chamados c " +
                 "JOIN Prioridades p ON c.id_prioridade = p.niv_prioridade " +
                 "JOIN StatusChamado s ON c.id_status = s.id_status " +
@@ -286,6 +284,7 @@ public class AbrirChamadoServlet extends HttpServlet {
                 "JOIN Usuarios u_sol ON c.id_usuario = u_sol.id_usuario " +
                 "LEFT JOIN AtribuicoesChamado atrib ON c.id_chamado = atrib.id_chamado " +
                 "LEFT JOIN Usuarios u_agente ON atrib.id_usuario_atribuido = u_agente.id_usuario " +
+                "LEFT JOIN SLA sla ON p.niv_prioridade = sla.id_prioridade " +
                 "WHERE c.id_chamado = ?";
 
         try (Connection conn = DriverManager.getConnection(
@@ -297,23 +296,34 @@ public class AbrirChamadoServlet extends HttpServlet {
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     ChamadoCompletoDTO chamado = new ChamadoCompletoDTO(
-                            rs.getInt("id_chamado"), rs.getString("titulo"), rs.getString("desc_chamado"),
-                            rs.getString("dt_abertura"), rs.getString("dt_fechamento"), rs.getString("email_contato"),
-                            rs.getString("desc_prioridade"), rs.getString("desc_status"), rs.getString("desc_categoria"),
-                            rs.getString("nome_solicitante"), rs.getString("nome_agente"),
+                            rs.getInt("id_chamado"),
+                            rs.getString("titulo"),
+                            rs.getString("desc_chamado"),
+                            rs.getString("dt_abertura"), // A query agora traz data e hora completas
+                            rs.getString("dt_fechamento"),
+                            rs.getString("email_contato"),
+                            rs.getString("desc_prioridade"),
+                            rs.getString("desc_status"),
+                            rs.getString("desc_categoria"),
+                            rs.getString("nome_solicitante"),
+                            rs.getString("nome_agente"),
+                            rs.getString("email_solicitante"), // Adicionado
+                            rs.getString("email_agente"), // Adicionado
+                            rs.getInt("sla_horas"), // SLA
+                            rs.getInt("id_usuario"), // ✨ O ID DO CRIADOR (O MAIS IMPORTANTE) ✨
                             timeline
                     );
                     response.setStatus(HttpServletResponse.SC_OK);
                     response.getWriter().write(gson.toJson(chamado));
                 } else {
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND); // Erro 404
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     response.getWriter().write("{\"success\": false, \"message\": \"Chamado não encontrado.\"}");
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"success\": false, \"message\": \"Erro SQL ao buscar detalhes: " + e.getMessage() + "\"}");
+            response.getWriter().write("{\"success\": false, \"message\": \"Erro SQL: " + e.getMessage() + "\"}");
         }
     }
 

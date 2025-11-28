@@ -134,24 +134,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="16dp">
+                android:gravity="center_vertical" >
 
                 <ImageButton
                     android:id="@+id/btn_voltar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="30dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Voltar"
-                    android:padding="4dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="0dp"
                     android:src="@drawable/ic_arrow_back_grey" />
 
                 <TextView
                     android:id="@+id/tv_detalhe_titulo_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/black"
+                    android:textColor="@color/solveit_texto_primario"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     tools:text="Chamado (ID 00)" />
@@ -161,7 +159,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="14dp">
 
                 <TextView
                     android:id="@+id/tv_detalhe_status"
@@ -170,7 +168,7 @@
                     tools:text="Em Atendimento"
                     android:textColor="@color/white"
                     android:paddingHorizontal="12dp"
-                    android:paddingVertical="4dp"
+                    android:paddingVertical="6dp"
                     android:textSize="12sp"
                     android:background="@drawable/borda_edittext"
                     android:layout_marginEnd="8dp"/>
@@ -203,8 +201,8 @@
                 android:gravity="center_vertical"
                 android:layout_marginBottom="4dp">
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:src="@drawable/ic_person_grey"
                     android:layout_marginEnd="8dp"/>
                 <TextView
@@ -223,8 +221,8 @@
                 android:gravity="center_vertical"
                 android:layout_marginBottom="16dp">
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:src="@drawable/ic_person_grey"
                     android:layout_marginEnd="8dp"/>
                 <TextView
@@ -247,29 +245,31 @@
             <TextView
                 android:id="@+id/tv_detalhe_tempo"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="0d 03h 45m"
+                android:layout_height="30dp"
+                android:minWidth="120dp"
+                android:gravity="center"
+                android:textAlignment="center"
+                tools:text="0d 00h 00m"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="4dp"
                 android:background="@drawable/borda_edittext"
                 android:layout_marginEnd="8dp"
-                app:drawableStartCompat="@android:drawable/ic_menu_recent_history"
-                app:drawableTint="@color/white"
-                android:drawablePadding="4dp"/>
+                app:drawableStartCompat="@drawable/ic_clock"
+                app:drawableTint="@color/white" />
 
             <TextView
                 android:id="@+id/btn_sla"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="30dp"
+                android:minWidth="50dp"
+                android:gravity="center"
                 android:text="SLA"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="4dp"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="6dp"
                 android:background="@drawable/borda_edittext"
                 android:clickable="true"
                 android:focusable="true"/>

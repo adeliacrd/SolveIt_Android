@@ -24,8 +24,12 @@ import com.example.solveit.api.ChamadoCompletoDTO;
 import com.example.solveit.api.InteracaoDTO;
 import com.example.solveit.api.RetrofitClient;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,6 +44,7 @@ public class DetalheChamadoActivity extends AppCompatActivity {
 
     // UI Components
     private TextView tvTituloId, tvStatus, tvPrioridade, tvTituloCompleto, tvSolicitante, tvAgente;
+    private TextView tvTempo, btnSla; // Componentes da tag de tempo/SLA
     private RecyclerView recyclerTimeline;
     private TimelineAdapter timelineAdapter;
     private LinearLayout layoutResponder;
@@ -55,7 +60,7 @@ public class DetalheChamadoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhe_chamado);
 
-        // 1. Recebe os dados do Intent e SharedPreferences
+        // 1. Recebe os dados
         idChamado = getIntent().getIntExtra("ID_CHAMADO", -1);
         SharedPreferences prefs = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
         idUsuarioLogado = prefs.getInt(MainActivity.KEY_USER_ID, -1);
@@ -72,11 +77,10 @@ public class DetalheChamadoActivity extends AppCompatActivity {
 
         // 3. Configura RecyclerView da Timeline
         recyclerTimeline.setLayoutManager(new LinearLayoutManager(this));
-        // Passa o ID logado para o adapter saber alinhar as mensagens
         timelineAdapter = new TimelineAdapter(this, new ArrayList<>(), idUsuarioLogado);
         recyclerTimeline.setAdapter(timelineAdapter);
 
-        // 4. Busca dados da API
+        // 4. Busca dados
         apiService = RetrofitClient.getClient().create(ApiService.class);
         buscarDetalhesChamado();
 
@@ -84,6 +88,7 @@ public class DetalheChamadoActivity extends AppCompatActivity {
         btnVoltar.setOnClickListener(v -> finish());
         btnEnviarResposta.setOnClickListener(v -> enviarResposta());
         btnAssumir.setOnClickListener(v -> assumirChamado());
+        btnSla.setOnClickListener(v -> Toast.makeText(this, "SLA: " + btnSla.getText(), Toast.LENGTH_SHORT).show());
     }
 
     private void initViews() {
@@ -93,13 +98,15 @@ public class DetalheChamadoActivity extends AppCompatActivity {
         tvTituloCompleto = findViewById(R.id.tv_detalhe_titulo_completo);
         tvSolicitante = findViewById(R.id.tv_detalhe_solicitante);
         tvAgente = findViewById(R.id.tv_detalhe_agente);
-        recyclerTimeline = findViewById(R.id.recycler_timeline);
+        tvTempo = findViewById(R.id.tv_detalhe_tempo);
+        btnSla = findViewById(R.id.btn_sla);
 
+        recyclerTimeline = findViewById(R.id.recycler_timeline);
         layoutResponder = findViewById(R.id.layout_responder);
         btnAssumir = findViewById(R.id.btn_assumir_chamado);
         btnEnviarResposta = findViewById(R.id.btn_enviar_resposta);
         editResposta = findViewById(R.id.edit_resposta);
-        btnVoltar = findViewById(R.id.btn_voltar);
+        btnVoltar = findViewById(R.id.btn_voltar); // ID do botão de voltar
     }
 
     private void buscarDetalhesChamado() {
@@ -125,40 +132,43 @@ public class DetalheChamadoActivity extends AppCompatActivity {
     private void preencherDadosNaTela() {
         tvTituloId.setText("Chamado (ID " + chamadoAtual.getId_chamado() + ")");
         tvTituloCompleto.setText(chamadoAtual.getTitulo());
-        tvSolicitante.setText("Solicitante: " + chamadoAtual.getNome_solicitante());
 
+        // --- SOLICITANTE E EMAIL (Corrigido) ---
+        String nomeSolicitante = chamadoAtual.getNome_solicitante();
+        String emailSolicitante = chamadoAtual.getEmail_solicitante();
+
+        String infoSolicitante = "Solicitante: " + nomeSolicitante;
+        if (emailSolicitante != null && !emailSolicitante.isEmpty()) {
+            infoSolicitante += "\n" + emailSolicitante;
+        }
+        tvSolicitante.setText(infoSolicitante);
+
+        // --- AGENTE E EMAIL (Corrigido - sem "Pendente" se for nulo) ---
         String nomeAgente = chamadoAtual.getNome_agente();
-        tvAgente.setText("Agente: " + (nomeAgente != null ? nomeAgente : "Pendente"));
+        String emailAgente = chamadoAtual.getEmail_agente();
+
+        String infoAgente = "Agente: " + (nomeAgente != null ? nomeAgente : "--"); // Mostra "--" se não for atribuído
+        if (emailAgente != null && !emailAgente.isEmpty()) {
+            infoAgente += "\n" + emailAgente;
+        }
+        tvAgente.setText(infoAgente);
 
         // --- 1. STATUS (TAG COLORIDA) ---
         tvStatus.setText(chamadoAtual.getDesc_status());
-
-        int corFundoStatus;
+        int corFundoStatus = ContextCompat.getColor(this, R.color.prioridade_default); // Padrão
         String status = chamadoAtual.getDesc_status().toLowerCase();
 
-        if (status.contains("aberto") || status.contains("novo")) {
-            corFundoStatus = ContextCompat.getColor(this, R.color.prioridade_baixa); // Verde
-        } else if (status.contains("atendimento")) {
+        if (status.contains("aberto") || status.contains("novo") || status.contains("atendimento")) {
             corFundoStatus = ContextCompat.getColor(this, R.color.prioridade_baixa); // Verde
         } else if (status.contains("transferido")) {
             corFundoStatus = ContextCompat.getColor(this, R.color.prioridade_media); // Amarelo
         } else if (status.contains("cancelado")) {
             corFundoStatus = ContextCompat.getColor(this, R.color.prioridade_urgente); // Vermelho
-        } else {
-            // Concluído ou outros
-            corFundoStatus = ContextCompat.getColor(this, R.color.prioridade_default); // Cinza
         }
+        aplicarCorTag(tvStatus, corFundoStatus);
 
-        // Aplica a cor ao "molde" arredondado (drawable/bg_rounded_tag)
-        // Certifique-se de que no XML o tvStatus tem android:background="@drawable/bg_rounded_tag"
-        GradientDrawable backgroundStatus = (GradientDrawable) tvStatus.getBackground();
-        backgroundStatus.setColor(corFundoStatus);
-
-        // Texto Branco
-        tvStatus.setTextColor(Color.WHITE);
-
+        // --- 2. PRIORIDADE (TAG COLORIDA) ---
         tvPrioridade.setText(chamadoAtual.getDesc_prioridade());
-        // Lógica de Cor da Prioridade
         int corPrioridade = ContextCompat.getColor(this, R.color.prioridade_default);
         switch (chamadoAtual.getDesc_prioridade().toLowerCase()) {
             case "urgente": corPrioridade = ContextCompat.getColor(this, R.color.prioridade_urgente); break;
@@ -166,26 +176,98 @@ public class DetalheChamadoActivity extends AppCompatActivity {
             case "média": case "media": corPrioridade = ContextCompat.getColor(this, R.color.prioridade_media); break;
             case "baixa": corPrioridade = ContextCompat.getColor(this, R.color.prioridade_baixa); break;
         }
-        ((GradientDrawable) tvPrioridade.getBackground()).setColor(corPrioridade);
+        aplicarCorTag(tvPrioridade, corPrioridade);
 
-        // Preenche a Timeline
-        // Adiciona a descrição inicial como a primeira "mensagem"
-        List<InteracaoDTO> listaComDescricao = new ArrayList<>();
+        // --- 3. SLA (SEMPRE CINZA) ---
+        btnSla.setText("SLA: " + (chamadoAtual.getSla_horas() > 0 ? chamadoAtual.getSla_horas() + "h" : "--"));
+        aplicarCorTag(btnSla, ContextCompat.getColor(this, R.color.prioridade_default)); // Força a cor cinza
 
-        // Cria um DTO falso para a descrição inicial (para aparecer no chat)
-        // (Isso é um truque visual útil)
-        // InteracaoDTO descricaoInicial = new InteracaoDTO(0, idChamado, ???, chamadoAtual.getNome_solicitante(), chamadoAtual.getDesc_chamado(), chamadoAtual.getDt_abertura());
-        // listaComDescricao.add(descricaoInicial);
+        // --- 4. TEMPO (CALCULADO) ---
+        calcularTempoECorSla(); // Este método cuida da cor e texto do tvTempo
+
+        // --- 5. TIMELINE ---
+        List<InteracaoDTO> listaCompleta = new ArrayList<>();
+        // ... (resto da lógica de timeline com descrição inicial) ...
+        InteracaoDTO descricaoInicial = new InteracaoDTO(
+                0, // id_interacoes
+                idChamado, // id_chamado
+                chamadoAtual.getId_usuario(), // ID do Solicitante
+                chamadoAtual.getNome_solicitante(),
+                chamadoAtual.getDesc_chamado(), // Descrição
+                chamadoAtual.getDt_abertura() // Data de Abertura
+        );
+        listaCompleta.add(descricaoInicial);
 
         if (chamadoAtual.getTimeline() != null) {
-            listaComDescricao.addAll(chamadoAtual.getTimeline());
+            listaCompleta.addAll(chamadoAtual.getTimeline());
         }
-        timelineAdapter.atualizarLista(listaComDescricao);
+        timelineAdapter.atualizarLista(listaCompleta);
     }
 
-    // ==========================================================
-    // ✨ LÓGICA DE QUEM PODE FAZER O QUÊ ✨
-    // ==========================================================
+    // (O método auxiliar aplicarCorTag e calcularTempoECorSla já estão corretos)
+
+    // Método auxiliar para aplicar cor ao background arredondado
+    private void aplicarCorTag(TextView view, int cor) {
+        view.setTextColor(Color.WHITE);
+        GradientDrawable background = (GradientDrawable) view.getBackground().mutate();
+        background.setColor(cor);
+    }
+
+    // Calcula o tempo decorrido e define a cor da tag de Tempo
+    private void calcularTempoECorSla() {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+
+            if (chamadoAtual.getDt_abertura() == null) { tvTempo.setText("--"); return; }
+
+            Date dataAbertura = sdf.parse(chamadoAtual.getDt_abertura());
+            Date dataReferencia;
+
+            boolean isConcluido = chamadoAtual.getDesc_status().toLowerCase().contains("concluído")
+                    || chamadoAtual.getDesc_status().toLowerCase().contains("cancelado");
+
+            if (isConcluido && chamadoAtual.getDt_fechamento() != null) {
+                dataReferencia = sdf.parse(chamadoAtual.getDt_fechamento());
+            } else {
+                dataReferencia = new Date(); // Agora
+            }
+
+            long diffMillis = dataReferencia.getTime() - dataAbertura.getTime();
+            long horasCorridas = TimeUnit.MILLISECONDS.toHours(diffMillis);
+
+            long dias = TimeUnit.MILLISECONDS.toDays(diffMillis);
+            long horas = horasCorridas % 24;
+            long minutos = TimeUnit.MILLISECONDS.toMinutes(diffMillis) % 60;
+
+            tvTempo.setText(String.format(Locale.getDefault(), "%dd %02dh %02dm", dias, horas, minutos));
+
+            // Lógica de Cor do SLA
+            int slaLimiteHoras = chamadoAtual.getSla_horas();
+            long totalHorasCorridas = TimeUnit.MILLISECONDS.toHours(diffMillis);
+
+            int corTempo;
+
+            if (isConcluido) {
+                corTempo = ContextCompat.getColor(this, R.color.prioridade_default);
+            } else if (slaLimiteHoras > 0) {
+                if (totalHorasCorridas >= slaLimiteHoras) {
+                    corTempo = ContextCompat.getColor(this, R.color.prioridade_urgente); // Vermelho
+                } else if (totalHorasCorridas >= (slaLimiteHoras / 2.0)) {
+                    corTempo = ContextCompat.getColor(this, R.color.prioridade_media); // Amarelo
+                } else {
+                    corTempo = ContextCompat.getColor(this, R.color.prioridade_baixa); // Verde
+                }
+            } else {
+                corTempo = ContextCompat.getColor(this, R.color.prioridade_default); // Sem SLA
+            }
+            aplicarCorTag(tvTempo, corTempo);
+
+        } catch (Exception e) {
+            tvTempo.setText("--");
+            aplicarCorTag(tvTempo, ContextCompat.getColor(this, R.color.prioridade_default));
+        }
+    }
+
     private void configurarVisibilidadeBotoes() {
         boolean isAgente = (idTipoAcessoLogado == 2);
         boolean isAdm = (idTipoAcessoLogado == 3);
@@ -197,33 +279,27 @@ public class DetalheChamadoActivity extends AppCompatActivity {
         btnAssumir.setVisibility(View.GONE);
 
         if (isCliente) {
-            // Cliente pode responder se o chamado NÃO estiver fechado
             layoutResponder.setVisibility(View.VISIBLE);
         }
         else if (isAgente) {
             if (!temAgenteAtribuido) {
-                // Agente vê botão ASSUMIR se ninguém pegou ainda
                 btnAssumir.setVisibility(View.VISIBLE);
             } else {
-                // Se já tem agente, verifica se sou EU
-                // (Precisamos do ID do agente no DTO para essa verificação precisa,
-                //  por enquanto assumimos que se tem agente, ele pode responder se for ele)
                 layoutResponder.setVisibility(View.VISIBLE);
             }
         }
         else if (isAdm) {
-            // ADM pode tudo (Responder e Atribuir - atribuir faremos depois)
             layoutResponder.setVisibility(View.VISIBLE);
         }
     }
 
     private void enviarResposta() {
         // Lógica para chamar o ComentarioServlet (POST)
-        // ...
+        Toast.makeText(this, "Enviar resposta: Em breve...", Toast.LENGTH_SHORT).show();
     }
 
     private void assumirChamado() {
         // Lógica para chamar o endpoint de atribuir (UPDATE)
-        // ...
+        Toast.makeText(this, "Assumir chamado: Em breve...", Toast.LENGTH_SHORT).show();
     }
 }
