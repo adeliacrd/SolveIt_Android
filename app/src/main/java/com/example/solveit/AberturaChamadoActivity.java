@@ -3,15 +3,13 @@ package com.example.solveit;
 // Imports (Verifique se todos necessários estão aqui)
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences; // Import para SharedPreferences
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -34,7 +32,7 @@ import com.example.solveit.api.ApiService;
 import com.example.solveit.api.CategoriaDTO;
 import com.example.solveit.api.RetrofitClient;
 
-import java.io.IOException; // Para tratar erro do errorBody
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +47,7 @@ public class AberturaChamadoActivity extends AppCompatActivity {
 
     // --- Variáveis da UI ---
     private EditText editTitulo;
-    private EditText editNomeSolicitante; // Mantido para exibir o nome
+    private EditText editNomeSolicitante;
     private Spinner spinnerPrioridade;
     private Spinner spinnerCategoria;
     private EditText editEmail;
@@ -65,7 +63,7 @@ public class AberturaChamadoActivity extends AppCompatActivity {
     private ApiService apiService;
     private List<CategoriaDTO> listaCategorias = new ArrayList<>();
     private int selectedCategoriaId = -1;
-    private int idUsuarioLogado = -1; // Guarda o ID do usuário logado
+    private int idUsuarioLogado = -1;
 
     private static final int PICK_FILE_REQUEST_CODE = 101;
     private final String PLACEHOLDER = "Selecione";
@@ -91,6 +89,19 @@ public class AberturaChamadoActivity extends AppCompatActivity {
         btnAnexarIcone = findViewById(R.id.btn_anexar_icone);
         textNomeArquivo = findViewById(R.id.text_nome_arquivo);
         btnAnexarEscolha = findViewById(R.id.btn_anexar_escolha);
+
+        // ✅ ======================================================================
+        // ✅ CORREÇÃO DEFINITIVA APLICADA AQUI
+        // ✅ Força a redefinição do campo de anexo para o estado inicial
+        // ✅ ======================================================================
+        // Garante que o fundo do TextView do nome do arquivo seja transparente.
+        // Isso é crucial para que a cor do LinearLayout pai (cinza) apareça, removendo o vermelho.
+        textNomeArquivo.setBackgroundColor(Color.TRANSPARENT);
+
+        // Garante que a cor do texto seja a cinza padrão de placeholder.
+        textNomeArquivo.setTextColor(Color.parseColor("#757575"));
+        // ✅ ======================================================================
+
 
         // --- Carrega dados do usuário logado e preenche o nome ---
         SharedPreferences prefs = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
@@ -213,10 +224,9 @@ public class AberturaChamadoActivity extends AppCompatActivity {
 
         // Se passou nas validações, envia para a API
         if (!houveErro) {
-            // ✨ LOG DE VERIFICAÇÃO ADICIONADO AQUI ✨
             Log.d(TAG, "===> Preparando para enviar API. Valores:");
             Log.d(TAG, "     titulo: " + titulo);
-            Log.d(TAG, "     idUsuarioAbertura: " + idUsuarioAbertura); // <<< O VALOR ESTÁ CORRETO AQUI?
+            Log.d(TAG, "     idUsuarioAbertura: " + idUsuarioAbertura);
             Log.d(TAG, "     prioridade: " + prioridade);
             Log.d(TAG, "     idCategoria: " + idCategoria);
             Log.d(TAG, "     email: " + email);
@@ -225,14 +235,8 @@ public class AberturaChamadoActivity extends AppCompatActivity {
 
             btnConfirmar.setEnabled(false);
 
-            // Chama a API
             Call<AbrirChamadoResponse> call = apiService.abrirChamado(
-                    titulo,
-                    idUsuarioAbertura, // ✨ Garanta que esta variável tem o valor correto ✨
-                    prioridade,
-                    idCategoria,
-                    email,
-                    descricao
+                    titulo, idUsuarioAbertura, prioridade, idCategoria, email, descricao
             );
 
             call.enqueue(new Callback<AbrirChamadoResponse>() {
@@ -243,7 +247,6 @@ public class AberturaChamadoActivity extends AppCompatActivity {
                         AbrirChamadoResponse apiResponse = response.body();
                         Log.d(TAG, "Chamado aberto! ID: " + (apiResponse.getId_chamado() != null ? apiResponse.getId_chamado() : "N/A"));
                         Toast.makeText(AberturaChamadoActivity.this, "Chamado aberto com sucesso!", Toast.LENGTH_LONG).show();
-                        // Aqui você pode iniciar o upload do anexo usando apiResponse.getId_chamado()
                         finish();
                     } else {
                         String errorMsg = "Erro ao abrir chamado.";
@@ -272,7 +275,6 @@ public class AberturaChamadoActivity extends AppCompatActivity {
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        // ✨ ADICIONADO: Chamada ao super que estava faltando ✨
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
@@ -285,10 +287,9 @@ public class AberturaChamadoActivity extends AppCompatActivity {
                     }
                 } catch (Exception e) { Log.e(TAG, "Erro ao obter nome do arquivo", e); }
             }
-            textNomeArquivo.setText(nomeArquivo); textNomeArquivo.setTextColor(Color.BLACK);
+            textNomeArquivo.setText(nomeArquivo);
+            textNomeArquivo.setTextColor(Color.BLACK); // Muda a cor do texto para preto para indicar que um arquivo foi selecionado
             Toast.makeText(this, "Arquivo selecionado: " + nomeArquivo, Toast.LENGTH_SHORT).show();
-            // Guarde a Uri aqui (ex: private Uri selectedFileUri = null;)
-            // selectedFileUri = uri;
         }
     }
 }
