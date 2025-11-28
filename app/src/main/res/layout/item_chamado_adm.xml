@@ -9,8 +9,9 @@
     android:gravity="center_vertical"
     android:background="@android:color/white">
 
+    <!-- ✅ CORRIGIDO: ID alterado de tv_item_id para tv_chamado_id -->
     <TextView
-        android:id="@+id/tv_item_id"
+        android:id="@+id/tv_chamado_id"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.8"
@@ -18,8 +19,9 @@
         android:textSize="14sp"
         android:textColor="@color/solveit_texto_secundario" />
 
+    <!-- ✅ CORRIGIDO: ID alterado de tv_item_titulo para tv_chamado_titulo -->
     <TextView
-        android:id="@+id/tv_item_titulo"
+        android:id="@+id/tv_chamado_titulo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2.5"
@@ -30,8 +32,9 @@
         android:ellipsize="end"
         android:layout_marginEnd="8dp"/>
 
+    <!-- ✅ CORRIGIDO: ID alterado de tv_item_prioridade para tv_chamado_prioridade -->
     <TextView
-        android:id="@+id/tv_item_prioridade"
+        android:id="@+id/tv_chamado_prioridade"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1.5"
@@ -44,8 +47,9 @@
         android:paddingHorizontal="8dp"
         android:background="@drawable/borda_edittext"/>
 
+    <!-- ✅ CORRIGIDO: ID alterado de tv_item_status para tv_chamado_status -->
     <TextView
-        android:id="@+id/tv_item_status"
+        android:id="@+id/tv_chamado_status"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1.2"

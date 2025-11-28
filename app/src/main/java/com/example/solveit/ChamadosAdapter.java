@@ -98,10 +98,10 @@ public class ChamadosAdapter extends RecyclerView.Adapter<ChamadosAdapter.Chamad
 
         public ChamadoViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvId = itemView.findViewById(R.id.tv_item_id);
-            tvTitulo = itemView.findViewById(R.id.tv_item_titulo);
-            tvPrioridade = itemView.findViewById(R.id.tv_item_prioridade);
-            tvStatus = itemView.findViewById(R.id.tv_item_status);
+            tvId = itemView.findViewById(R.id.tv_chamado_id);
+            tvTitulo = itemView.findViewById(R.id.tv_chamado_titulo);
+            tvPrioridade = itemView.findViewById(R.id.tv_chamado_prioridade);
+            tvStatus = itemView.findViewById(R.id.tv_chamado_status);
 
             // =========================================================================
             // ✨ SEU CÓDIGO DE CLIQUE, AGORA USANDO A INTERFACE MELHORADA ✨

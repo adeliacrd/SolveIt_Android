@@ -17,15 +17,17 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public class EdicaoChamadoFragment extends Fragment {
 
-    // Todos os componentes que você já tinha
+    // 1. DECLARAÇÃO DAS VARIÁVEIS DO CHAMADO
     private TextInputEditText etTitulo, etSolicitante, etEmail, etDescricao;
     private AutoCompleteTextView spinnerPrioridade;
+    private AutoCompleteTextView spinnerAtribuirAgente;
     private MaterialButton btnConfirmar, btnCancelar;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Infla o layout do fragmento
+        // ✅ AQUI ESTÁ A LIGAÇÃO CORRETA!
+        // Este fragmento Java deve usar o layout de EDIÇÃO DE CHAMADO.
         return inflater.inflate(R.layout.fragment_edicao_chamado, container, false);
     }
 
@@ -33,50 +35,58 @@ public class EdicaoChamadoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // A lógica do seu antigo onCreate() vem para cá
+        // O resto do código funciona se a ligação acima estiver certa.
         conectarComponentes(view);
-        configurarSpinnerPrioridade();
-        receberDadosDoChamado(); // Podemos ajustar isso depois
+        configurarSpinners();
+        receberDadosDoChamado();
+        configurarBotoes();
+    }
 
+    private void conectarComponentes(View view) {
+        // Estes IDs existem no 'fragment_edicao_chamado.xml'
+        etTitulo = view.findViewById(R.id.et_titulo_chamado);
+        etSolicitante = view.findViewById(R.id.et_solicitante_chamado);
+        etEmail = view.findViewById(R.id.et_email_chamado);
+        etDescricao = view.findViewById(R.id.et_descricao_chamado);
+        spinnerPrioridade = view.findViewById(R.id.spinner_prioridade);
+        spinnerAtribuirAgente = view.findViewById(R.id.spinner_atribuir_agente);
+        btnConfirmar = view.findViewById(R.id.btn_confirmar_edicao);
+        btnCancelar = view.findViewById(R.id.btn_cancelar_edicao);
+    }
+
+    // O resto do código...
+    private void configurarSpinners() {
+        String[] prioridades = new String[]{"Urgente", "Alta", "Média", "Baixa"};
+        ArrayAdapter<String> prioridadeAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, prioridades);
+        spinnerPrioridade.setAdapter(prioridadeAdapter);
+
+        String[] agentes = new String[]{"Agente Suporte N1", "Bruno Agente", "Carla Silva", "Não atribuído"};
+        ArrayAdapter<String> agenteAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, agentes);
+        spinnerAtribuirAgente.setAdapter(agenteAdapter);
+    }
+
+    private void configurarBotoes() {
         btnConfirmar.setOnClickListener(v -> salvarAlteracoes());
         btnCancelar.setOnClickListener(v -> {
-            // Em um fragmento, para fechar a tela, pedimos para a Activity fazer isso
             if (getActivity() != null) {
-                getActivity().finish();
+                getActivity().onBackPressed();
             }
         });
     }
 
-    // A lógica para encontrar os componentes agora precisa da "view" do fragmento
-    private void conectarComponentes(View view) {
-        etTitulo = view.findViewById(R.id.et_edicao_titulo);
-        etSolicitante = view.findViewById(R.id.et_edicao_solicitante);
-        etEmail = view.findViewById(R.id.et_edicao_email);
-        etDescricao = view.findViewById(R.id.et_edicao_descricao);
-        spinnerPrioridade = view.findViewById(R.id.spinner_edicao_prioridade);
-        btnConfirmar = view.findViewById(R.id.btn_edicao_confirmar);
-        btnCancelar = view.findViewById(R.id.btn_edicao_cancelar);
-    }
-
-    private void configurarSpinnerPrioridade() {
-        String[] prioridades = new String[]{"Urgente", "Alta", "Média", "Baixa"};
-        // O contexto agora é pego do fragmento usando "requireContext()"
-        ArrayAdapter<String> prioridadeAdapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_dropdown_item_1line, prioridades);
-        spinnerPrioridade.setAdapter(prioridadeAdapter);
-    }
-
     private void receberDadosDoChamado() {
-        // Vamos deixar os dados fixos por enquanto para simplificar
-        // Depois vamos pegar os dados da Activity que hospeda o fragmento
         etTitulo.setText("Impressora não funciona na sala de reuniões");
         etSolicitante.setText("Nome do Usuário");
         etEmail.setText("nome.usuario@empresa.com");
-        etDescricao.setText("A impressora da sala de reuniões simplesmente parou de funcionar. Já tentei reiniciar e nada acontece.");
+        etDescricao.setText("A impressora da sala de reuniões simplesmente parou de funcionar.");
         spinnerPrioridade.setText("Alta", false);
+        spinnerAtribuirAgente.setText("Não atribuído", false);
     }
 
     private void salvarAlteracoes() {
-        Toast.makeText(getContext(), "Alterações salvas (simulação)!", Toast.LENGTH_SHORT).show();
+        String prioridade = spinnerPrioridade.getText().toString();
+        String agente = spinnerAtribuirAgente.getText().toString();
+        String mensagem = "Prioridade: " + prioridade + "\nAtribuído a: " + agente;
+        Toast.makeText(getContext(), "Alterações salvas!\n" + mensagem, Toast.LENGTH_LONG).show();
     }
 }

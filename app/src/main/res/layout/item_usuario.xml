@@ -1,87 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="12dp"
-    android:paddingBottom="12dp">
+    android:orientation="vertical"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:background="@android:color/white"
+    android:animateLayoutChanges="true"> <!-- Essencial para a animação de expansão -->
 
-    <!-- Ícone de Edição (Lápis) -->
-    <ImageView
-        android:id="@+id/iv_usuario_edit"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="16dp"
-        app:srcCompat="@drawable/ic_edit"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/azul_link" />
+    <!-- PARTE PRINCIPAL (sempre visível) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_principal_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <!-- Container para os textos (Nome, email, etc.) -->
+        <!-- Ícone de Lápis -->
+        <ImageView
+            android:id="@+id/iv_usuario_edit"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_edit"
+            app:tint="@color/azul_botao"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <!-- Bloco de informações do usuário -->
+        <LinearLayout
+            android:id="@+id/info_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@id/iv_usuario_edit"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/switch_usuario_status"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                android:id="@+id/tv_usuario_nome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                tools:text="Nome do Usuário"/>
+
+            <TextView
+                android:id="@+id/tv_usuario_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                tools:text="email.usuario@empresa.com"/>
+
+            <TextView
+                android:id="@+id/tv_usuario_telefone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                tools:text="11 99999-9999"/>
+
+            <TextView
+                android:id="@+id/tv_usuario_empresa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                tools:text="Nome da Empresa"/>
+        </LinearLayout>
+
+        <!-- Switch de Status -->
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switch_usuario_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Ativo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- ✅ PARTE EXPANSÍVEL (invisível por padrão) -->
     <LinearLayout
-        android:id="@+id/layout_textos_usuario"
-        android:layout_width="0dp"
+        android:id="@+id/layout_expansivel"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/switch_usuario_status"
-        app:layout_constraintStart_toEndOf="@id/iv_usuario_edit"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        tools:visibility="visible">
 
+        <!-- Label "Tipo de Acesso" -->
         <TextView
-            android:id="@+id/tv_usuario_nome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
+            android:text="Tipo de Acesso:"
             android:textStyle="bold"
-            tools:text="NomeUsuário1" />
+            android:textColor="@android:color/black"/>
 
-        <TextView
-            android:id="@+id/tv_usuario_email"
-            android:layout_width="wrap_content"
+        <!-- Dropdown Tipo de Acesso -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            tools:text="Nome@NomeEmpresa.com" />
+            android:layout_marginTop="8dp"
+            app:hintEnabled="false">
 
-        <TextView
-            android:id="@+id/tv_usuario_telefone"
-            android:layout_width="wrap_content"
+            <AutoCompleteTextView
+                android:id="@+id/spinner_tipo_acesso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Usuário"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Botões de Ação do Item -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            tools:text="11 9 9999-9999" />
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
 
-        <TextView
-            android:id="@+id/tv_usuario_empresa"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            tools:text="Empresa 1" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_item_cancelar"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="CANCELAR"
+                app:cornerRadius="20dp"
+                android:layout_marginEnd="8dp"/>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_item_confirmar"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="CONFIRMAR"
+                app:cornerRadius="20dp"
+                android:backgroundTint="@color/azul_botao"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
     </LinearLayout>
 
-    <!-- Switch para Ativo/Inativo -->
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switch_usuario_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:text="Ativo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Linha divisória fina -->
+    <!-- Divisor -->
     <View
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="12dp"
-        android:background="#E0E0E0"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/iv_usuario_edit" />
+        android:background="?android:attr/listDivider"
+        android:layout_marginTop="8dp"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

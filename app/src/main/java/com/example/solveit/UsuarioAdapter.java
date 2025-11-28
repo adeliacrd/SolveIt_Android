@@ -3,13 +3,21 @@ package com.example.solveit;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +41,7 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.UsuarioV
     @Override
     public void onBindViewHolder(@NonNull UsuarioViewHolder holder, int position) {
         Usuario usuario = listaUsuariosFiltrada.get(position);
-        holder.bind(usuario);
+        holder.bind(usuario, this);
     }
 
     @Override
@@ -41,48 +49,56 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.UsuarioV
         return listaUsuariosFiltrada != null ? listaUsuariosFiltrada.size() : 0;
     }
 
-    // =======================================================================
-    // FILTRO PARA O DROPDOWN DE STATUS (Ativo/Inativo)
-    // =======================================================================
-    public void filtrarPorStatus(String status) {
-        List<Usuario> listaTemporaria = new ArrayList<>();
-
-        if (status == null || status.equalsIgnoreCase("Todos")) {
-            // Se o status for nulo ou "Todos", mostra a lista original completa
-            listaTemporaria.addAll(listaUsuariosOriginal);
-        } else {
-            boolean isAtivo = status.equalsIgnoreCase("Ativo");
-            for (Usuario usuario : listaUsuariosOriginal) {
-                // Compara o status do usuário com o status desejado
-                if (usuario.isAtivo() == isAtivo) {
-                    listaTemporaria.add(usuario);
-                }
-            }
-        }
-
-        // Atualiza a lista filtrada e notifica o RecyclerView
-        listaUsuariosFiltrada.clear();
-        listaUsuariosFiltrada.addAll(listaTemporaria);
+    public void atualizarLista(List<Usuario> novaLista) {
+        this.listaUsuariosOriginal.clear();
+        this.listaUsuariosFiltrada.clear();
+        this.listaUsuariosOriginal.addAll(novaLista);
+        this.listaUsuariosFiltrada.addAll(novaLista);
         notifyDataSetChanged();
     }
 
 
     // =======================================================================
-    // FILTRO DE BUSCA POR TEXTO (CÓDIGO COMPLETO E CORRIGIDO)
+    // MÉTODO DE FILTRO CORRIGIDO
     // =======================================================================
+    public void filtrarPorStatus(String statusSelecionado) {
+        // Se a opção for "Todos", mostra a lista original completa
+        if (statusSelecionado == null || statusSelecionado.equalsIgnoreCase("Todos")) {
+            listaUsuariosFiltrada.clear();
+            listaUsuariosFiltrada.addAll(listaUsuariosOriginal);
+        } else {
+            // Se for "Ativos" ou "Inativos", faz a filtragem
+            List<Usuario> listaTemporaria = new ArrayList<>();
+
+            // ✅ A CORREÇÃO: Converte a string "Ativos" para o booleano 'true'.
+            // Qualquer outra coisa (como "Inativos") resultará em 'false'.
+            boolean deveEstarAtivo = statusSelecionado.equalsIgnoreCase("Ativos");
+
+            for (Usuario usuario : listaUsuariosOriginal) {
+                // Compara o status do usuário (booleano) com o status desejado (booleano)
+                if (usuario.isAtivo() == deveEstarAtivo) {
+                    listaTemporaria.add(usuario);
+                }
+            }
+            // Atualiza a lista exibida com o resultado do filtro
+            listaUsuariosFiltrada.clear();
+            listaUsuariosFiltrada.addAll(listaTemporaria);
+        }
+        // Notifica o RecyclerView que os dados mudaram para ele se redesenhar
+        notifyDataSetChanged();
+    }
+
     @Override
     public Filter getFilter() {
+        // Seu filtro de texto por nome/email/telefone continua o mesmo
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 String textoBusca = constraint.toString().toLowerCase().trim();
                 List<Usuario> listaTemporaria = new ArrayList<>();
-
                 if (textoBusca.isEmpty()) {
-                    // Se a busca estiver vazia, usa a lista original completa
                     listaTemporaria.addAll(listaUsuariosOriginal);
                 } else {
-                    // Percorre a lista original procurando por correspondências
                     for (Usuario usuario : listaUsuariosOriginal) {
                         if (usuario.getNome().toLowerCase().contains(textoBusca) ||
                                 usuario.getEmail().toLowerCase().contains(textoBusca) ||
@@ -91,8 +107,6 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.UsuarioV
                         }
                     }
                 }
-
-                // Cria o objeto de resultados e o retorna
                 FilterResults filterResults = new FilterResults();
                 filterResults.values = listaTemporaria;
                 return filterResults;
@@ -100,34 +114,39 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.UsuarioV
 
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                // Atualiza a lista filtrada com os resultados
                 listaUsuariosFiltrada.clear();
                 listaUsuariosFiltrada.addAll((List<Usuario>) results.values);
-                // Notifica o RecyclerView para se redesenhar
                 notifyDataSetChanged();
             }
         };
     }
 
     // =======================================================================
-    // VIEWHOLDER (A estrutura que segura os componentes de cada item)
+    // VIEWHOLDER (Sem alterações, seu código já está excelente)
     // =======================================================================
     static class UsuarioViewHolder extends RecyclerView.ViewHolder {
+        private final ConstraintLayout layoutPrincipalItem;
         private final TextView tvNome, tvEmail, tvTelefone, tvEmpresa;
         private final SwitchMaterial switchStatus;
-        private final ImageView ivEdit;
+        private final LinearLayout layoutExpansivel;
+        private final AutoCompleteTextView spinnerTipoAcesso;
+        private final MaterialButton btnItemConfirmar, btnItemCancelar;
 
         public UsuarioViewHolder(@NonNull View itemView) {
             super(itemView);
+            layoutPrincipalItem = itemView.findViewById(R.id.layout_principal_item);
             tvNome = itemView.findViewById(R.id.tv_usuario_nome);
             tvEmail = itemView.findViewById(R.id.tv_usuario_email);
             tvTelefone = itemView.findViewById(R.id.tv_usuario_telefone);
             tvEmpresa = itemView.findViewById(R.id.tv_usuario_empresa);
             switchStatus = itemView.findViewById(R.id.switch_usuario_status);
-            ivEdit = itemView.findViewById(R.id.iv_usuario_edit);
+            layoutExpansivel = itemView.findViewById(R.id.layout_expansivel);
+            spinnerTipoAcesso = itemView.findViewById(R.id.spinner_tipo_acesso);
+            btnItemConfirmar = itemView.findViewById(R.id.btn_item_confirmar);
+            btnItemCancelar = itemView.findViewById(R.id.btn_item_cancelar);
         }
 
-        public void bind(final Usuario usuario) {
+        public void bind(final Usuario usuario, final UsuarioAdapter adapter) {
             tvNome.setText(usuario.getNome());
             tvEmail.setText(usuario.getEmail());
             tvTelefone.setText(usuario.getTelefone());
@@ -135,16 +154,43 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.UsuarioV
             switchStatus.setChecked(usuario.isAtivo());
             switchStatus.setText(usuario.isAtivo() ? "Ativo" : "Inativo");
 
-            // Permite que o usuário mude o status diretamente no switch
+            boolean isExpandido = usuario.isExpandido();
+            layoutExpansivel.setVisibility(isExpandido ? View.VISIBLE : View.GONE);
+
+            if (isExpandido) {
+                String[] tiposDeAcesso = new String[]{"Usuário", "Agente", "Administrador"};
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                        itemView.getContext(),
+                        android.R.layout.simple_spinner_dropdown_item,
+                        tiposDeAcesso
+                );
+                spinnerTipoAcesso.setAdapter(arrayAdapter);
+                spinnerTipoAcesso.setText(usuario.getTipoDeAcesso(), false);
+            }
+
+            layoutPrincipalItem.setOnClickListener(v -> {
+                usuario.setExpandido(!usuario.isExpandido());
+                adapter.notifyItemChanged(getAdapterPosition());
+            });
+
+            btnItemConfirmar.setOnClickListener(v -> {
+                usuario.setTipoDeAcesso(spinnerTipoAcesso.getText().toString());
+                usuario.setExpandido(false);
+                adapter.notifyItemChanged(getAdapterPosition());
+                Toast.makeText(itemView.getContext(), "Tipo de acesso de " + usuario.getNome() + " atualizado!", Toast.LENGTH_SHORT).show();
+            });
+
+            btnItemCancelar.setOnClickListener(v -> {
+                usuario.setExpandido(false);
+                adapter.notifyItemChanged(getAdapterPosition());
+            });
+
             switchStatus.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 usuario.setAtivo(isChecked);
                 switchStatus.setText(isChecked ? "Ativo" : "Inativo");
-            });
-
-            // Ação do clique no ícone de editar (lápis)
-            ivEdit.setOnClickListener(v -> {
-                // Futuramente, aqui você pode abrir uma nova tela para editar
-                // os detalhes completos do usuário.
+                // Opcional: Se quiser que a lista se re-filtre automaticamente ao mudar o switch,
+                // precisaria de uma referência ao fragment/activity para chamar o filtro.
+                // Por enquanto, esta é a abordagem mais simples e segura.
             });
         }
     }

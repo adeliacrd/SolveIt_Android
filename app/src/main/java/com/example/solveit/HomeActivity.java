@@ -7,25 +7,24 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout; // Importar LinearLayout
-import android.widget.TextView; // Importar TextView
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull; // Importar
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.tabs.TabLayout; // Importar TabLayout
 
+import com.google.android.material.tabs.TabLayout;
 import com.example.solveit.api.ApiService;
 import com.example.solveit.api.ChamadoDTO;
 import com.example.solveit.api.RetrofitClient;
 
-import java.io.IOException; // Importar
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors; // Importar
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,7 +44,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private LinearLayout layoutCabecalhoAdm;
-    private TextView textViewEmpty; // ✨ VARIÁVEL PARA O TEXTO DE LISTA VAZIA ✨
+    private TextView textViewEmpty;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +74,6 @@ public class HomeActivity extends AppCompatActivity {
         // --- 4. Encontra os componentes que trocam ---
         tabLayout = findViewById(R.id.tabLayout_home);
         layoutCabecalhoAdm = findViewById(R.id.layout_cabecalho_adm);
-
-        // ✨ CONECTA O TEXTO DE LISTA VAZIA ✨
         textViewEmpty = findViewById(R.id.textViewEmpty);
         if (textViewEmpty == null) {
             Log.e(TAG, "FATAL: TextView com ID 'textViewEmpty' não foi encontrado no layout! A mensagem de lista vazia não funcionará.");
@@ -89,19 +86,10 @@ public class HomeActivity extends AppCompatActivity {
         recyclerViewChamados.setAdapter(chamadosAdapter);
 
         chamadosAdapter.setOnItemClickListener(chamadoClicado -> {
-            // PASSO 3: MUDANÇA DE DESTINO
-            // A Intent agora aponta para a nova tela que criamos.
             Intent intent = new Intent(HomeActivity.this, ConversaChamadoActivity.class);
-
-            // Por enquanto, vamos enviar o ID do chamado. A nova tela usará esse ID
-            // para buscar todos os detalhes da API no futuro.
             intent.putExtra("CHAMADO_ID", chamadoClicado.getId_chamado());
-
-            // Inicia a nova tela
             startActivity(intent);
         });
-
-
 
         // --- 6. A MÁGICA: Decide o layout com base no acesso ---
         if (idTipoAcessoLogado == 3) { // 3 = ADM
@@ -119,14 +107,29 @@ public class HomeActivity extends AppCompatActivity {
 
     // --- Métodos de Configuração de UI ---
     private void configurarIconesToolbar() {
+        // Define a visibilidade do ícone de configurações baseado no tipo de acesso
         iconConfig.setVisibility(idTipoAcessoLogado == 3 ? View.VISIBLE : View.GONE);
-        iconConfig.setOnClickListener(v -> Toast.makeText(this, "Configurações (ADM) clicado!", Toast.LENGTH_SHORT).show());
-        iconAdd.setOnClickListener(v -> startActivity(new Intent(this, AberturaChamadoActivity.class)));
-// ✨ Linha NOVA E CORRETA ✨
-        iconNotificacoes.setOnClickListener(v -> startActivity(new Intent(this, NotificacoesActivity.class)));        // ✨ Linha NOVA E CORRETA ✨
-        iconPerfil.setOnClickListener(v -> startActivity(new Intent(this, PerfilActivity.class)));
 
+        // ✅ ========================================================== ✅
+        // ✅               AQUI ESTÁ A SUA CORREÇÃO                   ✅
+        // ✅ ========================================================== ✅
+        // Ação para o ícone de Configurações (Engrenagem)
+        iconConfig.setOnClickListener(v -> {
+            // Cria uma Intent para abrir a tela de edição do Administrador
+            Intent intent = new Intent(HomeActivity.this, AdminEdicaoActivity.class);
+            startActivity(intent);
+        });
+
+        // Ação para o ícone de Adicionar
+        iconAdd.setOnClickListener(v -> startActivity(new Intent(this, AberturaChamadoActivity.class)));
+
+        // Ação para o ícone de Notificações
+        iconNotificacoes.setOnClickListener(v -> startActivity(new Intent(this, NotificacoesActivity.class)));
+
+        // Ação para o ícone de Perfil
+        iconPerfil.setOnClickListener(v -> startActivity(new Intent(this, PerfilActivity.class)));
     }
+
 
     private void prepararTelaAdm() {
         Log.d(TAG, "Preparando UI para ADM...");
@@ -211,8 +214,6 @@ public class HomeActivity extends AppCompatActivity {
 
         List<ChamadoDTO> listaFiltrada;
 
-        // 1. Filtra por "MEUS" chamados primeiro
-        // ✨ ATENÇÃO: ISSO SÓ VAI FUNCIONAR DEPOIS QUE ATUALIZARMOS O BACKEND (Passo 4) ✨
         List<ChamadoDTO> meusChamados = listaDeChamadosCompleta.stream()
                 .filter(c -> c.getId_usuario() == idUsuarioLogado) // <-- O FILTRO CHAVE
                 .collect(Collectors.toList());
@@ -235,23 +236,21 @@ public class HomeActivity extends AppCompatActivity {
         atualizarVisibilidadeLista(listaFiltrada, msgVazio);
     }
 
-    // --- ✨ MÉTODO CORRIGIDO: Para mostrar/esconder a lista ✨ ---
+    // ---  MÉTODO CORRIGIDO: Para mostrar/esconder a lista  ---
     private void atualizarVisibilidadeLista(List<ChamadoDTO> listaExibida, String mensagemVazio) {
 
-        // A variável textViewEmpty foi conectada no onCreate
         if (textViewEmpty == null) {
-            // Se o findViewById falhou, não podemos continuar
             Log.e(TAG, "TextView 'textViewEmpty' é nulo. Não é possível atualizar a visibilidade.");
             return;
         }
 
         if (listaExibida == null || listaExibida.isEmpty()) {
-            recyclerViewChamados.setVisibility(View.GONE); // Esconde a lista
-            textViewEmpty.setVisibility(View.VISIBLE); // Mostra a mensagem
+            recyclerViewChamados.setVisibility(View.GONE);
+            textViewEmpty.setVisibility(View.VISIBLE);
             textViewEmpty.setText(mensagemVazio);
         } else {
-            recyclerViewChamados.setVisibility(View.VISIBLE); // Mostra a lista
-            textViewEmpty.setVisibility(View.GONE); // Esconde a mensagem
+            recyclerViewChamados.setVisibility(View.VISIBLE);
+            textViewEmpty.setVisibility(View.GONE);
         }
     }
 

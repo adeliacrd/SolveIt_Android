@@ -5,9 +5,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    tools:context=".EdicaoUsuarioFragment">
 
-    <!-- LinearLayout para agrupar os filtros e a lista -->
+    <!-- Conteúdo principal: filtros e lista -->
     <LinearLayout
         android:id="@+id/conteudo_principal"
         android:layout_width="0dp"
@@ -27,7 +28,6 @@
             android:textColor="@android:color/black"
             android:textStyle="bold" />
 
-        <!-- ✅ REVERTIDO: Voltando para o estilo original do Dropdown -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
@@ -44,7 +44,6 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Campo de Pesquisa -->
-        <!-- ✅ REVERTIDO: Voltando para o estilo original da Caixa de Texto -->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
@@ -71,7 +70,7 @@
             tools:listitem="@layout/item_usuario"/>
     </LinearLayout>
 
-    <!-- LinearLayout para agrupar os botões na parte inferior -->
+    <!-- Botões inferiores -->
     <LinearLayout
         android:id="@+id/botoes_layout"
         android:layout_width="0dp"
@@ -85,7 +84,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Botão Confirmar -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cancelar_edicao"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:text="CANCELAR"
+            app:cornerRadius="20dp" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_confirmar_edicao"
             style="@style/Widget.MaterialComponents.Button"
@@ -96,20 +104,6 @@
             android:text="CONFIRMAR"
             android:backgroundTint="@color/azul_botao"
             app:cornerRadius="20dp" />
-
-        <!-- Botão Cancelar -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_cancelar_edicao"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:text="CANCELAR"
-            android:textColor="@color/cinza_claro"
-            app:cornerRadius="20dp"
-            android:backgroundTint="@color/cinza_fundo_botao" />
-
 
     </LinearLayout>
 

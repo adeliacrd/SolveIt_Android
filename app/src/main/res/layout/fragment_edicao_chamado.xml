@@ -1,193 +1,205 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:orientation="vertical"
-    tools:context=".EdicaoChamadoActivity">
+    tools:context=".EdicaoChamadoFragment">
 
-
-
-    <!-- 2. ScrollView como o container principal para o conteúdo rolável -->
+    <!-- Conteúdo principal com rolagem para caber em telas menores -->
     <ScrollView
-        android:layout_width="match_parent"
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/botoes_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- 3. LinearLayout interno com o padding lateral e vertical -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
-            android:paddingTop="24dp">
+            android:padding="16dp">
 
-            <!-- Campo Título -->
+            <!-- Título -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Título"
-                android:textAppearance="?attr/textAppearanceCaption"
-                android:textColor="?android:attr/textColorSecondary"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="@color/black"
                 android:textStyle="bold" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.App.TextInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="#F0F0F0"
-                app:hintEnabled="false">
+                android:layout_marginTop="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_edicao_titulo"
+                    android:id="@+id/et_titulo_chamado"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:enabled="false"
-                    android:focusable="false"
-                    android:hint="Título" />
+                    android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Campo Nome do Solicitante -->
+            <!-- Nome do Solicitante -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Nome do solicitante"
-                android:textAppearance="?attr/textAppearanceCaption"
-                android:textColor="?android:attr/textColorSecondary"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="@color/black"
                 android:textStyle="bold" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.App.TextInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="#F0F0F0"
-                app:hintEnabled="false">
+                android:layout_marginTop="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_edicao_solicitante"
+                    android:id="@+id/et_solicitante_chamado"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:enabled="false"
-                    android:focusable="false"
-                    android:hint="Nome" />
+                    android:focusable="false"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-
-            <!-- Campo Prioridade -->
+            <!-- Prioridade -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Prioridade"
-                android:textAppearance="?attr/textAppearanceCaption"
-                android:textColor="?android:attr/textColorSecondary"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="@color/black"
                 android:textStyle="bold" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.App.TextInputLayout.ExposedDropdownMenu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:hintEnabled="false">
+                android:layout_marginTop="8dp">
 
                 <AutoCompleteTextView
-                    android:id="@+id/spinner_edicao_prioridade"
+                    android:id="@+id/spinner_prioridade"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Selecione"
-                    android:inputType="none"
-                    tools:ignore="LabelFor" />
+                    android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
-
-            <!-- Campo E-mail de contato -->
+            <!-- E-mail de Contato -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="E-mail de contato"
-                android:textAppearance="?attr/textAppearanceCaption"
-                android:textColor="?android:attr/textColorSecondary"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="@color/black"
                 android:textStyle="bold" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.App.TextInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="#F0F0F0"
-                app:hintEnabled="false">
+                android:layout_marginTop="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_edicao_email"
+                    android:id="@+id/et_email_chamado"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:enabled="false"
-                    android:focusable="false"
-                    android:hint="seunome@suaempresa.com" />
+                    android:focusable="false"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-
-            <!-- Campo Descrição -->
+            <!-- Descrição -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Descrição"
-                android:textAppearance="?attr/textAppearanceCaption"
-                android:textColor="?android:attr/textColorSecondary"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="@color/black"
                 android:textStyle="bold" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.App.TextInputLayout"
+                android:id="@+id/et_descricao_chamado_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:hintEnabled="false">
+                android:layout_marginTop="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_edicao_descricao"
+                    android:id="@+id/et_descricao_chamado"
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
+                    android:layout_height="wrap_content"
                     android:gravity="top"
-                    android:hint="Escreva aqui a descrição" />
+                    android:minHeight="120dp"
+                    android:enabled="false"
+                    android:focusable="false"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Atribuir Chamado -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Atribuir Chamado"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <AutoCompleteTextView
+                    android:id="@+id/spinner_atribuir_agente"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Selecione um agente"
+                    android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
     </ScrollView>
 
-    <!-- 4. Botões com seu próprio padding lateral e vertical -->
+    <!-- Botões inferiores -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/botoes_layout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:orientation="horizontal"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp">
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_edicao_confirmar"
+            android:id="@+id/btn_cancelar_edicao"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:text="Confirmar"
+            android:text="CANCELAR"
             app:cornerRadius="20dp" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_edicao_cancelar"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:id="@+id/btn_confirmar_edicao"
+            style="@style/Widget.MaterialComponents.Button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:backgroundTint="#E0E0E0"
-            android:text="Cancelar"
-            android:textColor="#808080"
-            app:cornerRadius="20dp"
-            app:strokeWidth="0dp" />
+            android:text="CONFIRMAR"
+            android:backgroundTint="@color/azul_botao"
+            app:cornerRadius="20dp" />
     </LinearLayout>
-</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
